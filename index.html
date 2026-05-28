@@ -162,12 +162,16 @@ button:disabled{cursor:not-allowed}
 
 /* ===== SUMMARY WIDGET 2x2 (concept v1.3 Розділ A) ===== */
 .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sum-cell{background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:13px 14px;display:flex;flex-direction:column;gap:3px;transition:border-color .16s,background .16s}
-.sum-val{font-size:21px;font-weight:800;letter-spacing:-.5px;color:var(--text-secondary);line-height:1.05;transition:color .16s}
+.sum-cell{position:relative;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:13px 14px;display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:border-color .16s,background .16s,transform .1s}
+.sum-cell:active{background:var(--surface-3);transform:scale(.985)}
+.sum-ico{position:absolute;top:12px;right:12px;width:16px;height:16px;color:var(--text-muted);opacity:.65}
+.sum-val{font-size:21px;font-weight:800;letter-spacing:-.5px;color:var(--text-secondary);line-height:1.05;transition:color .16s;font-variant-numeric:tabular-nums;padding-right:20px}
 .sum-lbl{font-size:11.5px;font-weight:600;color:var(--text-muted)}
 .sum-cell.accent{border-color:var(--border-accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}
 .sum-cell.accent .sum-val{color:var(--accent-text)}
-.sum-sub{font-size:11px;color:var(--text-muted);font-weight:500}
+.sum-cell.accent .sum-ico{color:var(--accent-text);opacity:.85}
+.sum-cell.accent:active{background:color-mix(in srgb,var(--accent) 12%,var(--surface-2))}
+.sum-sub{font-size:11px;color:var(--text-muted);font-weight:500;font-variant-numeric:tabular-nums}
 
 /* ===== CTA PAIR (concept v1.3 Розділ B — no "+" sign) ===== */
 .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
@@ -300,27 +304,32 @@ html.pwa-full .nav-i{padding-top:8px;padding-bottom:calc(8px + var(--sab))}
 /* Form fields */
 .fld{margin-bottom:13px}
 .fld-row{display:flex;gap:10px}
-.fld-row .fld{flex:1;margin-bottom:13px}
+.fld-row .fld{flex:1;min-width:0;margin-bottom:13px}
+.fld-row .fld .inp{width:100%;min-width:0}
 .fld-l{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px}
 .inp{width:100%;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);padding:12px 13px;color:var(--text-primary);font-weight:600;transition:border-color .14s,background .14s}
 .inp:focus{outline:none;border-color:var(--border-accent);background:var(--surface-2)}
 .inp.invalid{border-color:var(--crit)}
 textarea.inp{resize:none;line-height:1.5}
 select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238A968F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
-.fld-cc{display:flex;gap:8px;align-items:flex-end}
+.fld-cc{display:flex;gap:8px;align-items:center}
+.fld-cc .chip-btn{padding:10px 13px;align-self:center}
 .chip-btn{padding:11px 13px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);font-size:13px;font-weight:700;color:var(--text-secondary);white-space:nowrap;cursor:pointer;transition:background .12s,color .12s}
 .chip-btn:active{background:var(--accent-soft);color:var(--accent-text)}
 .char-c{font-size:11px;color:var(--text-muted);text-align:right;margin-top:4px;font-weight:600}
 
 /* Fuel selector (concept v1.3 Розділ D — 12 cells, 4 groups) */
 .fuel-sel{margin:2px 0 4px}
-.fg-grid{display:flex;gap:4px;touch-action:none;user-select:none;-webkit-user-select:none;padding:4px 0}
-.fg-group{display:flex;gap:4px}
-.fg-group + .fg-group{margin-left:9px}
-.fg-cell{flex:1;height:34px;min-width:14px;border-radius:5px;background:var(--surface-3);border:1px solid var(--border-subtle);transition:background .1s,transform .1s,border-color .1s;cursor:pointer}
-.fg-cell.on{background:var(--accent);border-color:var(--accent)}
-.fg-cell.pulse{transform:scaleY(1.12)}
-.fg-val{margin-top:9px;font-size:13px;font-weight:700;color:var(--text-secondary)}
+.fg-wrap{display:flex;align-items:center;gap:9px}
+.fg-end{flex-shrink:0;width:12px;text-align:center;font-size:11px;font-weight:800;color:var(--text-muted)}
+.fg-grid{flex:1;display:flex;gap:5px;touch-action:none;user-select:none;-webkit-user-select:none;padding:7px 8px;background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:9px;box-shadow:inset 0 1px 3px rgba(0,0,0,.10)}
+.fg-group{display:flex;gap:5px;flex:1}
+.fg-group + .fg-group{margin-left:7px}
+.fg-cell{flex:1;height:32px;min-width:12px;border-radius:5px;background:var(--surface-3);border:1px solid var(--border-subtle);transition:background .1s,transform .1s,border-color .1s,box-shadow .1s;cursor:pointer}
+.fg-cell.on{background:var(--accent);border-color:var(--accent);box-shadow:0 1px 4px color-mix(in srgb,var(--accent) 40%,transparent)}
+.fg-cell.pulse{transform:scaleY(1.14)}
+.fg-val{margin-top:10px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.fg-val svg{width:14px;height:14px;color:var(--accent-text);flex-shrink:0}
 .fg-val b{color:var(--accent-text);font-weight:800}
 
 /* Form footer — parallel actions (concept v1.3 Розділ F) */
@@ -415,7 +424,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
         Робочий
       </button>
       <button class="seg-i" data-f="vibe" role="tab">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
         Вайб
       </button>
       <button class="seg-i" data-f="all" role="tab">Всі</button>
@@ -470,9 +479,9 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
     <div class="sh-head"><span class="sh-title">Активний день</span><button class="sh-x" onclick="closeSheet('sh-date')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
-      <div class="fld">
-        <label class="fld-l" for="dateInput">Оберіть дату</label>
-        <input class="inp" type="date" id="dateInput" autocomplete="off">
+      <div class="fld" style="text-align:center">
+        <label class="fld-l" for="dateInput" style="text-align:left">Оберіть дату</label>
+        <input class="inp" type="date" id="dateInput" autocomplete="off" style="max-width:210px;margin:0 auto;display:block;text-align:center">
       </div>
       <button class="chip-btn" id="todayBtn" style="width:100%;padding:13px;text-align:center">Сьогодні</button>
     </div>
@@ -509,7 +518,22 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="sh-body">
       <div class="fld-row">
         <div class="fld"><label class="fld-l" for="f-time">Час</label><input class="inp" type="time" id="f-time" autocomplete="off"></div>
-        <div class="fld"><label class="fld-l" for="f-azs">АЗС</label><input class="inp" type="text" id="f-azs" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="WOG Слобожанський"></div>
+        <div class="fld"><label class="fld-l" for="f-odo">Одометр</label><input class="inp" type="text" id="f-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" placeholder="17 742"></div>
+      </div>
+      <div class="fld"><label class="fld-l" for="f-azs-sel">АЗС</label>
+        <select class="inp" id="f-azs-sel">
+          <option value="WOG">WOG</option>
+          <option value="ОККО">ОККО</option>
+          <option value="UPG">UPG</option>
+          <option value="SOCAR">SOCAR</option>
+          <option value="Укрнафта">Укрнафта</option>
+          <option value="БРСМ-Нафта">БРСМ-Нафта</option>
+          <option value="AMIC">AMIC</option>
+          <option value="KLO">KLO</option>
+          <option value="Параллель">Параллель</option>
+          <option value="__other">Інша…</option>
+        </select>
+        <input class="inp" type="text" id="f-azs-other" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="Введіть назву АЗС" style="display:none;margin-top:8px">
       </div>
       <div class="fld"><label class="fld-l" for="f-liters">Кількість літрів</label>
         <div class="fld-cc"><input class="inp" type="text" id="f-liters" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" placeholder="30.50"><button class="chip-btn" id="f-full">Повний бак</button></div>
@@ -528,7 +552,6 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
           <option value="Газ">Газ (LPG)</option>
         </select>
       </div>
-      <div class="fld"><label class="fld-l" for="f-odo">Одометр</label><input class="inp" type="text" id="f-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" placeholder="17 640"></div>
       <div class="fld"><label class="fld-l">Рівень після заправки</label><div class="fuel-sel" id="f-fuel"></div></div>
       <div class="fld"><label class="fld-l" for="f-note">Примітка</label><textarea class="inp" id="f-note" rows="2" maxlength="120" enterkeyhint="done" autocomplete="off" spellcheck="false" placeholder="опційно"></textarea><div class="char-c"><span id="f-cc">0</span>/120</div></div>
       <div class="sh-foot">
@@ -551,7 +574,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="toast" id="toast"></div>
 <script>
 /* ============================================================
-   Drive Lens — preview Batch07 (Tab 1 Огляд + Tab 2 Журнал)
+   Drive Lens — preview Batch08 (Tab 1 Огляд + Tab 2 Журнал)
    Етап 1: mock data + localStorage. Real data flow (concept v1.3 §I).
    Усі handlers реальні (wsd Кластер 3.9 — без заглушок).
    ============================================================ */
@@ -565,6 +588,7 @@ function fmtDate(iso){const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;}
 function isToday(iso){return iso===todayISO();}
 function L100(){return 4.2;} // 1 поділ ≈ 4.2 л (бак 50л / 12)
 function liters(lvl){return (lvl*L100()).toFixed(1);}
+function fmtNum(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00A0');} // 17742 → 17 742
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
@@ -581,13 +605,13 @@ const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true};
 function seed(){
   const t=todayISO();
   S.records=[
-    {id:uid(),date:t,time:'08:15',route:'Лівий берег → Центр',addr:'вул. Робоча 23',km:32,type:'work',fuel:9},
-    {id:uid(),date:t,time:'11:40',route:'Центр → Перемога',addr:'пр. Гагаріна 115',km:18,type:'work',fuel:8},
-    {id:uid(),date:t,time:'15:30',route:'Перемога → Сонячний',addr:'ТЦ Вавилон',km:25,type:'work',fuel:8,range:222},
-    {id:uid(),date:t,time:'18:50',route:'Дім → магазин',addr:'АТБ Тополя',km:16,type:'vibe',fuel:8}
+    {id:uid(),date:t,time:'08:15',route:'Лівий берег → Центр',addr:'вул. Робоча 23',km:32,type:'work',fuel:9,odo:17683},
+    {id:uid(),date:t,time:'11:40',route:'Центр → Перемога',addr:'пр. Гагаріна 115',km:18,type:'work',fuel:8,odo:17701},
+    {id:uid(),date:t,time:'15:30',route:'Перемога → Сонячний',addr:'ТЦ Вавилон',km:25,type:'work',fuel:8,range:222,odo:17726},
+    {id:uid(),date:t,time:'18:50',route:'Дім → магазин',addr:'АТБ Тополя',km:16,type:'vibe',fuel:8,odo:17742}
   ];
   S.refuels=[
-    {id:uid(),date:t,time:'12:30',azs:'WOG Слобожанський',liters:30.5,price:54.90,sum:1674.45,ftype:'А-95',odo:17640,fuel:11}
+    {id:uid(),date:t,time:'12:30',azs:'WOG Слобожанський',liters:30.5,price:54.90,sum:1674.45,ftype:'А-95',odo:17701,fuel:11}
   ];
   // --- минулі дні (mock-історія для Журналу: місяці + тижні + work/vibe + заправки) ---
   const d1=addDays(t,-1),d2=addDays(t,-2),d5=addDays(t,-5),d9=addDays(t,-9),d16=addDays(t,-16),d33=addDays(t,-33),d38=addDays(t,-38);
@@ -642,6 +666,27 @@ function dayRefuels(){return refuelsOf(S.activeDay);}
 function filteredRecords(){return filteredOf(S.activeDay);}
 function lastSnap(){const rs=dayRecords();return rs.length?rs[rs.length-1]:null;}
 function lastRange(){const rs=dayRecords();for(let i=rs.length-1;i>=0;i--){if(rs[i].range!=null)return rs[i].range;}return null;}
+// month-to-date пробіг: baseline = останній одометр ПОПЕРЕДНЬОГО місяця (як у маршрутному листі)
+function odoEvents(){
+  const ev=[];
+  S.records.forEach(r=>{if(r.odo!=null)ev.push({date:r.date,time:r.time,odo:+r.odo});});
+  S.refuels.forEach(r=>{if(r.odo!=null)ev.push({date:r.date,time:r.time,odo:+r.odo});});
+  ev.sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date));
+  return ev;
+}
+function monthProgress(day){
+  const a=day.split('-').map(Number), monthStart=a[0]+'-'+pad(a[1])+'-01';
+  const ev=odoEvents();
+  let startOdo=null,endOdo=null,firstInMonth=null;
+  ev.forEach(e=>{
+    if(e.date<monthStart) startOdo=e.odo;                       // останній перед місяцем
+    if(e.date>=monthStart && e.date<=day && firstInMonth==null) firstInMonth=e.odo;
+    if(e.date<=day) endOdo=e.odo;                               // останній до активного дня включно
+  });
+  if(startOdo==null) startOdo=firstInMonth;                     // fallback: перший запис місяця
+  const km=(startOdo!=null&&endOdo!=null&&endOdo>=startOdo)?endOdo-startOdo:null;
+  return {startOdo,endOdo,km};
+}
 
 // ---------- journal date helpers ----------
 const MON_NOM=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
@@ -665,18 +710,27 @@ function renderSummary(){
   const rs=dayRecords();
   const work=rs.filter(r=>r.type==='work').reduce((s,r)=>s+(+r.km||0),0);
   const vibe=rs.filter(r=>r.type==='vibe').reduce((s,r)=>s+(+r.km||0),0);
-  const snap=lastSnap(), rng=lastRange();
+  const snap=lastSnap();
   const fuelTxt=snap?`${snap.fuel}/12`:'—';
   const fuelSub=snap?`≈ ${liters(snap.fuel)} л`:'паливо не введено';
-  const rngTxt=rng!=null?`${rng} км`:'—';
+  const mp=monthProgress(S.activeDay);
+  const monthTxt=mp.km!=null?`${fmtNum(mp.km)} км`:'—';
+  const monthSub=(mp.startOdo!=null&&mp.endOdo!=null)?`${fmtNum(mp.startOdo)} → ${fmtNum(mp.endOdo)}`:'потрібен одометр';
+  const IC={
+    work:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+    vibe:'<path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>',
+    fuel:'<path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/>',
+    month:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'
+  };
   const cells=[
-    {v:`${work} км`,l:'робочий пробіг',acc:S.filter==='work'},
-    {v:`${vibe} км`,l:'вайб пробіг',acc:S.filter==='vibe'},
-    {v:fuelTxt,l:'рівень палива',sub:fuelSub,acc:false},
-    {v:rngTxt,l:'запас ходу',acc:false}
+    {act:'work', v:`${work} км`,l:'робочий пробіг',ic:IC.work,acc:S.filter==='work'},
+    {act:'vibe', v:`${vibe} км`,l:'вайб пробіг',ic:IC.vibe,acc:S.filter==='vibe'},
+    {act:'fuel', v:fuelTxt,l:'рівень палива',sub:fuelSub,ic:IC.fuel,acc:false},
+    {act:'month',v:monthTxt,l:'пробіг за місяць',sub:monthSub,ic:IC.month,acc:false}
   ];
   return `<div class="sum-grid">${cells.map(c=>`
-    <div class="sum-cell${c.acc?' accent':''}">
+    <div class="sum-cell${c.acc?' accent':''}" data-act="${c.act}">
+      <svg class="sum-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.ic}</svg>
       <div class="sum-val">${esc(c.v)}</div>
       <div class="sum-lbl">${esc(c.l)}</div>
       ${c.sub?`<div class="sum-sub">${esc(c.sub)}</div>`:''}
@@ -753,6 +807,15 @@ function renderOverview(){
   $('ov-scroll').innerHTML=renderSummary()+renderCTA()+renderRecords();
   $('cta-rec').addEventListener('click',openRecordForm);
   $('cta-rf').addEventListener('click',openRefuelForm);
+  document.querySelectorAll('#ov-scroll .sum-cell').forEach(c=>{
+    c.addEventListener('click',()=>{
+      const a=c.dataset.act;
+      if(a==='work'){S.filter=(S.filter==='work'?'all':'work');render();}
+      else if(a==='vibe'){S.filter=(S.filter==='vibe'?'all':'vibe');render();}
+      else if(a==='fuel'){setTab('fuel');}
+      else if(a==='month'){setTab('month');}
+    });
+  });
   document.querySelectorAll('#ov-scroll .rec, #ov-scroll .rf').forEach(el=>{
     el.addEventListener('click',()=>toast('Деталі та редагування — у наступному batch'));
   });
@@ -853,13 +916,13 @@ function buildFuel(containerId,initial){
     for(let k=1;k<=3;k++){const idx=g*3+k;cells+=`<div class="fg-cell" data-idx="${idx}"></div>`;}
     groups+=`<div class="fg-group">${cells}</div>`;
   }
-  c.innerHTML=`<div class="fg-grid" id="${containerId}-grid">${groups}</div><div class="fg-val" id="${containerId}-val"></div>`;
+  c.innerHTML=`<div class="fg-wrap"><span class="fg-end">E</span><div class="fg-grid" id="${containerId}-grid">${groups}</div><span class="fg-end">F</span></div><div class="fg-val" id="${containerId}-val"></div>`;
   const grid=$(containerId+'-grid');
   function paint(){
     grid.querySelectorAll('.fg-cell').forEach(cell=>{
       cell.classList.toggle('on',(+cell.dataset.idx)<=c._fuel);
     });
-    $(containerId+'-val').innerHTML=`<b>${c._fuel}/12</b> · ≈ ${liters(c._fuel)} л`;
+    $(containerId+'-val').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg><span><b>${c._fuel}/12</b> · ≈ ${liters(c._fuel)} л</span>`;
   }
   function setVal(v,pulse){
     v=Math.max(1,Math.min(12,v));
@@ -916,15 +979,17 @@ $('r-save').addEventListener('click',()=>{
   };
   const rng=num($('r-range').value);if(rng!=null)rec.range=Math.round(rng);
   S.records.push(rec);saveData();
-  closeSheet('sh-rec');render();toast('Запис збережено');
+  closeSheet('sh-rec');render();syncCycle();toast('Запис збережено');
 });
 
 function openRefuelForm(){
-  $('f-time').value=nowHM();$('f-azs').value='';$('f-liters').value='';$('f-price').value='';$('f-sum').value='';$('f-odo').value='';$('f-note').value='';$('f-cc').textContent='0';$('f-type').value='А-95';
+  $('f-time').value=nowHM();$('f-liters').value='';$('f-price').value='';$('f-sum').value='';$('f-odo').value='';$('f-note').value='';$('f-cc').textContent='0';$('f-type').value='А-95';
+  $('f-azs-sel').value='WOG';$('f-azs-other').value='';$('f-azs-other').style.display='none';
   document.querySelectorAll('#sh-rf .inp').forEach(i=>i.classList.remove('invalid'));
   buildFuel('f-fuel',lastSnap()?Math.min(12,lastSnap().fuel+2):11);
   openSheet('sh-rf','sh-rf');
 }
+$('f-azs-sel').addEventListener('change',e=>{const o=e.target.value==='__other';$('f-azs-other').style.display=o?'block':'none';if(o)setTimeout(()=>$('f-azs-other').focus(),50);});
 $('f-note').addEventListener('input',e=>$('f-cc').textContent=e.target.value.length);
 $('f-full').addEventListener('click',()=>{$('f-fuel')._fuel=12;buildFuel('f-fuel',12);if(!$('f-liters').value)toast('Повний бак ≈ 50 л');});
 function recalcSum(){const l=num($('f-liters').value),p=num($('f-price').value);if(l!=null&&p!=null)$('f-sum').value=(l*p).toFixed(2);}
@@ -936,14 +1001,16 @@ $('f-save').addEventListener('click',()=>{
   if(l==null||l<=0){litEl.classList.add('invalid');ok=false;}else litEl.classList.remove('invalid');
   if(!ok){toast('Вкажіть кількість літрів');return;}
   const p=num($('f-price').value), sm=num($('f-sum').value);
+  const azsSel=$('f-azs-sel').value;
+  const azs=azsSel==='__other'?($('f-azs-other').value.trim()||'Інша АЗС'):azsSel;
   const rf={
     id:uid(),date:S.activeDay,time:$('f-time').value||nowHM(),
-    azs:$('f-azs').value.trim()||'',liters:+l.toFixed(2),
+    azs:azs,liters:+l.toFixed(2),
     price:p!=null?+p.toFixed(2):null,sum:sm!=null?+sm.toFixed(2):(p!=null?+(l*p).toFixed(2):null),
     ftype:$('f-type').value,odo:Math.round(num($('f-odo').value)||0)||null,fuel:getFuel('f-fuel')
   };
   S.refuels.push(rf);saveData();
-  closeSheet('sh-rf');render();toast('Заправку збережено');
+  closeSheet('sh-rf');render();syncCycle();toast('Заправку збережено');
 });
 
 // ============================================================
@@ -1026,7 +1093,7 @@ function openHelp(){
 function openAbout(){
   genSheet('Про додаток',`
     <div class="about-row"><span class="ar-k">Продукт</span><span class="ar-v">Drive·Lens</span></div>
-    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 07 (Етап 1)</span></div>
+    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 08 (Етап 1)</span></div>
     <div class="about-row"><span class="ar-k">Дата збірки</span><span class="ar-v">28.05.2026</span></div>
     <div class="about-row"><span class="ar-k">Сімейство</span><span class="ar-v">Lens (KPI · QR · Drive)</span></div>
     <div class="about-row"><span class="ar-k">Репозиторій</span><a class="ar-v" href="https://github.com/konst-andre" target="_blank" rel="noopener">github.com/konst-andre</a></div>
@@ -1046,6 +1113,8 @@ function setSync(state,extra){
   $('spText').textContent=SYNC_LABEL[state]+(extra?' · '+extra:'');
   p.setAttribute('aria-label','Стан синхронізації: '+SYNC_LABEL[state]);
 }
+let _syncT=null;
+function syncCycle(){setSync('syncing');clearTimeout(_syncT);_syncT=setTimeout(()=>setSync('synced'),900);}
 $('syncBtn').addEventListener('click',()=>{
   genSheet('Синхронізація',`
     <div class="note-banner">
@@ -1058,6 +1127,8 @@ $('syncBtn').addEventListener('click',()=>{
     <div class="faq-i"><div class="faq-q">⚠ Офлайн</div><div class="faq-a">Немає мережі — записи збережуться і синхронізуються пізніше.</div></div>`);
 });
 setSync('synced');
+// одноразова «жива» анімація на старті (демонструє цикл; на Етапі 1 — симуляція, привʼязана до реальних подій save)
+setTimeout(syncCycle,400);
 
 // ============================================================
 // SHEETS open/close/swipe (concept v1.2 §14.15-14.18, wsd Кластер 8)
@@ -1067,9 +1138,9 @@ function closeSheet(id){$(id).classList.remove('open');}
 function addSwipeClose(bgId,closeFn){
   const box=document.querySelector('#'+bgId+' .sh-box');
   if(!box||box._sw)return;box._sw=true;
-  let sy=0,ss=0,gt=false;
-  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');},{passive:true});
-  box.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy;if(gt&&dy>40)closeFn();else if(ss===0&&dy>64)closeFn();},{passive:true});
+  let sy=0,ss=0,gt=false,ig=false;
+  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid');},{passive:true});
+  box.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy;if(gt&&dy>40)closeFn();else if(!ig&&ss===0&&dy>64)closeFn();},{passive:true});
 }
 ['sh-menu','sh-date','sh-rec','sh-rf','sh-gen'].forEach(id=>{
   $(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeSheet(id);});
