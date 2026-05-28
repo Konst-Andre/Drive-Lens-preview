@@ -226,6 +226,42 @@ button:disabled{cursor:not-allowed}
 .dev-txt{font-size:16px;font-weight:800;color:var(--text-primary)}
 .dev-hint{font-size:13.5px;color:var(--text-secondary);line-height:1.6;max-width:280px}
 
+/* ===== JOURNAL (Tab 2, concept v1.3 §3.1) ===== */
+.jsum{display:flex;align-items:baseline;justify-content:space-between;gap:10px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:12px 14px;margin-bottom:6px}
+.jsum-l{font-size:13px;font-weight:700;color:var(--text-primary);min-width:0}
+.jsum-l b{color:var(--accent-text)}
+.jsum-r{font-size:12px;font-weight:600;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+.jm-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:18px 2px 9px}
+.jm-t{font-size:13px;font-weight:800;color:var(--text-primary);letter-spacing:-.2px}
+.jm-km{font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap}
+.jw-div{height:1px;background:var(--border-subtle);margin:9px 10px;opacity:.7}
+.jd{background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);margin-bottom:8px;overflow:hidden;transition:border-color .14s}
+.jd.active{border-color:var(--border-accent)}
+.jd-head{display:flex;align-items:center;gap:12px;padding:11px 13px;cursor:pointer;transition:background .14s}
+.jd-head:active{background:var(--surface-3)}
+.jd-cal{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.jd-day{width:34px;height:34px;border-radius:10px;background:var(--surface-3);color:var(--text-primary);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;line-height:1}
+.jd.active .jd-day{background:var(--accent);color:#fff}
+.jd-wd{font-size:9.5px;font-weight:700;color:var(--text-muted);margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+.jd-mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px}
+.jd-rel{font-size:14px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jd-counts{font-size:12px;font-weight:500;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jd-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.jd-km{font-size:15px;font-weight:800;color:var(--accent-text);letter-spacing:-.3px}
+.jd-km.zero{color:var(--text-muted)}
+.jd-fuel{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--text-muted)}
+.jd-fuel svg{width:11px;height:11px}
+.jd-chev{color:var(--text-muted);flex-shrink:0;transition:transform .18s}
+.jd.exp .jd-chev{transform:rotate(90deg)}
+.jd-exp{padding:0 13px 13px;border-top:1px solid var(--border-subtle)}
+.jd-exp .sec-h{margin:11px 2px 8px}
+.jd-exp .rec,.jd-exp .rf{background:var(--surface-1)}
+.jd-exp .rec:active,.jd-exp .rf:active{background:var(--surface-3)}
+.jd-empty{font-size:12.5px;color:var(--text-muted);padding:12px 2px 4px;font-weight:500;text-align:center}
+.jd-open{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:11px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);color:var(--accent-text);font-size:13px;font-weight:700;cursor:pointer;transition:background .12s}
+.jd-open:active{background:var(--accent-soft)}
+.jd-open svg{width:15px;height:15px;flex-shrink:0}
+
 /* ===== BOTTOM NAV (concept v1.2 §14.13 — 3-state padding) ===== */
 .bottom-nav{display:flex;background:var(--surface-2);border-top:1px solid var(--border-subtle);flex-shrink:0;padding-bottom:8px}
 @media(display-mode:standalone){.bottom-nav{padding-bottom:0}}
@@ -393,7 +429,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
   <!-- ===== SCREENS ===== -->
   <div class="screens">
     <div class="screen active" id="sc-overview"><div class="scroll-a" id="ov-scroll"></div></div>
-    <div class="screen" id="sc-journal"><div class="scroll-a"></div></div>
+    <div class="screen" id="sc-journal"><div class="scroll-a" id="jr-scroll"></div></div>
     <div class="screen" id="sc-fuel"><div class="scroll-a"></div></div>
     <div class="screen" id="sc-month"><div class="scroll-a"></div></div>
   </div>
@@ -515,7 +551,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="toast" id="toast"></div>
 <script>
 /* ============================================================
-   Drive Lens — preview Batch06 (Tab 1 Огляд)
+   Drive Lens — preview Batch07 (Tab 1 Огляд + Tab 2 Журнал)
    Етап 1: mock data + localStorage. Real data flow (concept v1.3 §I).
    Усі handlers реальні (wsd Кластер 3.9 — без заглушок).
    ============================================================ */
@@ -539,7 +575,7 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 // ---------- state ----------
-const S={activeDay:todayISO(),filter:'all',records:[],refuels:[]};
+const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',records:[],refuels:[]};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true};
 
 function seed(){
@@ -553,6 +589,28 @@ function seed(){
   S.refuels=[
     {id:uid(),date:t,time:'12:30',azs:'WOG Слобожанський',liters:30.5,price:54.90,sum:1674.45,ftype:'А-95',odo:17640,fuel:11}
   ];
+  // --- минулі дні (mock-історія для Журналу: місяці + тижні + work/vibe + заправки) ---
+  const d1=addDays(t,-1),d2=addDays(t,-2),d5=addDays(t,-5),d9=addDays(t,-9),d16=addDays(t,-16),d33=addDays(t,-33),d38=addDays(t,-38);
+  S.records.push(
+    {id:uid(),date:d1,time:'09:05',route:'Дім → Лівобережний',addr:'вул. Космічна 4',km:21,type:'work',fuel:7,odo:17611},
+    {id:uid(),date:d1,time:'13:20',route:'Лівобережний → Амур',addr:'пр. Праці 22',km:28,type:'work',fuel:6,odo:17639},
+    {id:uid(),date:d1,time:'19:30',route:'Дім → СпортЛайф',addr:'ТРЦ Караван',km:12,type:'vibe',fuel:6,odo:17651,range:140},
+    {id:uid(),date:d2,time:'08:40',route:'Дім → Центр',addr:'вул. Шевченка 1',km:24,type:'work',fuel:11,odo:17560},
+    {id:uid(),date:d2,time:'16:10',route:'Центр → Тополя',addr:'пр. Героїв 12',km:19,type:'work',fuel:10,odo:17579},
+    {id:uid(),date:d5,time:'10:00',route:'Дім → Новокодацький',addr:'вул. Будівельників 9',km:33,type:'work',fuel:8,odo:17402},
+    {id:uid(),date:d5,time:'14:45',route:'Новокодацький → Соборний',addr:'пр. Яворницького 50',km:22,type:'work',fuel:7,odo:17424,range:165},
+    {id:uid(),date:d9,time:'11:15',route:'Дім → Самарський',addr:'вул. Калинова 70',km:38,type:'work',fuel:9,odo:17210},
+    {id:uid(),date:d9,time:'20:00',route:'Дім → кіно',addr:'ТРЦ Most City',km:14,type:'vibe',fuel:8,odo:17224},
+    {id:uid(),date:d16,time:'09:30',route:'Дім → Індустріальний',addr:'пр. Слобожанський 31',km:27,type:'work',fuel:10,odo:16940},
+    {id:uid(),date:d33,time:'10:20',route:'Дім → Чечелівський',addr:'вул. Робоча 166',km:31,type:'work',fuel:9,odo:16320},
+    {id:uid(),date:d38,time:'12:00',route:'Дім → дача',addr:'с. Любимівка',km:46,type:'vibe',fuel:5,odo:16080,range:60}
+  );
+  S.refuels.push(
+    {id:uid(),date:d1,time:'18:10',azs:'OKKO Слобожанський',liters:28.0,price:55.20,sum:1545.60,ftype:'А-95',odo:17650,fuel:11},
+    {id:uid(),date:d5,time:'15:30',azs:'WOG Набережна',liters:25.4,price:54.70,sum:1389.38,ftype:'А-95',odo:17425,fuel:10},
+    {id:uid(),date:d16,time:'10:05',azs:'UPG Центр',liters:32.1,price:53.90,sum:1730.19,ftype:'А-95',odo:16945,fuel:12},
+    {id:uid(),date:d33,time:'11:00',azs:'WOG Слобожанський',liters:29.7,price:52.40,sum:1556.28,ftype:'А-95',odo:16325,fuel:11}
+  );
 }
 function loadData(){
   const raw=lsGet(DATA_KEY);
@@ -573,12 +631,27 @@ if(location.search.indexOf('reset=1')>-1){lsDel(DATA_KEY);lsDel(SET_KEY);}
 let _tt=null;
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),1900);}
 
-// ---------- day queries ----------
-function dayRecords(){return S.records.filter(r=>r.date===S.activeDay).sort((a,b)=>a.time.localeCompare(b.time));}
-function dayRefuels(){return S.refuels.filter(r=>r.date===S.activeDay).sort((a,b)=>a.time.localeCompare(b.time));}
-function filteredRecords(){const rs=dayRecords();if(S.filter==='all')return rs;return rs.filter(r=>r.type===(S.filter==='work'?'work':'vibe'));}
+// ---------- day queries (per-day base, activeDay delegates) ----------
+function recordsOf(day){return S.records.filter(r=>r.date===day).sort((a,b)=>a.time.localeCompare(b.time));}
+function refuelsOf(day){return S.refuels.filter(r=>r.date===day).sort((a,b)=>a.time.localeCompare(b.time));}
+function filteredOf(day){const rs=recordsOf(day);if(S.filter==='all')return rs;return rs.filter(r=>r.type===(S.filter==='work'?'work':'vibe'));}
+function dayKm(day){return filteredOf(day).reduce((s,r)=>s+(+r.km||0),0);}
+function lastFuelOf(day){const ev=recordsOf(day).concat(refuelsOf(day)).filter(e=>e.fuel!=null).sort((a,b)=>a.time.localeCompare(b.time));return ev.length?ev[ev.length-1].fuel:null;}
+function dayRecords(){return recordsOf(S.activeDay);}
+function dayRefuels(){return refuelsOf(S.activeDay);}
+function filteredRecords(){return filteredOf(S.activeDay);}
 function lastSnap(){const rs=dayRecords();return rs.length?rs[rs.length-1]:null;}
 function lastRange(){const rs=dayRecords();for(let i=rs.length-1;i>=0;i--){if(rs[i].range!=null)return rs[i].range;}return null;}
+
+// ---------- journal date helpers ----------
+const MON_NOM=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+const WD_SHORT=['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
+const WD_FULL=['Неділя','Понеділок','Вівторок','Середа','Четвер','П’ятниця','Субота'];
+function addDays(iso,delta){const a=iso.split('-').map(Number);const dt=new Date(a[0],a[1]-1,a[2]);dt.setDate(dt.getDate()+delta);return dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate());}
+function dowISO(iso){const a=iso.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]).getDay();}
+function weekKey(iso){const a=iso.split('-').map(Number);const dt=new Date(Date.UTC(a[0],a[1]-1,a[2]));const day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day+3);const f=new Date(Date.UTC(dt.getUTCFullYear(),0,4));const wk=1+Math.round(((dt-f)/864e5-3+((f.getUTCDay()+6)%7))/7);return dt.getUTCFullYear()+'-W'+wk;}
+function relDay(iso){if(isToday(iso))return 'Сьогодні';if(iso===addDays(todayISO(),-1))return 'Вчора';return WD_FULL[dowISO(iso)];}
+function plural(n,f){const a=n%10,b=n%100;if(a===1&&b!==11)return f[0];if(a>=2&&a<=4&&(b<10||b>=20))return f[1];return f[2];}
 
 // ---------- render: filter row ----------
 function renderFilterRow(){
@@ -685,8 +758,88 @@ function renderOverview(){
   });
 }
 
+// ---------- render: journal (Tab 2) ----------
+function journalDays(){
+  const set={};
+  S.records.forEach(r=>set[r.date]=1);S.refuels.forEach(r=>set[r.date]=1);
+  return Object.keys(set)
+    .filter(d=>filteredOf(d).length||refuelsOf(d).length)
+    .sort((a,b)=>b.localeCompare(a));               // newest day first
+}
+function dayCard(day){
+  const a=day.split('-').map(Number), dnum=a[2];
+  const exp=day===S.expandedDay, active=day===S.activeDay;
+  const km=dayKm(day), fuel=lastFuelOf(day);
+  const nr=filteredOf(day).length, nf=refuelsOf(day).length;
+  const parts=[];
+  if(nr)parts.push(nr+' '+plural(nr,['запис','записи','записів']));
+  if(nf)parts.push(nf+' '+plural(nf,['заправка','заправки','заправок']));
+  const counts=parts.join(' · ')||'немає подій';
+  let exph='';
+  if(exp){
+    const recs=filteredOf(day), rfs=refuelsOf(day);
+    let inner='';
+    if(recs.length){
+      const tk=recs.reduce((s,r)=>s+(+r.km||0),0);
+      inner+=`<div class="sec-h"><span class="sec-t">Записи дня</span><span class="sec-c">${recs.length} · ${tk} км</span></div>`;
+      inner+=recs.map((r,i)=>recItem(r,i+1)).join('');
+    }
+    if(rfs.length){
+      inner+=`<div class="sec-h${recs.length?' sec-gap':''}"><span class="sec-t">Заправки дня</span><span class="sec-c">${rfs.length}</span></div>`;
+      inner+=rfs.map(rfItem).join('');
+    }
+    if(!recs.length&&!rfs.length)inner=`<div class="jd-empty">У цьому режимі подій немає.</div>`;
+    exph=`<div class="jd-exp">${inner}<button class="jd-open" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+      Відкрити в Огляді</button></div>`;
+  }
+  return `<div class="jd${active?' active':''}${exp?' exp':''}" data-day="${day}">
+    <div class="jd-head">
+      <div class="jd-cal"><div class="jd-day">${dnum}</div><div class="jd-wd">${WD_SHORT[dowISO(day)]}</div></div>
+      <div class="jd-mid"><div class="jd-rel">${relDay(day)}</div><div class="jd-counts">${counts}</div></div>
+      <div class="jd-right">
+        <div class="jd-km${km>0?'':' zero'}">${km>0?km+' км':'—'}</div>
+        ${fuel!=null?`<div class="jd-fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg>${fuel}/12</div>`:''}
+      </div>
+      <svg class="jd-chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>${exph}
+  </div>`;
+}
+function renderJournal(){
+  const host=$('jr-scroll'), days=journalDays();
+  if(days.length===0){
+    host.innerHTML=`<div class="empty-state">
+      <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+      <div class="empty-txt">Журнал порожній</div>
+      <div class="empty-hint">Записи й заправки зʼявляться тут, згруповані за місяцями. Додай першу подію на вкладці «Огляд».</div>
+    </div>`;
+    return;
+  }
+  const totalKm=days.reduce((s,d)=>s+dayKm(d),0);
+  const fLbl=S.filter==='work'?'Робочий':S.filter==='vibe'?'Вайб':'Усі поїздки';
+  let html=`<div class="jsum"><div class="jsum-l">${days.length} ${plural(days.length,['день','дні','днів'])} · <b>${totalKm} км</b></div><div class="jsum-r">${fLbl}</div></div>`;
+  let curMonth=null, curWeek=null;
+  days.forEach(day=>{
+    const a=day.split('-').map(Number), mk=a[0]+'-'+a[1], wk=weekKey(day);
+    if(mk!==curMonth){
+      curMonth=mk;curWeek=wk;
+      const mkm=days.filter(d=>{const b=d.split('-').map(Number);return (b[0]+'-'+b[1])===mk;}).reduce((s,d)=>s+dayKm(d),0);
+      html+=`<div class="jm-head"><span class="jm-t">${MON_NOM[a[1]-1]} ${a[0]}</span><span class="jm-km">${mkm} км</span></div>`;
+    }else if(wk!==curWeek){
+      curWeek=wk;html+=`<div class="jw-div"></div>`;
+    }
+    html+=dayCard(day);
+  });
+  host.innerHTML=html;
+}
+
 // ---------- master render ----------
-function render(){renderFilterRow();if(S.tab==='overview')renderOverview();}
+function renderContent(){
+  if(S.tab==='overview'){renderOverview();return;}
+  if(S.tab==='journal'){renderJournal();return;}
+  document.querySelector('#sc-'+S.tab+' .scroll-a').innerHTML=renderDevTab(S.tab);
+}
+function render(){renderFilterRow();renderContent();}
 
 // ============================================================
 // FUEL SELECTOR (concept v1.3 Розділ D) — 12 cells, tap + swipe
@@ -873,7 +1026,7 @@ function openHelp(){
 function openAbout(){
   genSheet('Про додаток',`
     <div class="about-row"><span class="ar-k">Продукт</span><span class="ar-v">Drive·Lens</span></div>
-    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 06 (Етап 1)</span></div>
+    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 07 (Етап 1)</span></div>
     <div class="about-row"><span class="ar-k">Дата збірки</span><span class="ar-v">28.05.2026</span></div>
     <div class="about-row"><span class="ar-k">Сімейство</span><span class="ar-v">Lens (KPI · QR · Drive)</span></div>
     <div class="about-row"><span class="ar-k">Репозиторій</span><a class="ar-v" href="https://github.com/konst-andre" target="_blank" rel="noopener">github.com/konst-andre</a></div>
@@ -966,7 +1119,6 @@ document.addEventListener('click',e=>{if(!themeMenu.hidden&&!themeMenu.contains(
 // BOTTOM NAV + tabs 2-4 (honest dev-status screens — not stubs)
 // ============================================================
 const TABMETA={
-  journal:{t:'Журнал',b:'Batch 07',d:'Хронологічний список усіх днів з групуванням по тижнях і місяцях. Тап на день робить його активним.',icon:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'},
   fuel:{t:'Паливо',b:'Batch 08',d:'Паливний потік окремо: добове споживання, журнал заправок (rich cards) і витрата L/100км.',icon:'<path d="M3 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/><path d="M3 12h10"/><path d="M16 8l3 3v7a2 2 0 0 1-4 0V5"/>'},
   month:{t:'Місяць',b:'Batch 09',d:'Агрегований підсумок місяця: загальний пробіг, робочий vs особистий, заправки, витрата і залишок ліміту.',icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'}
 };
@@ -984,10 +1136,16 @@ function setTab(t){
   document.querySelectorAll('.nav-i').forEach(b=>b.classList.toggle('act',b.dataset.tab===t));
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='sc-'+t));
   document.querySelector('.app-bar').classList.remove('scrolled');
-  if(t==='overview'){renderOverview();}
-  else{document.querySelector('#sc-'+t+' .scroll-a').innerHTML=renderDevTab(t);}
+  renderContent();
 }
 $('bnav').addEventListener('click',e=>{const b=e.target.closest('.nav-i');if(b)setTab(b.dataset.tab);});
+// Journal interactions (delegation — content rebuilt each render)
+$('jr-scroll').addEventListener('click',e=>{
+  if(e.target.closest('.jd-open')){const jd=e.target.closest('.jd');if(jd){S.activeDay=jd.dataset.day;setTab('overview');renderFilterRow();}return;}
+  if(e.target.closest('.rec')||e.target.closest('.rf')){toast('Деталі та редагування — у наступному batch');return;}
+  const head=e.target.closest('.jd-head');
+  if(head){const day=head.closest('.jd').dataset.day;S.activeDay=day;S.expandedDay=(S.expandedDay===day?null:day);render();}
+});
 
 // ============================================================
 // iOS init (concept v1.2 §14.10-14.21)
