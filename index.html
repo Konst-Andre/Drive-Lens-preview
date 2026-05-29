@@ -162,14 +162,16 @@ button:disabled{cursor:not-allowed}
 
 /* ===== SUMMARY WIDGET 2x2 (concept v1.3 Розділ A) ===== */
 .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sum-cell{position:relative;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:13px 14px;display:flex;flex-direction:column;gap:3px;cursor:pointer;transition:border-color .16s,background .16s,transform .1s}
+.sum-cell{position:relative;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:13px 14px;display:flex;flex-direction:column;gap:3px;cursor:pointer;box-shadow:var(--sh1),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .16s,background .16s,box-shadow .16s,transform .1s}
 .sum-cell:active{background:var(--surface-3);transform:scale(.985)}
-.sum-ico{position:absolute;top:12px;right:12px;width:16px;height:16px;color:var(--text-muted);opacity:.65}
-.sum-val{font-size:21px;font-weight:800;letter-spacing:-.5px;color:var(--text-secondary);line-height:1.05;transition:color .16s;font-variant-numeric:tabular-nums;padding-right:20px}
+.sum-ico{position:absolute;top:11px;right:11px;width:26px;height:26px;padding:5px;box-sizing:border-box;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);opacity:1}
+.sum-val{font-size:21px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1.05;transition:color .16s;font-variant-numeric:tabular-nums;padding-right:36px}
 .sum-lbl{font-size:11.5px;font-weight:600;color:var(--text-muted)}
 .sum-cell.accent{border-color:var(--border-accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}
 .sum-cell.accent .sum-val{color:var(--accent-text)}
-.sum-cell.accent .sum-ico{color:var(--accent-text);opacity:.85}
+.sum-cell.accent .sum-ico{color:var(--accent-text);opacity:1}
+[data-theme="dark"] .sum-cell{border-color:var(--border-default)}
+[data-theme="dark"] .sum-cell.accent{border-color:var(--accent-text);background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}/* 9.5: яскравіша рамка + сильніший тінт обраної (чіткіше «обрано»); 9.4 FIX зберігся */
 .sum-cell.accent:active{background:color-mix(in srgb,var(--accent) 12%,var(--surface-2))}
 .sum-sub{font-size:11px;color:var(--text-muted);font-weight:500;font-variant-numeric:tabular-nums}
 
@@ -347,6 +349,10 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fg-cell{flex:1;height:32px;min-width:12px;border-radius:5px;background:var(--surface-3);border:1px solid var(--border-subtle);transition:background .1s,transform .1s,border-color .1s,box-shadow .1s;cursor:pointer}
 .fg-cell.on{background:var(--accent);border-color:var(--accent);box-shadow:0 1px 4px color-mix(in srgb,var(--accent) 40%,transparent)}
 .fg-cell.pulse{transform:scaleY(1.14)}
+/* Batch 9.2: Dark — підняти контейнер НАД аркушем (запас яскравості лише вгору). Панель=surface-3, порожні сегменти=surface-2 (вглиб) */
+[data-theme="dark"] .fg-grid{background:var(--surface-3);border-color:var(--border-default);box-shadow:0 1px 2px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)}
+[data-theme="dark"] .fg-cell{background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}/* 9.5: шепіт зеленого, нейтральніше (Light empty теж майже нейтральні) */
+[data-theme="dark"] .fg-cell.on{background:linear-gradient(180deg,color-mix(in srgb,var(--accent-hover) 88%,#fff) 0%,var(--accent-hover) 100%);border-color:var(--accent-hover);box-shadow:none}/* 9.6: субтильний градієнт зверху-вниз = об'єм LED-поділки (тіні на dark невидимі) */
 .fg-val{margin-top:10px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text-secondary);font-variant-numeric:tabular-nums}
 .fg-val svg{width:14px;height:14px;color:var(--accent-text);flex-shrink:0}
 .fg-val b{color:var(--accent-text);font-weight:800}
@@ -579,7 +585,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="toast" id="toast"></div>
 <script>
 /* ============================================================
-   Drive Lens — preview Batch 9.1 (Tab 1 Огляд + Tab 2 Журнал) — F14 Час-width + F15 Тип палива тап-селект (спільний makePicker)
+   Drive Lens — preview Batch 9.6 (Tab 1 Огляд + Tab 2 Журнал) — 9.5 + fuel градієнт-обʼєм (Dark) + hero-картки → детальний екран (без дублю фільтра)
    Етап 1: mock data + localStorage. Real data flow (concept v1.3 §I).
    Усі handlers реальні (wsd Кластер 3.9 — без заглушок).
    ============================================================ */
@@ -815,8 +821,8 @@ function renderOverview(){
   document.querySelectorAll('#ov-scroll .sum-cell').forEach(c=>{
     c.addEventListener('click',()=>{
       const a=c.dataset.act;
-      if(a==='work'){S.filter=(S.filter==='work'?'all':'work');render();}
-      else if(a==='vibe'){S.filter=(S.filter==='vibe'?'all':'vibe');render();}
+      // 9.6: картка = перехід на детальний екран метрики (не фільтр; segmented-рядок лишається єдиним фільтром)
+      if(a==='work'||a==='vibe'){setTab('journal');}
       else if(a==='fuel'){setTab('fuel');}
       else if(a==='month'){setTab('month');}
     });
@@ -1136,7 +1142,7 @@ function openHelp(){
 function openAbout(){
   genSheet('Про додаток',`
     <div class="about-row"><span class="ar-k">Продукт</span><span class="ar-v">Drive·Lens</span></div>
-    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 9.1 (Етап 1)</span></div>
+    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 9.6 (Етап 1)</span></div>
     <div class="about-row"><span class="ar-k">Дата збірки</span><span class="ar-v">29.05.2026</span></div>
     <div class="about-row"><span class="ar-k">Сімейство</span><span class="ar-v">Lens (KPI · QR · Drive)</span></div>
     <div class="about-row"><span class="ar-k">Репозиторій</span><a class="ar-v" href="https://github.com/konst-andre" target="_blank" rel="noopener">github.com/konst-andre</a></div>
