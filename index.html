@@ -218,6 +218,21 @@ button:disabled{cursor:not-allowed}
 .rf-vol{font-size:14px;font-weight:800;color:var(--accent-text)}
 .rf-r svg{width:12px;height:12px;color:var(--text-muted)}
 
+/* ===== SWIPE ROW + actions (Batch 10) — end-only snap ===== */
+.sw-row{position:relative;margin-bottom:8px;border-radius:var(--r);overflow:hidden}
+.sw-row .rec,.sw-row .rf{margin-bottom:0;position:relative;z-index:1;transition:transform .2s cubic-bezier(.4,0,.2,1);will-change:transform}
+.sw-row.sw-open .rec,.sw-row.sw-open .rf{transform:translateX(-148px)}
+.sw-actions{position:absolute;top:0;right:0;bottom:0;display:flex;z-index:0}
+.sw-act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:74px;color:#fff;font-size:11px;font-weight:700;letter-spacing:-.2px;cursor:pointer}
+.sw-act svg{width:19px;height:19px}
+.sw-act.edit{background:var(--accent)}
+.sw-act.del{background:var(--crit)}
+.sw-act:active{filter:brightness(.9)}
+/* confirm (destructive) */
+.cf-desc{font-size:13.5px;color:var(--text-secondary);line-height:1.5;margin:2px 2px 16px;font-weight:500}
+.btn-danger{flex:1.3;padding:14px;background:var(--crit);border-radius:var(--r);font-size:14px;font-weight:800;color:#fff;cursor:pointer;transition:filter .12s,transform .1s}
+.btn-danger:active{filter:brightness(.92);transform:scale(.985)}
+
 /* ===== EMPTY STATE ===== */
 .empty-state{padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;min-height:48dvh}
 .empty-ico{width:72px;height:72px;background:var(--surface-3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted)}
@@ -517,7 +532,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="sh-bg" id="sh-rec">
   <div class="sh-box">
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
-    <div class="sh-head"><span class="sh-title">Новий запис</span><button class="sh-x" onclick="closeSheet('sh-rec')" aria-label="Закрити">×</button></div>
+    <div class="sh-head"><span class="sh-title" id="rec-title">Новий запис</span><button class="sh-x" onclick="closeSheet('sh-rec')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
       <div class="fld"><label class="fld-l" for="r-time">Час</label><input class="inp" type="time" id="r-time" autocomplete="off"></div>
       <div class="fld"><label class="fld-l" for="r-route">Маршрут</label><input class="inp" type="text" id="r-route" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="Лівий берег → Центр"></div>
@@ -539,7 +554,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="sh-bg" id="sh-rf">
   <div class="sh-box">
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
-    <div class="sh-head"><span class="sh-title">Заправка</span><button class="sh-x" onclick="closeSheet('sh-rf')" aria-label="Закрити">×</button></div>
+    <div class="sh-head"><span class="sh-title" id="rf-title">Заправка</span><button class="sh-x" onclick="closeSheet('sh-rf')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
       <div class="fld"><label class="fld-l" for="f-time">Час</label><input class="inp" type="time" id="f-time" autocomplete="off"></div>
       <div class="fld"><label class="fld-l">АЗС</label>
@@ -564,7 +579,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
       <div class="fld"><label class="fld-l" for="f-odo">Одометр</label><input class="inp" type="text" id="f-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" placeholder="17 742"></div>
       <div class="fld"><label class="fld-l">Рівень після заправки</label><div class="fuel-sel" id="f-fuel"></div></div>
-      <div class="fld"><label class="fld-l" for="f-note">Примітка</label><textarea class="inp" id="f-note" rows="2" maxlength="120" enterkeyhint="done" autocomplete="off" spellcheck="false" placeholder="опційно"></textarea><div class="char-c"><span id="f-cc">0</span>/120</div></div>
+      <div class="fld"><label class="fld-l" for="f-note">Примітка</label><textarea class="inp" id="f-note" rows="2" maxlength="120" enterkeyhint="done" autocomplete="off" spellcheck="false" placeholder="напр.: повний бак, акційна ціна, чек не зберігся"></textarea><div class="char-c"><span id="f-cc">0</span>/120</div></div>
       <div class="sh-foot">
         <button class="btn-sec" onclick="closeSheet('sh-rf')">Скасувати</button>
         <button class="btn-pri" id="f-save">Зберегти заправку</button>
@@ -579,6 +594,21 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
     <div class="sh-head"><span class="sh-title" id="gen-title">—</span><button class="sh-x" onclick="closeSheet('sh-gen')" aria-label="Закрити">×</button></div>
     <div class="sh-body" id="gen-body"></div>
+  </div>
+</div>
+
+<!-- ===== SHEET: confirm (destructive, Batch 10) ===== -->
+<div class="sh-bg" id="sh-confirm">
+  <div class="sh-box">
+    <div class="sh-grip-w"><div class="sh-grip"></div></div>
+    <div class="sh-head"><span class="sh-title" id="cf-title">Підтвердження</span><button class="sh-x" onclick="closeSheet('sh-confirm')" aria-label="Закрити">×</button></div>
+    <div class="sh-body">
+      <div class="cf-desc" id="cf-desc"></div>
+      <div class="sh-foot">
+        <button class="btn-sec" onclick="closeSheet('sh-confirm')">Скасувати</button>
+        <button class="btn-danger" id="cf-ok">Видалити</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -610,7 +640,7 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 // ---------- state ----------
-const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',records:[],refuels:[]};
+const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',records:[],refuels:[],editRecId:null,editRfId:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true};
 
 function seed(){
@@ -766,7 +796,12 @@ function renderCTA(){
 function recItem(r,n){
   const isWork=r.type==='work';
   const showChip=S.filter==='all';
-  return `<div class="rec" data-id="${r.id}">
+  return `<div class="sw-row" data-id="${r.id}" data-kind="rec">
+    <div class="sw-actions">
+      <button class="sw-act edit" data-act="edit" type="button" aria-label="Редагувати"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Ред.</button>
+      <button class="sw-act del" data-act="del" type="button" aria-label="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Видал.</button>
+    </div>
+    <div class="rec" data-id="${r.id}">
     <div class="rec-num${isWork?'':' vibe'}">${n}</div>
     <div class="rec-mid">
       <div class="rec-route"><span class="rt-time">${esc(r.time)}</span>${esc(r.route)}</div>
@@ -777,10 +812,16 @@ function recItem(r,n){
       <div class="rec-km${isWork?'':' vibe'}">${r.km!=null?esc(r.km)+' км':'—'}</div>
       ${r.fuel!=null?`<div class="rec-fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg>${r.fuel}/12</div><div class="rec-liters">≈ ${liters(r.fuel)} л</div>`:`<div class="rec-fuel">—</div>`}
     </div>
+    </div>
   </div>`;
 }
 function rfItem(r){
-  return `<div class="rf" data-id="${r.id}">
+  return `<div class="sw-row" data-id="${r.id}" data-kind="rf">
+    <div class="sw-actions">
+      <button class="sw-act edit" data-act="edit" type="button" aria-label="Редагувати"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Ред.</button>
+      <button class="sw-act del" data-act="del" type="button" aria-label="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Видал.</button>
+    </div>
+    <div class="rf" data-id="${r.id}">
     <div class="rf-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg></div>
     <div class="rf-mid">
       <div class="rf-t"><span class="rt-time">${esc(r.time)}</span>${esc(r.azs||r.ftype)}</div>
@@ -788,6 +829,7 @@ function rfItem(r){
     </div>
     <div class="rf-r"><span class="rf-vol">${esc(r.liters)} л</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
     </div>
   </div>`;
 }
@@ -816,8 +858,8 @@ function renderRecords(){
 // ---------- render overview (Tab 1) ----------
 function renderOverview(){
   $('ov-scroll').innerHTML=renderSummary()+renderCTA()+renderRecords();
-  $('cta-rec').addEventListener('click',openRecordForm);
-  $('cta-rf').addEventListener('click',openRefuelForm);
+  $('cta-rec').addEventListener('click',()=>openRecordForm());
+  $('cta-rf').addEventListener('click',()=>openRefuelForm());
   document.querySelectorAll('#ov-scroll .sum-cell').forEach(c=>{
     c.addEventListener('click',()=>{
       const a=c.dataset.act;
@@ -827,9 +869,7 @@ function renderOverview(){
       else if(a==='month'){setTab('month');}
     });
   });
-  document.querySelectorAll('#ov-scroll .rec, #ov-scroll .rf').forEach(el=>{
-    el.addEventListener('click',()=>toast('Деталі та редагування — у наступному batch'));
-  });
+  bindSwipeRows($('ov-scroll'));   // Batch 10: tap=edit, swipe-left=дії
 }
 
 // ---------- render: journal (Tab 2) ----------
@@ -905,6 +945,7 @@ function renderJournal(){
     html+=dayCard(day);
   });
   host.innerHTML=html;
+  bindSwipeRows(host);   // Batch 10: tap=edit, swipe-left=дії (у розгорнутих днях)
 }
 
 // ---------- master render ----------
@@ -962,43 +1003,81 @@ function getFuel(id){return $(id)._fuel;}
 // ============================================================
 function num(v){v=String(v||'').replace(/\s/g,'').replace(',','.');const n=parseFloat(v);return isNaN(n)?null:n;}
 
-function openRecordForm(){
-  $('r-time').value=nowHM();$('r-range').value='';$('r-route').value='';$('r-odo').value='';$('r-note').value='';$('r-cc').textContent='0';
+function openRecordForm(id){
+  const ed = id ? S.records.find(r=>r.id===id) : null;
+  S.editRecId = ed ? id : null;
+  $('r-time').value = ed ? ed.time : nowHM();
+  $('r-range').value = ed && ed.range!=null ? ed.range : '';
+  $('r-route').value = ed ? ed.route : '';
+  $('r-odo').value = ed && ed.odo!=null ? ed.odo : '';
+  $('r-note').value = (ed && ed.addr && ed.addr!=='—') ? ed.addr : '';
+  $('r-cc').textContent = $('r-note').value.length;
   document.querySelectorAll('#sh-rec .inp').forEach(i=>i.classList.remove('invalid'));
-  buildFuel('r-fuel',lastSnap()?lastSnap().fuel:8);
+  buildFuel('r-fuel', ed ? ed.fuel : (lastSnap()?lastSnap().fuel:8));
+  $('rec-title').textContent = ed ? 'Редагувати запис' : 'Новий запис';
+  $('r-save').textContent = ed ? 'Зберегти зміни' : 'Зберегти запис';
   openSheet('sh-rec','sh-rec');
 }
 $('r-note').addEventListener('input',e=>$('r-cc').textContent=e.target.value.length);
 function prevOdo(){const rs=dayRecords();for(let i=rs.length-1;i>=0;i--){if(rs[i].odo!=null)return rs[i].odo;}return null;}
+// Batch 10: попередній odo ТОГО Ж дня за часом, виключаючи сам запис (для km при edit)
+function prevOdoBefore(date,time,exclId){
+  const rs=S.records.filter(r=>r.date===date&&r.id!==exclId&&r.time<time&&r.odo!=null).sort((a,b)=>a.time.localeCompare(b.time));
+  return rs.length?rs[rs.length-1].odo:null;
+}
 $('r-save').addEventListener('click',()=>{
-  const route=$('r-route').value.trim();
-  const routeEl=$('r-route');
-  let ok=true;
-  if(!route){routeEl.classList.add('invalid');ok=false;}else routeEl.classList.remove('invalid');
-  if(!ok){toast('Вкажіть маршрут');return;}
-  const odo=num($('r-odo').value);                      // одометр абсолютний
-  const prev=prevOdo();
-  // км поїздки = дельта одометра від попереднього запису (concept §4: пробіг рахується зі snapshots)
-  let km=null;
-  if(odo!=null&&prev!=null&&odo>=prev)km=Math.round(odo-prev);
-  const rec={
-    id:uid(),date:S.activeDay,time:$('r-time').value||nowHM(),
-    route:route,addr:$('r-note').value.trim()||'—',
-    km:km,odo:odo!=null?Math.round(odo):null,
-    type:S.filter==='vibe'?'vibe':'work',
-    fuel:getFuel('r-fuel')
-  };
-  const rng=num($('r-range').value);if(rng!=null)rec.range=Math.round(rng);
-  S.records.push(rec);saveData();
-  closeSheet('sh-rec');render();syncCycle();toast('Запис збережено');
+  const route=$('r-route').value.trim(), routeEl=$('r-route');
+  if(!route){routeEl.classList.add('invalid');toast('Вкажіть маршрут');return;}
+  routeEl.classList.remove('invalid');
+  const odo=num($('r-odo').value), odoR=odo!=null?Math.round(odo):null;
+  const time=$('r-time').value||nowHM();
+  const addr=$('r-note').value.trim()||'—';
+  const rng=num($('r-range').value);
+  const fuel=getFuel('r-fuel');
+  if(S.editRecId){
+    const r=S.records.find(x=>x.id===S.editRecId);
+    if(r){
+      r.time=time;r.route=route;r.addr=addr;r.odo=odoR;r.fuel=fuel;
+      if(rng!=null)r.range=Math.round(rng);else delete r.range;
+      // km — незалежна відстань поїздки. Перерах. ЛИШЕ цього запису за same-day prev; інакше зберегти наявне.
+      const prev=prevOdoBefore(r.date,r.time,r.id);
+      if(odoR!=null&&prev!=null&&odoR>=prev)r.km=Math.round(odoR-prev);
+    }
+    S.editRecId=null;saveData();closeSheet('sh-rec');render();syncCycle();toast('Зміни збережено');
+  }else{
+    const prev=prevOdo();
+    let km=null;
+    if(odoR!=null&&prev!=null&&odoR>=prev)km=Math.round(odoR-prev);
+    const rec={id:uid(),date:S.activeDay,time:time,route:route,addr:addr,km:km,odo:odoR,type:S.filter==='vibe'?'vibe':'work',fuel:fuel};
+    if(rng!=null)rec.range=Math.round(rng);
+    S.records.push(rec);saveData();closeSheet('sh-rec');render();syncCycle();toast('Запис збережено');
+  }
 });
 
-function openRefuelForm(){
-  $('f-time').value=nowHM();$('f-liters').value='';$('f-price').value='';$('f-sum').value='';$('f-odo').value='';$('f-note').value='';$('f-cc').textContent='0';
-  azsPicker.set('WOG','WOG');azsPicker.open(false);$('f-azs-other').value='';$('f-azs-other').style.display='none';
-  typePicker.set('А-95','А-95');typePicker.open(false);
+function openRefuelForm(id){
+  const ed = id ? S.refuels.find(r=>r.id===id) : null;
+  S.editRfId = ed ? id : null;
+  $('f-time').value = ed ? ed.time : nowHM();
+  $('f-liters').value = ed && ed.liters!=null ? ed.liters : '';
+  $('f-price').value = ed && ed.price!=null ? ed.price : '';
+  $('f-sum').value = ed && ed.sum!=null ? ed.sum : '';
+  $('f-odo').value = ed && ed.odo!=null ? ed.odo : '';
+  $('f-note').value = ed && ed.note ? ed.note : '';
+  $('f-cc').textContent = $('f-note').value.length;
+  // АЗС: у списку → звичайно; інакше (вкл. seed «WOG Слобожанський») → «Інша…» з підстановкою
+  if(ed){
+    if(AZS.indexOf(ed.azs)>-1){azsPicker.set(ed.azs,ed.azs);$('f-azs-other').value='';$('f-azs-other').style.display='none';}
+    else{azsPicker.set('__other','Інша…');$('f-azs-other').value=ed.azs||'';$('f-azs-other').style.display='block';}
+    const ft=FUEL_TYPES.find(x=>x.v===ed.ftype);typePicker.set(ed.ftype, ft?ft.l:ed.ftype);
+  }else{
+    azsPicker.set('WOG','WOG');$('f-azs-other').value='';$('f-azs-other').style.display='none';
+    typePicker.set('А-95','А-95');
+  }
+  azsPicker.open(false);typePicker.open(false);
   document.querySelectorAll('#sh-rf .inp').forEach(i=>i.classList.remove('invalid'));
-  buildFuel('f-fuel',lastSnap()?Math.min(12,lastSnap().fuel+2):11);
+  buildFuel('f-fuel', ed ? ed.fuel : (lastSnap()?Math.min(12,lastSnap().fuel+2):11));
+  $('rf-title').textContent = ed ? 'Редагувати заправку' : 'Заправка';
+  $('f-save').textContent = ed ? 'Зберегти зміни' : 'Зберегти заправку';
   openSheet('sh-rf','sh-rf');
 }
 // ----- Спільний тап-селект (Batch 9.1): нативний <select> → кастомний .pk. Переюз: АЗС (allowOther) + Тип палива -----
@@ -1046,20 +1125,25 @@ $('f-liters').addEventListener('input',recalcSum);
 $('f-price').addEventListener('input',recalcSum);
 $('f-save').addEventListener('click',()=>{
   const l=num($('f-liters').value),litEl=$('f-liters');
-  let ok=true;
-  if(l==null||l<=0){litEl.classList.add('invalid');ok=false;}else litEl.classList.remove('invalid');
-  if(!ok){toast('Вкажіть кількість літрів');return;}
+  if(l==null||l<=0){litEl.classList.add('invalid');toast('Вкажіть кількість літрів');return;}
+  litEl.classList.remove('invalid');
   const p=num($('f-price').value), sm=num($('f-sum').value);
   const azsVal=$('f-azs-btn').dataset.val;
   const azs=azsVal==='__other'?($('f-azs-other').value.trim()||'Інша АЗС'):azsVal;
-  const rf={
-    id:uid(),date:S.activeDay,time:$('f-time').value||nowHM(),
-    azs:azs,liters:+l.toFixed(2),
+  const fields={
+    time:$('f-time').value||nowHM(),azs:azs,liters:+l.toFixed(2),
     price:p!=null?+p.toFixed(2):null,sum:sm!=null?+sm.toFixed(2):(p!=null?+(l*p).toFixed(2):null),
-    ftype:typePicker.get(),odo:Math.round(num($('f-odo').value)||0)||null,fuel:getFuel('f-fuel')
+    ftype:typePicker.get(),odo:Math.round(num($('f-odo').value)||0)||null,fuel:getFuel('f-fuel'),
+    note:$('f-note').value.trim()||null
   };
-  S.refuels.push(rf);saveData();
-  closeSheet('sh-rf');render();syncCycle();toast('Заправку збережено');
+  if(S.editRfId){
+    const r=S.refuels.find(x=>x.id===S.editRfId);
+    if(r)Object.assign(r,fields);
+    S.editRfId=null;saveData();closeSheet('sh-rf');render();syncCycle();toast('Зміни збережено');
+  }else{
+    S.refuels.push(Object.assign({id:uid(),date:S.activeDay},fields));
+    saveData();closeSheet('sh-rf');render();syncCycle();toast('Заправку збережено');
+  }
 });
 
 // ============================================================
@@ -1183,7 +1267,7 @@ setTimeout(syncCycle,400);
 // SHEETS open/close/swipe (concept v1.2 §14.15-14.18, wsd Кластер 8)
 // ============================================================
 function openSheet(id){const el=$(id);el.classList.add('open');addSwipeClose(id,()=>closeSheet(id));}
-function closeSheet(id){$(id).classList.remove('open');}
+function closeSheet(id){$(id).classList.remove('open');if(id==='sh-rec')S.editRecId=null;if(id==='sh-rf')S.editRfId=null;}
 function addSwipeClose(bgId,closeFn){
   const box=document.querySelector('#'+bgId+' .sh-box');
   if(!box||box._sw)return;box._sw=true;
@@ -1191,9 +1275,63 @@ function addSwipeClose(bgId,closeFn){
   box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list');},{passive:true});
   box.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy;if(gt&&dy>40)closeFn();else if(!ig&&ss===0&&dy>64)closeFn();},{passive:true});
 }
-['sh-menu','sh-date','sh-rec','sh-rf','sh-gen'].forEach(id=>{
+['sh-menu','sh-date','sh-rec','sh-rf','sh-gen','sh-confirm'].forEach(id=>{
   $(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeSheet(id);});
 });
+
+// ============================================================
+// SWIPE ROWS + Edit/Delete + confirm (Batch 10) — end-only snap, passive
+// ============================================================
+const SW_SLOP=10, SW_TRIG=44;
+function closeAllSwipe(except){document.querySelectorAll('.sw-row.sw-open').forEach(r=>{if(r!==except)r.classList.remove('sw-open');});}
+function rowEdit(kind,id){if(kind==='rec')openRecordForm(id);else openRefuelForm(id);}
+function rowDelete(kind,id){
+  if(kind==='rec'){
+    const r=S.records.find(x=>x.id===id);
+    confirmAction('Видалити запис?', r?`${esc(r.time)} · ${esc(r.route)}${r.km!=null?' · '+r.km+' км':''}`:'',
+      ()=>{S.records=S.records.filter(x=>x.id!==id);saveData();render();syncCycle();toast('Видалено');});
+  }else{
+    const r=S.refuels.find(x=>x.id===id);
+    confirmAction('Видалити заправку?', r?`${esc(r.time)} · ${esc(r.azs)} · ${esc(r.liters)} л`:'',
+      ()=>{S.refuels=S.refuels.filter(x=>x.id!==id);saveData();render();syncCycle();toast('Видалено');});
+  }
+}
+function bindSwipeRows(container){
+  container.querySelectorAll('.sw-row').forEach(row=>{
+    if(row._sw)return;row._sw=true;
+    const front=row.querySelector('.rec,.rf');
+    const id=row.dataset.id, kind=row.dataset.kind;
+    let sx=0,sy=0,moved=false;
+    front.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;},{passive:true});
+    front.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-sx)>SW_SLOP||Math.abs(e.touches[0].clientY-sy)>SW_SLOP)moved=true;},{passive:true});
+    front.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+      const open=row.classList.contains('sw-open');
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>SW_TRIG){            // горизонтальний свайп
+        if(dx<0){closeAllSwipe(row);row.classList.add('sw-open');}     // вліво → відкрити дії
+        else row.classList.remove('sw-open');                         // вправо → закрити
+        return;
+      }
+      if(!moved){                                                     // тап (не свайп)
+        if(open)row.classList.remove('sw-open');                      // відкритий → закрити
+        else rowEdit(kind,id);                                        // закритий → редагувати
+      }
+    },{passive:true});
+    row.querySelectorAll('.sw-act').forEach(b=>{
+      b.addEventListener('click',e=>{e.stopPropagation();row.classList.remove('sw-open');
+        if(b.dataset.act==='edit')rowEdit(kind,id);else rowDelete(kind,id);});
+    });
+  });
+}
+// тап поза будь-яким рядком → закрити відкритий (один listener, guard від подвійної реєстрації)
+if(!window.__dlSwDoc){window.__dlSwDoc=true;document.addEventListener('click',e=>{if(!e.target.closest('.sw-row'))closeAllSwipe();},{passive:true});}
+// destructive confirm — реюз для будь-якого видалення
+function confirmAction(title,desc,onOk){
+  $('cf-title').textContent=title;$('cf-desc').textContent=desc||'';
+  const ok=$('cf-ok'), fresh=ok.cloneNode(true);ok.parentNode.replaceChild(fresh,ok); // скинути попередній handler
+  fresh.addEventListener('click',()=>{closeSheet('sh-confirm');onOk();});
+  openSheet('sh-confirm','sh-confirm');
+}
 
 // ============================================================
 // FILTER SEGMENT
@@ -1262,7 +1400,7 @@ $('bnav').addEventListener('click',e=>{const b=e.target.closest('.nav-i');if(b)s
 // Journal interactions (delegation — content rebuilt each render)
 $('jr-scroll').addEventListener('click',e=>{
   if(e.target.closest('.jd-open')){const jd=e.target.closest('.jd');if(jd){S.activeDay=jd.dataset.day;setTab('overview');renderFilterRow();}return;}
-  if(e.target.closest('.rec')||e.target.closest('.rf')){toast('Деталі та редагування — у наступному batch');return;}
+  if(e.target.closest('.sw-row'))return;   // Batch 10: tap=edit / swipe — обробляє bindSwipeRows
   const head=e.target.closest('.jd-head');
   if(head){const day=head.closest('.jd').dataset.day;S.activeDay=day;S.expandedDay=(S.expandedDay===day?null:day);render();}
 });
