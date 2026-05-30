@@ -40,6 +40,8 @@
   --text-primary:#15201C; --text-secondary:#586660; --text-muted:#8A968F;
   /* Accent (Pine Forest mono) */
   --accent:#40916C; --accent-hover:#52B788; --accent-soft:#DCEDE3; --accent-text:#2E7355;
+  /* Vibe (warm honey/ochre — особисті поїздки) */
+  --vibe:#C9A86A; --vibe-soft:#F3E9D6; --vibe-text:#9C7430;
   /* Status (semantic, sparingly) */
   --ok:#2E9E5C; --warn:#C8841C; --crit:#C8331C; --info:#3E7C94;
   /* Borders */
@@ -56,6 +58,7 @@
   --surface-1:#0D1110; --surface-2:#151E1C; --surface-3:#1F2A26; --surface-4:#2A3531;
   --text-primary:#F0F4F2; --text-secondary:#A1AAA6; --text-muted:#6B7570;
   --accent:#40916C; --accent-hover:#52B788; --accent-soft:#1E3A2D; --accent-text:#4FAE7A;
+  --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
   --ok:#4FAE7A; --warn:#D4A055; --crit:#C75450; --info:#6B9BB8;
   --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-accent:#40916C;
   --appbar-bg:rgba(13,17,16,0.92);
@@ -67,6 +70,7 @@
     --surface-1:#0D1110; --surface-2:#151E1C; --surface-3:#1F2A26; --surface-4:#2A3531;
     --text-primary:#F0F4F2; --text-secondary:#A1AAA6; --text-muted:#6B7570;
     --accent:#40916C; --accent-hover:#52B788; --accent-soft:#1E3A2D; --accent-text:#4FAE7A;
+    --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
     --ok:#4FAE7A; --warn:#D4A055; --crit:#C75450; --info:#6B9BB8;
     --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-accent:#40916C;
     --appbar-bg:rgba(13,17,16,0.92);
@@ -143,7 +147,8 @@ button:disabled{cursor:not-allowed}
 @keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
 
 /* ===== FILTER ROW (toggle + date) ===== */
-.filter-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border-subtle);flex-shrink:0}
+.filter-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border-subtle);flex-shrink:0;box-shadow:0 4px 12px rgba(20,30,25,.06)}
+[data-theme="dark"] .filter-row{box-shadow:none}   /* dark: тіні невидимі — обʼєм через тон, не shadow */
 .seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px;flex:0 0 auto}
 .seg-i{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-secondary);transition:background .14s,color .14s,box-shadow .14s;cursor:pointer;white-space:nowrap}
 .seg-i svg{width:14px;height:14px;flex-shrink:0}
@@ -153,6 +158,42 @@ button:disabled{cursor:not-allowed}
 .date-btn:active{background:var(--surface-4)}
 .date-btn svg{width:14px;height:14px;color:var(--text-secondary);flex-shrink:0}
 .date-btn .db-sub{color:var(--accent);font-weight:700}
+/* Search row (Журнал) — тонкий, під filter-row */
+.search-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--rs);flex-shrink:0;-webkit-user-select:none;user-select:none}
+.search-row[hidden]{display:none}
+.sr-ico{width:15px;height:15px;color:var(--text-muted);flex-shrink:0}
+.sr-inp{flex:1;min-width:0;height:24px;border:none;outline:none;background:transparent;color:var(--text-primary);font-size:16px;font-weight:500;padding:0;-webkit-user-select:text;user-select:text}
+.sr-inp::placeholder{color:var(--text-muted);font-weight:500}
+.sr-inp::-webkit-search-cancel-button{display:none;-webkit-appearance:none}
+.sr-clear{flex-shrink:0;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--surface-3);color:var(--text-secondary);cursor:pointer}
+.sr-clear[hidden]{display:none}
+.sr-clear svg{width:13px;height:13px}
+.sr-clear:active{background:var(--surface-4)}
+
+/* ===== RANGE CALENDAR (batch11) ===== */
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
+.cal-my{font-size:15px;font-weight:800;color:var(--text-primary)}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{width:34px;height:34px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.cal-nav button:active{background:var(--surface-4)}
+.cal-wd{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-wd span{text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);padding:2px 0 6px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px}
+.cal-c{position:relative;height:42px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--text-primary);cursor:pointer;-webkit-user-select:none;user-select:none}
+.cal-c.blank{visibility:hidden;cursor:default}
+.cal-c.r0{background:var(--accent-soft)}
+.cal-c.r1,.cal-c.r2,.cal-c.r3{background:var(--accent);color:#fff;font-weight:800}
+.cal-c.r1{border-radius:21px 0 0 21px}
+.cal-c.r2{border-radius:0 21px 21px 0}
+.cal-c.r3{border-radius:21px}
+.cal-c.today::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.cal-c.r1.today::after,.cal-c.r2.today::after,.cal-c.r3.today::after{background:#fff}
+.cal-hint{font-size:11.5px;color:var(--text-muted);text-align:center;margin:10px 0 2px}
+.cal-foot{display:flex;gap:8px;margin-top:10px}
+.cal-reset{flex:0 0 auto;padding:13px 18px;border-radius:var(--r);background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:14px;font-weight:700;cursor:pointer}
+.cal-reset:active{background:var(--surface-4)}
+.cal-apply{flex:1 1 auto;padding:13px;border-radius:var(--r);background:var(--accent);border:1px solid var(--accent);color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.cal-apply:active{filter:brightness(.95)}
 
 /* ===== SCREENS ===== */
 .screens{flex:1 1 auto;position:relative;overflow:hidden}
@@ -173,6 +214,12 @@ button:disabled{cursor:not-allowed}
 [data-theme="dark"] .sum-cell{border-color:var(--border-default)}
 [data-theme="dark"] .sum-cell.accent{border-color:var(--accent-text);background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}/* 9.5: яскравіша рамка + сильніший тінт обраної (чіткіше «обрано»); 9.4 FIX зберігся */
 .sum-cell.accent:active{background:color-mix(in srgb,var(--accent) 12%,var(--surface-2))}
+/* Vibe-active: коли фільтр «Вайб» — seg-active + smart-accent тінимо теплим (A8 guard: вища специфічність за тематичні) */
+body[data-filter="vibe"] .seg-i.act{color:var(--vibe-text)}
+body[data-filter="vibe"] .sum-cell.accent{border-color:var(--vibe);background:color-mix(in srgb,var(--vibe) 7%,var(--surface-2))}
+body[data-filter="vibe"] .sum-cell.accent .sum-val,
+body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
+body[data-filter="vibe"] .sum-cell.accent:active{background:color-mix(in srgb,var(--vibe) 13%,var(--surface-2))}
 .sum-sub{font-size:11px;color:var(--text-muted);font-weight:500;font-variant-numeric:tabular-nums}
 
 /* ===== CTA PAIR (concept v1.3 Розділ B — no "+" sign) ===== */
@@ -191,16 +238,17 @@ button:disabled{cursor:not-allowed}
 .rec{display:flex;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;position:relative;cursor:pointer;transition:border-color .14s,background .14s}
 .rec:active{background:var(--surface-3)}
 .rec-num{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent-text);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
-.rec-num.vibe{border-color:var(--text-muted);color:var(--text-muted)}
+.rec-num.vibe{border-color:var(--vibe);color:var(--vibe-text)}
 .rec-mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
 .rec-route{font-size:14px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rec-route .rt-time{color:var(--text-muted);font-weight:600;margin-right:6px}
 .rec-addr{font-size:12px;color:var(--text-muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rec-chip{align-self:flex-start;margin-top:3px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--surface-3);color:var(--text-secondary)}
 .rec-chip.work{background:var(--accent-soft);color:var(--accent-text)}
+.rec-chip.vibe{background:var(--vibe-soft);color:var(--vibe-text)}
 .rec-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-start;flex-shrink:0;gap:2px}
 .rec-km{font-size:15px;font-weight:800;color:var(--accent-text);letter-spacing:-.3px;margin-bottom:2px}
-.rec-km.vibe{color:var(--text-secondary)}
+.rec-km.vibe{color:var(--vibe-text)}
 .rec-fuel{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--text-secondary)}
 .rec-fuel svg{width:11px;height:11px;color:var(--accent-text)}
 .rec-liters{font-size:10.5px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
@@ -251,9 +299,23 @@ button:disabled{cursor:not-allowed}
 
 /* ===== JOURNAL (Tab 2, concept v1.3 §3.1) ===== */
 .jsum{display:flex;align-items:baseline;justify-content:space-between;gap:10px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:12px 14px;margin-bottom:6px}
+/* Pinned journal stats bar (chrome, завжди видно) */
+.jstats-bar{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:7px 14px;background:var(--surface-1);border-bottom:1px solid var(--border-subtle);flex-shrink:0;box-shadow:0 4px 12px rgba(20,30,25,.06)}
+[data-theme="dark"] .jstats-bar{background:var(--surface-3);box-shadow:none}   /* dark: тон-страйп (s3>s1 void), лише faint border-subtle — без хайлайту/товстого бордера */
+.jstats-bar[hidden]{display:none}
+#jr-controls{flex-shrink:0}
+#jr-list{padding-top:4px}
+.jb-drop{display:inline-flex;align-items:center;color:var(--info)}
+.jb-drop svg{width:12px;height:12px;display:block}
 .jsum-l{font-size:13px;font-weight:700;color:var(--text-primary);min-width:0}
 .jsum-l b{color:var(--accent-text)}
-.jsum-r{font-size:12px;font-weight:600;color:var(--text-muted);white-space:nowrap;flex-shrink:0}
+.jsum-r{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:600;color:var(--text-secondary);white-space:nowrap;flex-shrink:0}
+.jb-i{display:inline-flex;align-items:center;gap:4px}
+.jb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.jb-dot.work{background:var(--accent)}
+.jb-dot.vibe{background:var(--vibe)}
+.jb-dot.fuel{background:var(--info)}
+.jb-sep{color:var(--text-muted);font-style:normal;opacity:.6}
 .jm-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:18px 2px 9px}
 .jm-t{font-size:13px;font-weight:800;color:var(--text-primary);letter-spacing:-.2px}
 .jm-km{font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap}
@@ -459,8 +521,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     </div>
   </header>
 
-  <!-- ===== FILTER ROW ===== -->
-  <div class="filter-row">
+  <!-- ===== FILTER ROW (chrome, статично — seg + date; НЕ релокується) ===== -->
+  <div class="filter-row" id="filterRow">
     <div class="seg" id="seg" role="tablist" aria-label="Режим">
       <button class="seg-i" data-f="work" role="tab">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -478,10 +540,25 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     </button>
   </div>
 
+  <!-- ===== JOURNAL STATS BAR (pinned chrome, ПІД filter-row — лише журнал) ===== -->
+  <div class="jstats-bar" id="jStats" hidden></div>
+
   <!-- ===== SCREENS ===== -->
   <div class="screens">
     <div class="screen active" id="sc-overview"><div class="scroll-a" id="ov-scroll"></div></div>
-    <div class="screen" id="sc-journal"><div class="scroll-a" id="jr-scroll"></div></div>
+    <div class="screen" id="sc-journal"><div class="scroll-a" id="jr-scroll">
+      <div id="jr-controls">
+        <!-- SEARCH ROW (Журнал) — перший елемент скролу, дихає під pinned chrome -->
+        <div class="search-row" id="searchRow" hidden>
+          <svg class="sr-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input class="sr-inp" id="jSearch" type="search" inputmode="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" placeholder="Пошук: маршрут, адреса, АЗС…">
+          <button class="sr-clear" id="jSearchClear" type="button" aria-label="Очистити пошук" hidden>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="jr-list"></div>
+    </div></div>
     <div class="screen" id="sc-fuel"><div class="scroll-a"></div></div>
     <div class="screen" id="sc-month"><div class="scroll-a"></div></div>
   </div>
@@ -520,13 +597,23 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="sh-bg" id="sh-date">
   <div class="sh-box">
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
-    <div class="sh-head"><span class="sh-title">Активний день</span><button class="sh-x" onclick="closeSheet('sh-date')" aria-label="Закрити">×</button></div>
+    <div class="sh-head"><span class="sh-title">Оберіть період</span><button class="sh-x" onclick="closeSheet('sh-date')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
-      <div class="fld" style="text-align:center">
-        <label class="fld-l" for="dateInput" style="text-align:left">Оберіть дату</label>
-        <input class="inp" type="date" id="dateInput" autocomplete="off" style="max-width:210px;margin:0 auto;display:block;text-align:center">
+      <div class="cal-h">
+        <span class="cal-my" id="calMY">—</span>
+        <div class="cal-nav">
+          <button id="calPrev" type="button" aria-label="Попередній місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button id="calNext" type="button" aria-label="Наступний місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
       </div>
-      <button class="chip-btn" id="todayBtn" style="width:100%;padding:13px;text-align:center">Сьогодні</button>
+      <div class="cal-wd"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Нд</span></div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-hint" id="calHint">Тапни день — або початок і кінець діапазону</div>
+      <button class="chip-btn" id="todayBtn" style="width:100%;padding:11px;text-align:center;margin-top:4px">Сьогодні</button>
+      <div class="cal-foot">
+        <button class="cal-reset" id="calReset" type="button">Скинути</button>
+        <button class="cal-apply" id="calApply" type="button">Показати</button>
+      </div>
     </div>
   </div>
 </div>
@@ -643,7 +730,7 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 // ---------- state ----------
-const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',records:[],refuels:[],editRecId:null,editRfId:null};
+const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true};
 
 function seed(){
@@ -704,6 +791,16 @@ function recordsOf(day){return S.records.filter(r=>r.date===day).sort((a,b)=>a.t
 function refuelsOf(day){return S.refuels.filter(r=>r.date===day).sort((a,b)=>a.time.localeCompare(b.time));}
 function filteredOf(day){const rs=recordsOf(day);if(S.filter==='all')return rs;return rs.filter(r=>r.type===(S.filter==='work'?'work':'vibe'));}
 function dayKm(day){return filteredOf(day).reduce((s,r)=>s+(+r.km||0),0);}
+// ---- Journal view model (D5): єдине джерело — scope(journalDays) + тип(filteredOf) + search ----
+function matchSearch(r){
+  const q=(S.search||'').trim().toLowerCase();
+  if(!q)return true;
+  const hay=(r.route!=null)?((r.route||'')+' '+(r.addr||'')):((r.azs||'')+' '+(r.ftype||''));
+  return hay.toLowerCase().includes(q);
+}
+function jRecsOf(day){return filteredOf(day).filter(matchSearch);}   // тип AND search
+function jRfsOf(day){return refuelsOf(day).filter(matchSearch);}     // заправки: search only, ігнорують тип (D5)
+function jDayKm(day){return jRecsOf(day).reduce((s,r)=>s+(+r.km||0),0);}
 function lastFuelOf(day){const ev=recordsOf(day).concat(refuelsOf(day)).filter(e=>e.fuel!=null).sort((a,b)=>a.time.localeCompare(b.time));return ev.length?ev[ev.length-1].fuel:null;}
 function dayRecords(){return recordsOf(S.activeDay);}
 function dayRefuels(){return refuelsOf(S.activeDay);}
@@ -741,12 +838,19 @@ function dowISO(iso){const a=iso.split('-').map(Number);return new Date(a[0],a[1
 function weekKey(iso){const a=iso.split('-').map(Number);const dt=new Date(Date.UTC(a[0],a[1]-1,a[2]));const day=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-day+3);const f=new Date(Date.UTC(dt.getUTCFullYear(),0,4));const wk=1+Math.round(((dt-f)/864e5-3+((f.getUTCDay()+6)%7))/7);return dt.getUTCFullYear()+'-W'+wk;}
 function relDay(iso){if(isToday(iso))return 'Сьогодні';if(iso===addDays(todayISO(),-1))return 'Вчора';return WD_FULL[dowISO(iso)];}
 function plural(n,f){const a=n%10,b=n%100;if(a===1&&b!==11)return f[0];if(a>=2&&a<=4&&(b<10||b>=20))return f[1];return f[2];}
+// ---------- scope / range (batch11) ----------
+const MON_SHORT=['січ','лют','бер','кві','тра','чер','лип','сер','вер','жов','лис','гру'];
+function fmtShort(iso){const a=iso.split('-').map(Number);return a[2]+' '+MON_SHORT[a[1]-1];}
+function fmtRange(s,e){if(s===e)return fmtShort(s);const A=s.split('-').map(Number),B=e.split('-').map(Number);if(A[0]===B[0]&&A[1]===B[1])return A[2]+'–'+B[2]+' '+MON_SHORT[A[1]-1];return fmtShort(s)+' – '+fmtShort(e);}
+function inScope(d){return (!S.scopeStart||!S.scopeEnd)?true:(d>=S.scopeStart&&d<=S.scopeEnd);}
 
 // ---------- render: filter row ----------
 function renderFilterRow(){
+  document.body.dataset.filter=S.filter;
   document.querySelectorAll('.seg-i').forEach(b=>b.classList.toggle('act',b.dataset.f===S.filter));
   const lbl=$('dateLbl');
-  lbl.innerHTML=isToday(S.activeDay)?`${fmtDate(S.activeDay)} · <span class="db-sub">Сьогодні</span>`:fmtDate(S.activeDay);
+  if(S.scopeStart&&S.scopeEnd){lbl.innerHTML=`<span class="db-sub">${fmtRange(S.scopeStart,S.scopeEnd)}</span>`;}
+  else lbl.innerHTML=isToday(S.activeDay)?`${fmtDate(S.activeDay)} · <span class="db-sub">Сьогодні</span>`:fmtDate(S.activeDay);
 }
 
 // ---------- render: summary 2x2 + smart accent ----------
@@ -809,7 +913,7 @@ function recItem(r,n){
     <div class="rec-mid">
       <div class="rec-route"><span class="rt-time">${esc(r.time)}</span>${esc(r.route)}</div>
       <div class="rec-addr">${esc(r.addr||'—')}</div>
-      ${showChip?`<span class="rec-chip ${isWork?'work':''}">${isWork?'Робочий':'Вайб'}</span>`:''}
+      ${showChip?`<span class="rec-chip ${isWork?'work':'vibe'}">${isWork?'Робочий':'Вайб'}</span>`:''}
     </div>
     <div class="rec-right">
       <div class="rec-km${isWork?'':' vibe'}">${r.km!=null?esc(r.km)+' км':'—'}</div>
@@ -880,21 +984,22 @@ function journalDays(){
   const set={};
   S.records.forEach(r=>set[r.date]=1);S.refuels.forEach(r=>set[r.date]=1);
   return Object.keys(set)
-    .filter(d=>filteredOf(d).length||refuelsOf(d).length)
+    .filter(d=>inScope(d))
+    .filter(d=>jRecsOf(d).length||jRfsOf(d).length)
     .sort((a,b)=>b.localeCompare(a));               // newest day first
 }
 function dayCard(day){
   const a=day.split('-').map(Number), dnum=a[2];
   const exp=day===S.expandedDay, active=day===S.activeDay;
-  const km=dayKm(day), fuel=lastFuelOf(day);
-  const nr=filteredOf(day).length, nf=refuelsOf(day).length;
+  const km=jDayKm(day), fuel=lastFuelOf(day);
+  const nr=jRecsOf(day).length, nf=jRfsOf(day).length;
   const parts=[];
   if(nr)parts.push(nr+' '+plural(nr,['запис','записи','записів']));
   if(nf)parts.push(nf+' '+plural(nf,['заправка','заправки','заправок']));
   const counts=parts.join(' · ')||'немає подій';
   let exph='';
   if(exp){
-    const recs=filteredOf(day), rfs=refuelsOf(day);
+    const recs=jRecsOf(day), rfs=jRfsOf(day);
     let inner='';
     if(recs.length){
       const tk=recs.reduce((s,r)=>s+(+r.km||0),0);
@@ -922,33 +1027,42 @@ function dayCard(day){
     </div>${exph}
   </div>`;
 }
+function jStatsBar(days){
+  const totalKm=days.reduce((s,d)=>s+jDayKm(d),0);
+  let wc=0,vc=0,fc=0;
+  days.forEach(d=>{jRecsOf(d).forEach(r=>{if(r.type==='work')wc++;else vc++;});fc+=jRfsOf(d).length;});
+  const bd=[];
+  if(wc)bd.push(`<span class="jb-i"><i class="jb-dot work"></i>${wc} роб</span>`);
+  if(vc)bd.push(`<span class="jb-i"><i class="jb-dot vibe"></i>${vc} вайб</span>`);
+  if(fc)bd.push(`<span class="jb-i"><span class="jb-drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg></span>${fc}</span>`);
+  return `<div class="jsum-l">${days.length} ${plural(days.length,['день','дні','днів'])} · <b>${totalKm} км</b></div><div class="jsum-r">${bd.join('<i class="jb-sep">·</i>')}</div>`;
+}
 function renderJournal(){
-  const host=$('jr-scroll'), days=journalDays();
+  const list=$('jr-list'), days=journalDays();
+  $('jStats').innerHTML=jStatsBar(days);
   if(days.length===0){
-    host.innerHTML=`<div class="empty-state">
+    list.innerHTML=`<div class="empty-state">
       <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
-      <div class="empty-txt">Журнал порожній</div>
-      <div class="empty-hint">Записи й заправки зʼявляться тут, згруповані за місяцями. Додай першу подію на вкладці «Огляд».</div>
+      <div class="empty-txt">${(S.search||'').trim()?'Нічого не знайдено':'Журнал порожній'}</div>
+      <div class="empty-hint">${(S.search||'').trim()?'Спробуй інший запит або очисти пошук.':'Записи й заправки зʼявляться тут, згруповані за місяцями. Додай першу подію на вкладці «Огляд».'}</div>
     </div>`;
     return;
   }
-  const totalKm=days.reduce((s,d)=>s+dayKm(d),0);
-  const fLbl=S.filter==='work'?'Робочий':S.filter==='vibe'?'Вайб':'Усі поїздки';
-  let html=`<div class="jsum"><div class="jsum-l">${days.length} ${plural(days.length,['день','дні','днів'])} · <b>${totalKm} км</b></div><div class="jsum-r">${fLbl}</div></div>`;
+  let html='';
   let curMonth=null, curWeek=null;
   days.forEach(day=>{
     const a=day.split('-').map(Number), mk=a[0]+'-'+a[1], wk=weekKey(day);
     if(mk!==curMonth){
       curMonth=mk;curWeek=wk;
-      const mkm=days.filter(d=>{const b=d.split('-').map(Number);return (b[0]+'-'+b[1])===mk;}).reduce((s,d)=>s+dayKm(d),0);
+      const mkm=days.filter(d=>{const b=d.split('-').map(Number);return (b[0]+'-'+b[1])===mk;}).reduce((s,d)=>s+jDayKm(d),0);
       html+=`<div class="jm-head"><span class="jm-t">${MON_NOM[a[1]-1]} ${a[0]}</span><span class="jm-km">${mkm} км</span></div>`;
     }else if(wk!==curWeek){
       curWeek=wk;html+=`<div class="jw-div"></div>`;
     }
     html+=dayCard(day);
   });
-  host.innerHTML=html;
-  bindSwipeRows(host);   // Batch 10: tap=edit, swipe-left=дії (у розгорнутих днях)
+  list.innerHTML=html;
+  bindSwipeRows(list);   // Batch 10: tap=edit, swipe-left=дії
 }
 
 // ---------- master render ----------
@@ -1275,7 +1389,7 @@ function addSwipeClose(bgId,closeFn){
   const box=document.querySelector('#'+bgId+' .sh-box');
   if(!box||box._sw)return;box._sw=true;
   let sy=0,ss=0,gt=false,ig=false;
-  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list');},{passive:true});
+  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list')||!!e.target.closest('.cal-grid');},{passive:true});
   box.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy;if(gt&&dy>40)closeFn();else if(!ig&&ss===0&&dy>64)closeFn();},{passive:true});
 }
 ['sh-menu','sh-date','sh-rec','sh-rf','sh-gen','sh-confirm'].forEach(id=>{
@@ -1304,9 +1418,14 @@ function bindSwipeRows(container){
     if(row._sw)return;row._sw=true;
     const front=row.querySelector('.rec,.rf');
     const id=row.dataset.id, kind=row.dataset.kind;
-    let sx=0,sy=0,moved=false;
-    front.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;},{passive:true});
-    front.addEventListener('touchmove',e=>{if(Math.abs(e.touches[0].clientX-sx)>SW_SLOP||Math.abs(e.touches[0].clientY-sy)>SW_SLOP)moved=true;},{passive:true});
+    let sx=0,sy=0,moved=false,axis=null;
+    front.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;moved=false;axis=null;},{passive:true});
+    front.addEventListener('touchmove',e=>{
+      const cx=e.touches[0].clientX-sx, cy=e.touches[0].clientY-sy;
+      if(axis===null && (Math.abs(cx)>SW_SLOP||Math.abs(cy)>SW_SLOP)) axis=Math.abs(cx)>Math.abs(cy)?'x':'y';
+      if(Math.abs(cx)>SW_SLOP||Math.abs(cy)>SW_SLOP) moved=true;
+      if(axis==='x') e.preventDefault();   // горизонт. намір → блок нативного скролу (no page-jump при закритті)
+    },{passive:false});
     front.addEventListener('touchend',e=>{
       const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
       const open=row.classList.contains('sw-open');
@@ -1340,13 +1459,70 @@ function confirmAction(title,desc,onOk){
 // FILTER SEGMENT
 // ============================================================
 $('seg').addEventListener('click',e=>{const b=e.target.closest('.seg-i');if(b){S.filter=b.dataset.f;render();}});
+$('jSearch').addEventListener('input',e=>{S.search=e.target.value;$('jSearchClear').hidden=!S.search;renderContent();});
+$('jSearchClear').addEventListener('click',()=>{S.search='';$('jSearch').value='';$('jSearchClear').hidden=true;$('jSearch').focus();renderContent();});
 
 // ============================================================
 // DATE PICKER
 // ============================================================
-$('dateBtn').addEventListener('click',()=>{$('dateInput').value=S.activeDay;openSheet('sh-date','sh-date');});
-$('dateInput').addEventListener('change',e=>{if(e.target.value){S.activeDay=e.target.value;closeSheet('sh-date');render();}});
-$('todayBtn').addEventListener('click',()=>{S.activeDay=todayISO();closeSheet('sh-date');render();});
+// ----- Range calendar (batch11): tap start → tap end → Показати -----
+let calView=null, calS=null, calE=null;   // calView={y,m(1-12)}; calS/calE temp ISO
+function calOpen(){
+  const base=(S.scopeStart||S.activeDay).split('-').map(Number);
+  calView={y:base[0],m:base[1]};
+  calS=S.scopeStart||null; calE=S.scopeEnd||null;
+  renderCal(); openSheet('sh-date');
+}
+function calCellISO(d){return calView.y+'-'+pad(calView.m)+'-'+pad(d);}
+function renderCal(){
+  $('calMY').textContent=MON_NOM[calView.m-1]+' '+calView.y;
+  const firstISO=calView.y+'-'+pad(calView.m)+'-01';
+  const lead=(dowISO(firstISO)+6)%7;                       // Monday-first offset
+  const dim=new Date(calView.y,calView.m,0).getDate();     // днів у місяці
+  const tIso=todayISO();
+  const s=calS, e=calE||calS, lo=s?(s<e?s:e):null, hi=s?(s<e?e:s):null;
+  let g='';
+  for(let i=0;i<lead;i++)g+='<div class="cal-c blank"></div>';
+  for(let d=1;d<=dim;d++){
+    const iso=calCellISO(d); let cls='cal-c';
+    if(s){
+      if(iso===lo&&iso===hi)cls+=' r3';
+      else if(iso===lo)cls+=' r1';
+      else if(iso===hi)cls+=' r2';
+      else if(iso>lo&&iso<hi)cls+=' r0';
+    }
+    if(iso===tIso)cls+=' today';
+    g+=`<div class="${cls}" data-d="${d}">${d}</div>`;
+  }
+  $('calGrid').innerHTML=g;
+  $('calHint').textContent = (calS&&calE&&calS!==calE) ? fmtRange(lo,hi)
+                            : calS ? fmtShort(calS)+' — тапни кінець діапазону'
+                            : 'Тапни день — або початок і кінець діапазону';
+}
+function calTap(d){
+  const iso=calCellISO(d);
+  if(!calS||(calS&&calE)){calS=iso;calE=null;}             // новий старт
+  else{calE=iso;}                                          // 2-й тап = кінець (renderCal нормалізує lo/hi)
+  renderCal();
+}
+$('dateBtn').addEventListener('click',calOpen);
+$('calPrev').addEventListener('click',()=>{calView.m--;if(calView.m<1){calView.m=12;calView.y--;}renderCal();});
+$('calNext').addEventListener('click',()=>{calView.m++;if(calView.m>12){calView.m=1;calView.y++;}renderCal();});
+$('calGrid').addEventListener('click',e=>{const c=e.target.closest('.cal-c');if(!c||c.classList.contains('blank'))return;calTap(+c.dataset.d);});
+$('calApply').addEventListener('click',()=>{
+  if(!calS){closeSheet('sh-date');return;}
+  const e=calE||calS, lo=calS<e?calS:e, hi=calS<e?e:calS;
+  S.scopeStart=lo;S.scopeEnd=hi;S.activeDay=lo;S.expandedDay=lo;
+  closeSheet('sh-date');render();
+});
+$('calReset').addEventListener('click',()=>{
+  S.scopeStart=null;S.scopeEnd=null;calS=null;calE=null;
+  closeSheet('sh-date');render();
+});
+$('todayBtn').addEventListener('click',()=>{
+  S.activeDay=todayISO();S.expandedDay=todayISO();S.scopeStart=null;S.scopeEnd=null;
+  closeSheet('sh-date');render();
+});
 
 // ============================================================
 // THEME (wsd Кластер 9) — dl-theme, label «Системна» для auto
@@ -1394,6 +1570,11 @@ function renderDevTab(key){
 }
 function setTab(t){
   S.tab=t;
+  // filter-row лишається статично в chrome (seg+date) — НЕ релокуємо у скрол.
+  // На журналі: pinned stats (під фільтром) + search (перший елемент скролу).
+  const onJournal=(t==='journal');
+  $('jStats').hidden=!onJournal;
+  $('searchRow').hidden=!onJournal;
   document.querySelectorAll('.nav-i').forEach(b=>b.classList.toggle('act',b.dataset.tab===t));
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='sc-'+t));
   document.querySelector('.app-bar').classList.remove('scrolled');
