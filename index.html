@@ -55,7 +55,7 @@
   --sab:env(safe-area-inset-bottom,0px);
 }
 [data-theme="dark"]{
-  --surface-1:#0D1110; --surface-2:#151E1C; --surface-3:#1F2A26; --surface-4:#2A3531;
+  --surface-1:#0E1311; --surface-2:#1D2723; --surface-3:#2A3530; --surface-4:#36433C;
   --text-primary:#F0F4F2; --text-secondary:#A1AAA6; --text-muted:#6B7570;
   --accent:#40916C; --accent-hover:#52B788; --accent-soft:#1E3A2D; --accent-text:#4FAE7A;
   --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
@@ -67,7 +67,7 @@
 }
 @media(prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
-    --surface-1:#0D1110; --surface-2:#151E1C; --surface-3:#1F2A26; --surface-4:#2A3531;
+    --surface-1:#0E1311; --surface-2:#1D2723; --surface-3:#2A3530; --surface-4:#36433C;
     --text-primary:#F0F4F2; --text-secondary:#A1AAA6; --text-muted:#6B7570;
     --accent:#40916C; --accent-hover:#52B788; --accent-soft:#1E3A2D; --accent-text:#4FAE7A;
     --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
@@ -208,18 +208,23 @@ button:disabled{cursor:not-allowed}
 .sum-ico{position:absolute;top:11px;right:11px;width:26px;height:26px;padding:5px;box-sizing:border-box;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);opacity:1}
 .sum-val{font-size:21px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1.05;transition:color .16s;font-variant-numeric:tabular-nums;padding-right:36px}
 .sum-lbl{font-size:11.5px;font-weight:600;color:var(--text-muted)}
-.sum-cell.accent{border-color:var(--border-accent);background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}
+.sum-cell.accent{border-color:var(--border-accent)}
 .sum-cell.accent .sum-val{color:var(--accent-text)}
 .sum-cell.accent .sum-ico{color:var(--accent-text);opacity:1}
 [data-theme="dark"] .sum-cell{border-color:var(--border-default)}
-[data-theme="dark"] .sum-cell.accent{border-color:var(--accent-text);background:color-mix(in srgb,var(--accent) 10%,var(--surface-2))}/* 9.5: яскравіша рамка + сильніший тінт обраної (чіткіше «обрано»); 9.4 FIX зберігся */
-.sum-cell.accent:active{background:color-mix(in srgb,var(--accent) 12%,var(--surface-2))}
-/* Vibe-active: коли фільтр «Вайб» — seg-active + smart-accent тінимо теплим (A8 guard: вища специфічність за тематичні) */
+[data-theme="dark"] .sum-cell.accent{border-color:var(--accent-text)}/* Batch12: активний = ЛИШЕ кільце-рамка, без заливки — тинт за змістом дає фон, тож немає «колір на колір» */
+/* Vibe-active: фільтр «Вайб» — seg-active + рамка smart-accent теплим */
 body[data-filter="vibe"] .seg-i.act{color:var(--vibe-text)}
-body[data-filter="vibe"] .sum-cell.accent{border-color:var(--vibe);background:color-mix(in srgb,var(--vibe) 7%,var(--surface-2))}
+body[data-filter="vibe"] .sum-cell.accent{border-color:var(--vibe)}
 body[data-filter="vibe"] .sum-cell.accent .sum-val,
 body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
-body[data-filter="vibe"] .sum-cell.accent:active{background:color-mix(in srgb,var(--vibe) 13%,var(--surface-2))}
+/* Batch12 тинт за змістом (Вісь-3): постійна тонка заливка за типом + іконки за типом */
+.sum-grid .sum-cell[data-act="work"]{background:color-mix(in srgb,var(--accent) 8%,var(--surface-2))}
+.sum-grid .sum-cell[data-act="vibe"]{background:color-mix(in srgb,var(--vibe) 8%,var(--surface-2))}
+.sum-grid .sum-cell[data-act="fuel"]{background:color-mix(in srgb,var(--info) 9%,var(--surface-2))}
+.sum-cell[data-act="vibe"] .sum-ico{background:var(--vibe-soft);color:var(--vibe-text)}
+.sum-cell[data-act="fuel"] .sum-ico{background:color-mix(in srgb,var(--info) 18%,var(--surface-2));color:var(--info)}
+.sum-cell[data-act="month"] .sum-ico{background:var(--surface-3);color:var(--text-secondary)}
 .sum-sub{font-size:11px;color:var(--text-muted);font-weight:500;font-variant-numeric:tabular-nums}
 
 /* ===== CTA PAIR (concept v1.3 Розділ B — no "+" sign) ===== */
@@ -235,7 +240,12 @@ body[data-filter="vibe"] .sum-cell.accent:active{background:color-mix(in srgb,va
 .sec-gap{margin-top:18px}
 
 /* ===== RECORDS LIST (concept v1.3 Розділ E) ===== */
-.rec{display:flex;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;position:relative;cursor:pointer;transition:border-color .14s,background .14s}
+.rec{display:flex;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .14s,background .14s}
+/* Batch12 акцент-рейка (Вісь-3): тип одним поглядом */
+.rec::before,.rf::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px}
+.rec.work::before{background:var(--accent)}
+.rec.vibe::before{background:var(--vibe)}
+.rf::before{background:var(--info)}
 .rec:active{background:var(--surface-3)}
 .rec-num{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent-text);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
 .rec-num.vibe{border-color:var(--vibe);color:var(--vibe-text)}
@@ -254,7 +264,7 @@ body[data-filter="vibe"] .sum-cell.accent:active{background:color-mix(in srgb,va
 .rec-liters{font-size:10.5px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
 
 /* Compact refuel item (concept v1.3 Розділ C.2) */
-.rf{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:background .14s}
+.rf{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;position:relative;overflow:hidden;cursor:pointer;transition:background .14s}
 .rf:active{background:var(--surface-3)}
 .rf-ico{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .rf-ico svg{width:16px;height:16px}
@@ -477,6 +487,56 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
   #app{display:none!important}
   body::after{content:"Поверніть телефон вертикально";position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;background:var(--surface-1);color:var(--text-primary);font-size:17px;font-weight:600;text-align:center;padding:32px;line-height:1.4}
 }
+/* ===== Tab 3 Паливо (Batch 13) ===== */
+.fl-seg{margin-bottom:14px}
+.fl-seg .seg-i{flex:1;justify-content:center}
+.fl-card{background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:14px;margin-bottom:12px;box-shadow:var(--sh1),inset 0 1px 0 rgba(255,255,255,.04)}
+[data-theme="dark"] .fl-card{border-color:var(--border-default)}
+.fl-note{font-size:13px;color:var(--text-muted);line-height:1.55}
+.fl-cta{margin-top:2px;padding:11px 18px;background:var(--accent);color:#fff;border-radius:var(--rs);font-size:13.5px;font-weight:800;cursor:pointer;transition:transform .1s,background .12s}
+.fl-cta:active{transform:scale(.97);background:var(--accent-text)}
+/* Ring gauge */
+.fr-card{background:color-mix(in srgb,var(--info) 7%,var(--surface-2))}
+.fr-card.low{background:color-mix(in srgb,var(--crit) 8%,var(--surface-2))}
+.fr-ring{position:relative;width:200px;height:200px;margin:2px auto 0}
+.fr-svg{width:100%;height:100%;display:block}
+.fr-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none}
+.fr-liters{font-size:34px;font-weight:800;letter-spacing:-1px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
+.fr-liters span{font-size:15px;font-weight:700;color:var(--text-secondary)}
+.fr-card.low .fr-liters{color:var(--crit)}
+.fr-sub{font-size:12px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.fr-warn{margin-top:6px;text-align:center;font-size:12.5px;font-weight:700;color:var(--crit)}
+/* Consumption */
+.fc-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fc-val{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
+.fc-val span{font-size:13px;font-weight:700;color:var(--text-secondary)}
+.fc-lbl{margin-top:5px;font-size:12px;font-weight:600;color:var(--text-muted)}
+.fc-trend{font-weight:800;font-variant-numeric:tabular-nums}
+.fc-trend.down{color:var(--ok)}.fc-trend.up{color:var(--crit)}
+.fc-spark{flex-shrink:0}
+.spark{width:88px;height:30px;display:block}
+.fl-skip{margin-top:9px;font-size:11.5px;color:var(--text-muted)}
+/* Split bar */
+.split-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-4);margin-bottom:11px}
+.split-w{background:var(--accent)}.split-v{background:var(--vibe)}
+.split-leg{display:flex;flex-direction:column;gap:7px}
+.split-li{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.sl-dot.work{background:var(--accent)}.sl-dot.vibe{background:var(--vibe)}
+.sl-k{font-weight:700;color:var(--text-secondary);min-width:58px}
+.sl-v{color:var(--text-muted);font-weight:600;font-variant-numeric:tabular-nums}
+/* Money + pattern rows */
+.fm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-subtle)}
+.fm-row:last-child{border-bottom:none}
+.fm-k{font-size:13px;font-weight:600;color:var(--text-secondary)}
+.fm-v{font-size:14px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;text-align:right}
+.fp-sub{margin:12px 0 7px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted)}
+.fp-st{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border-subtle)}
+.fp-st:last-of-type{border-bottom:none}
+.fp-st-n{flex:1;font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-st-c{font-size:12px;font-weight:700;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.fp-st-p{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums;min-width:66px;text-align:right}
+.fp-spark .spark{width:100%;height:34px}
 </style>
 </head>
 <body>
@@ -559,7 +619,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
       <div id="jr-list"></div>
     </div></div>
-    <div class="screen" id="sc-fuel"><div class="scroll-a"></div></div>
+    <div class="screen" id="sc-fuel"><div class="scroll-a" id="fl-scroll"></div></div>
     <div class="screen" id="sc-month"><div class="scroll-a"></div></div>
   </div>
 
@@ -730,7 +790,7 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 // ---------- state ----------
-const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null};
+const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m'};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true};
 
 function seed(){
@@ -908,7 +968,7 @@ function recItem(r,n){
       <button class="sw-act edit" data-act="edit" type="button" aria-label="Редагувати"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Ред.</button>
       <button class="sw-act del" data-act="del" type="button" aria-label="Видалити"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Видал.</button>
     </div>
-    <div class="rec" data-id="${r.id}">
+    <div class="rec ${isWork?'work':'vibe'}" data-id="${r.id}">
     <div class="rec-num${isWork?'':' vibe'}">${n}</div>
     <div class="rec-mid">
       <div class="rec-route"><span class="rt-time">${esc(r.time)}</span>${esc(r.route)}</div>
@@ -1065,10 +1125,178 @@ function renderJournal(){
   bindSwipeRows(list);   // Batch 10: tap=edit, swipe-left=дії
 }
 
+// ============================================================
+// Tab 3 — Паливо (Batch 13): аналітика, без фейкових чисел
+// ============================================================
+const L_PER_TICK=L100();            // 4.2 л/поділ (бак 50л/12) — джерело правди те саме, що у формі
+function f1(n){return (Math.round(n*10)/10).toFixed(1);}
+function money(n){return fmtNum(n)+'\u00A0₴';}
+
+// --- scope (rolling window, відвʼязано від scope Журналу) ---
+function fuelScopeCutoff(){if(S.fuelScope==='all')return null;return addDays(todayISO(),-(S.fuelScope==='m'?30:90));}
+function inFuelScope(d){const c=fuelScopeCutoff();return !c||d>=c;}
+
+// --- readings / refuels ---
+function fuelReadings(){
+  const ev=[];
+  S.records.forEach(r=>{if(r.fuel!=null)ev.push({date:r.date,time:r.time,fuel:+r.fuel,range:r.range!=null?+r.range:null});});
+  S.refuels.forEach(r=>{if(r.fuel!=null)ev.push({date:r.date,time:r.time,fuel:+r.fuel,range:null});});
+  ev.sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date));
+  return ev;
+}
+function currentFuel(){const ev=fuelReadings();return ev.length?ev[ev.length-1]:null;}
+function latestRange(){let best=null;S.records.forEach(r=>{if(r.range!=null){const key=r.date+r.time;if(!best||key>best.key)best={key,range:+r.range};}});return best?best.range:null;}
+function refuelsChrono(){return S.refuels.slice().filter(r=>r.odo!=null).sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date));}
+function scopedRefuels(){return refuelsChrono().filter(r=>inFuelScope(r.date));}
+
+// --- tank-to-tank сегменти + запобіжник проти сміття ---
+function tankSegments(){
+  const rf=refuelsChrono(), segs=[];
+  for(let i=1;i<rf.length;i++){
+    const A=rf[i-1], B=rf[i], dist=(+B.odo)-(+A.odo), litersB=(B.liters!=null)?+B.liters:null;
+    if(litersB==null||!(dist>0)){segs.push({B,dist,l100:null,plausible:false});continue;}
+    const spent=((+A.fuel - +B.fuel)*L_PER_TICK)+litersB;
+    const l100=spent/dist*100;
+    const plausible=(dist>=50 && l100>=3 && l100<=25 && spent>0);
+    segs.push({B,dist,spent,l100,plausible});
+  }
+  return segs;
+}
+function scopedSegments(){return tankSegments().filter(s=>inFuelScope(s.B.date));}
+function avgL100(){const ok=scopedSegments().filter(s=>s.plausible);return ok.length?ok.reduce((a,s)=>a+s.l100,0)/ok.length:null;}
+
+// --- distance / money / split / cadence ---
+function scopedDistance(){const ev=odoEvents().filter(e=>inFuelScope(e.date));return ev.length<2?null:ev[ev.length-1].odo-ev[0].odo;}
+function refuelCost(r){return (r.sum!=null)?+r.sum:((r.liters!=null&&r.price!=null)?(+r.liters*+r.price):0);}
+function fuelMoney(){
+  const rf=scopedRefuels();let cost=0,lit=0;
+  rf.forEach(r=>{cost+=refuelCost(r);if(r.liters!=null)lit+=+r.liters;});
+  const dist=scopedDistance();
+  return {cost,liters:lit,count:rf.length,avgPrice:lit>0?cost/lit:null,per100:(dist&&dist>0)?cost/dist*100:null,avgFill:rf.length?lit/rf.length:null};
+}
+function fuelSplit(){
+  let wk=0,vk=0;
+  S.records.forEach(r=>{if(!inFuelScope(r.date))return;if(r.type==='work')wk+=(+r.km||0);else vk+=(+r.km||0);});
+  const tot=wk+vk, m=fuelMoney(), share=tot>0?wk/tot:null;
+  return {wk,vk,tot,wPct:share!=null?Math.round(share*100):null,wCost:share!=null?m.cost*share:null,vCost:share!=null?m.cost*(1-share):null};
+}
+function fuelCadence(){
+  const rf=scopedRefuels();if(rf.length<2)return null;
+  const A=rf[0],B=rf[rf.length-1],a=A.date.split('-').map(Number),b=B.date.split('-').map(Number);
+  const days=Math.round((new Date(b[0],b[1]-1,b[2])-new Date(a[0],a[1]-1,a[2]))/864e5);
+  const km=(B.odo!=null&&A.odo!=null)?(+B.odo-+A.odo):null, gaps=rf.length-1;
+  return {days:gaps?Math.round(days/gaps):null,km:(km!=null&&gaps)?Math.round(km/gaps):null};
+}
+function topStations(){
+  const m={};
+  scopedRefuels().forEach(r=>{const k=r.azs||'—';(m[k]||(m[k]={azs:k,count:0,lit:0,cost:0}));m[k].count++;if(r.liters!=null)m[k].lit+=+r.liters;m[k].cost+=refuelCost(r);});
+  return Object.values(m).map(o=>(o.avgPrice=o.lit>0?o.cost/o.lit:null,o)).sort((a,b)=>b.count-a.count).slice(0,3);
+}
+
+// --- SVG helpers ---
+function polarXY(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
+function arcPath(cx,cy,r,d0,d1){const[x0,y0]=polarXY(cx,cy,r,d0),[x1,y1]=polarXY(cx,cy,r,d1),large=((d1-d0)%360+360)%360>180?1:0;return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
+function ringSVG(level){
+  const cx=80,cy=80,r=60,segs=12,base=215,step=270/segs,gap=3,low=(level!=null&&level<=3),col=low?'var(--crit)':'var(--info)';let p='';
+  for(let i=0;i<segs;i++){const on=(level!=null)&&(i<Math.round(level));p+=`<path d="${arcPath(cx,cy,r,base+i*step+gap/2,base+(i+1)*step-gap/2)}" stroke="${on?col:'var(--surface-4)'}" stroke-width="12" stroke-linecap="round"/>`;}
+  return `<svg class="fr-svg" viewBox="0 0 160 160" fill="none">${p}</svg>`;
+}
+function sparkline(vals){
+  if(!vals||vals.length<2)return '';
+  const w=88,h=30,pad=4,mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),rng=(mx-mn)||1;
+  const pts=vals.map((v,i)=>[pad+(w-2*pad)*i/(vals.length-1),h-pad-(h-2*pad)*(v-mn)/rng]);
+  const d=pts.map((q,i)=>(i?'L':'M')+q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' '),last=pts[pts.length-1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" fill="none"><path d="${d}" stroke="var(--info)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2.6" fill="var(--info)"/></svg>`;
+}
+
+// --- block renderers ---
+function ringBlock(cur){
+  const lvl=cur.fuel,lit=Math.round(lvl*L_PER_TICK),avg=avgL100();
+  let range=latestRange(),approx=false;
+  if(range==null&&avg){range=Math.round(lit*100/avg);approx=true;}
+  const low=lvl<=3,sub=(range!=null)?`${lvl}/12 · ${approx?'≈':''}${fmtNum(range)} км запас`:`${lvl}/12`;
+  return `<section class="fl-card fr-card${low?' low':''}">
+    <div class="fr-ring">${ringSVG(lvl)}
+      <div class="fr-center"><div class="fr-liters">≈\u202F${lit}<span> л</span></div><div class="fr-sub">${esc(sub)}</div></div>
+    </div>${low?`<div class="fr-warn">Низький рівень — час заправитись</div>`:''}
+  </section>`;
+}
+function consumptionBlock(){
+  const head=`<div class="sec-h"><span class="sec-t">Мій розхід</span><span class="sec-c">tank-to-tank</span></div>`;
+  const segs=scopedSegments(),ok=segs.filter(s=>s.plausible),skip=segs.length-ok.length;
+  if(!ok.length)return `<section class="fl-card">${head}<div class="fl-note">Потрібно щонайменше дві заправки з одометром, щоб порахувати розхід.</div></section>`;
+  const avg=avgL100(),last=ok[ok.length-1].l100,delta=last-avg;
+  const dir=delta<-0.05?'down':(delta>0.05?'up':'flat'),arrow=dir==='down'?'↓':(dir==='up'?'↑':'→');
+  const skipNote=skip>0?`<div class="fl-skip">${skip} ${plural(skip,['відрізок','відрізки','відрізків'])} не враховано (доливка / мало км)</div>`:'';
+  return `<section class="fl-card">${head}
+    <div class="fc-row">
+      <div class="fc-main"><div class="fc-val">${f1(avg)}<span> L/100</span></div>
+        <div class="fc-lbl">середній за період${dir!=='flat'?` · <span class="fc-trend ${dir}">${arrow}\u202F${f1(Math.abs(delta))}</span> ост. бак`:''}</div></div>
+      <div class="fc-spark">${sparkline(ok.map(s=>s.l100))}</div>
+    </div>${skipNote}
+  </section>`;
+}
+function splitBlock(){
+  const head=`<div class="sec-h"><span class="sec-t">Робота vs власне</span><span class="sec-c">за пробігом</span></div>`;
+  const sp=fuelSplit();
+  if(sp.tot<=0)return `<section class="fl-card">${head}<div class="fl-note">Немає записів з пробігом за цей період.</div></section>`;
+  const wp=sp.wPct,vp=100-wp,m=fuelMoney(),ck=m.cost>0;
+  return `<section class="fl-card">${head}
+    <div class="split-bar"><span class="split-w" style="width:${wp}%"></span><span class="split-v" style="width:${vp}%"></span></div>
+    <div class="split-leg">
+      <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${ck?` · ${money(sp.wCost)}`:''}</span></div>
+      <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Власне</span><span class="sl-v">${fmtNum(sp.vk)} км${ck?` · ${money(sp.vCost)}`:''}</span></div>
+    </div>
+  </section>`;
+}
+function moneyBlock(){
+  const m=fuelMoney(),head=`<div class="sec-h"><span class="sec-t">Гроші</span><span class="sec-c">${m.count} ${plural(m.count,['заправка','заправки','заправок'])}</span></div>`;
+  if(m.count<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
+  const rows=[['Витрати на паливо',m.cost>0?money(m.cost):'—'],['Вартість 100 км',m.per100!=null?money(m.per100):'—'],['Середня ціна літра',m.avgPrice!=null?m.avgPrice.toFixed(2)+'\u00A0₴':'—']];
+  return `<section class="fl-card">${head}${rows.map(r=>`<div class="fm-row"><span class="fm-k">${r[0]}</span><span class="fm-v">${r[1]}</span></div>`).join('')}</section>`;
+}
+function patternBlock(){
+  const head=`<div class="sec-h"><span class="sec-t">Заправки</span><span class="sec-c">патерн</span></div>`;
+  const rf=scopedRefuels();
+  if(rf.length<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
+  const m=fuelMoney(),cad=fuelCadence(),tops=topStations(),prices=rf.filter(r=>r.price!=null).map(r=>+r.price);
+  const cp=[];if(cad){if(cad.days&&cad.days>0)cp.push('раз на '+cad.days+' '+plural(cad.days,['день','дні','днів']));if(cad.km!=null&&cad.km>0)cp.push('~'+fmtNum(cad.km)+' км');}
+  const cadTxt=cp.length?cp.join(' · '):'замало даних';
+  const st=tops.map(t=>`<div class="fp-st"><span class="fp-st-n">${esc(t.azs)}</span><span class="fp-st-c">${t.count}×</span><span class="fp-st-p">${t.avgPrice!=null?t.avgPrice.toFixed(2)+'\u00A0₴/л':'—'}</span></div>`).join('');
+  return `<section class="fl-card">${head}
+    <div class="fm-row"><span class="fm-k">Як часто</span><span class="fm-v">${cadTxt}</span></div>
+    <div class="fm-row"><span class="fm-k">Середній залив</span><span class="fm-v">${m.avgFill!=null?f1(m.avgFill)+' л':'—'}</span></div>
+    <div class="fp-sub">Де заправляюсь</div>${st}
+    ${prices.length>1?`<div class="fp-sub">Ціна за літр у часі</div><div class="fp-spark">${sparkline(prices)}</div>`:''}
+  </section>`;
+}
+function fuelPeriods(){
+  return `<div class="seg fl-seg" id="flSeg" role="tablist" aria-label="Період аналітики">
+    <button class="seg-i${S.fuelScope==='m'?' act':''}" data-fs="m" role="tab">Місяць</button>
+    <button class="seg-i${S.fuelScope==='3m'?' act':''}" data-fs="3m" role="tab">3 міс</button>
+    <button class="seg-i${S.fuelScope==='all'?' act':''}" data-fs="all" role="tab">Усе</button>
+  </div>`;
+}
+function renderFuel(){
+  const scroll=$('fl-scroll'),cur=currentFuel();
+  if(!cur){
+    scroll.innerHTML=fuelPeriods()+`<div class="empty-state">
+      <div class="empty-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg></div>
+      <div class="empty-txt">Ще немає даних про паливо</div>
+      <div class="empty-hint">Додай заправку або вкажи рівень палива в записі — і тут зʼявиться аналітика витрат.</div>
+      <button class="fl-cta" id="fl-add" type="button">Додати заправку</button>
+    </div>`;
+    $('fl-add').addEventListener('click',()=>openRefuelForm());
+    return;
+  }
+  scroll.innerHTML=fuelPeriods()+ringBlock(cur)+consumptionBlock()+splitBlock()+moneyBlock()+patternBlock();
+}
+
 // ---------- master render ----------
 function renderContent(){
   if(S.tab==='overview'){renderOverview();return;}
   if(S.tab==='journal'){renderJournal();return;}
+  if(S.tab==='fuel'){renderFuel();return;}
   document.querySelector('#sc-'+S.tab+' .scroll-a').innerHTML=renderDevTab(S.tab);
 }
 function render(){renderFilterRow();renderContent();}
@@ -1556,7 +1784,6 @@ document.addEventListener('click',e=>{if(!themeMenu.hidden&&!themeMenu.contains(
 // BOTTOM NAV + tabs 2-4 (honest dev-status screens — not stubs)
 // ============================================================
 const TABMETA={
-  fuel:{t:'Паливо',b:'Batch 10',d:'Паливний потік окремо: добове споживання, журнал заправок (rich cards) і витрата L/100км.',icon:'<path d="M3 22V4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v18"/><path d="M3 12h10"/><path d="M16 8l3 3v7a2 2 0 0 1-4 0V5"/>'},
   month:{t:'Місяць',b:'Batch 11',d:'Агрегований підсумок місяця: загальний пробіг, робочий vs особистий, заправки, витрата і залишок ліміту.',icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'}
 };
 function renderDevTab(key){
@@ -1575,12 +1802,16 @@ function setTab(t){
   const onJournal=(t==='journal');
   $('jStats').hidden=!onJournal;
   $('searchRow').hidden=!onJournal;
+  // Агрегатні таби (Паливо/Місяць) не фільтрують по дню/типу → filter-row ховаємо (Кластер 3.7 — заодно month)
+  $('filterRow').hidden=(t==='fuel'||t==='month');
   document.querySelectorAll('.nav-i').forEach(b=>b.classList.toggle('act',b.dataset.tab===t));
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='sc-'+t));
   document.querySelector('.app-bar').classList.remove('scrolled');
   renderContent();
 }
 $('bnav').addEventListener('click',e=>{const b=e.target.closest('.nav-i');if(b)setTab(b.dataset.tab);});
+// Fuel period switch (delegation — content rebuilt each render)
+$('fl-scroll').addEventListener('click',e=>{const b=e.target.closest('.fl-seg .seg-i');if(b&&b.dataset.fs!==S.fuelScope){S.fuelScope=b.dataset.fs;renderFuel();}});
 // Journal interactions (delegation — content rebuilt each render)
 $('jr-scroll').addEventListener('click',e=>{
   if(e.target.closest('.jd-open')){const jd=e.target.closest('.jd');if(jd){S.activeDay=jd.dataset.day;setTab('overview');renderFilterRow();}return;}
