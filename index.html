@@ -149,6 +149,7 @@ button:disabled{cursor:not-allowed}
 /* ===== FILTER ROW (toggle + date) ===== */
 .filter-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border-subtle);flex-shrink:0;box-shadow:0 4px 12px rgba(20,30,25,.06)}
 [data-theme="dark"] .filter-row{box-shadow:none}   /* dark: тіні невидимі — обʼєм через тон, не shadow */
+.filter-row[hidden]{display:none}   /* b15 L4: інакше display:flex б'є атрибут [hidden] (рівна специфічність) → панель не ховалась на Паливі/Місяці */
 .seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px;flex:0 0 auto}
 .seg-i{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-secondary);transition:background .14s,color .14s,box-shadow .14s;cursor:pointer;white-space:nowrap}
 .seg-i svg{width:14px;height:14px;flex-shrink:0}
@@ -541,11 +542,11 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fl-skip{margin-top:9px;font-size:11.5px;color:var(--text-muted)}
 /* Split bar */
 .split-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-4);margin-bottom:11px}
-.split-w{background:var(--accent)}.split-v{background:var(--vibe)}
+.split-w{background:var(--accent)}.split-v{background:var(--vibe)}.split-u{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
 .split-leg{display:flex;flex-direction:column;gap:7px}
 .split-li{display:flex;align-items:center;gap:8px;font-size:12.5px}
 .sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.sl-dot.work{background:var(--accent)}.sl-dot.vibe{background:var(--vibe)}
+.sl-dot.work{background:var(--accent)}.sl-dot.vibe{background:var(--vibe)}.sl-dot.unlog{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
 .sl-k{font-weight:700;color:var(--text-secondary);min-width:58px}
 .sl-v{color:var(--text-muted);font-weight:600;font-variant-numeric:tabular-nums}
 /* Money + pattern rows */
@@ -1186,7 +1187,7 @@ function tankSegments(){
   return segs;
 }
 function scopedSegments(){return tankSegments().filter(s=>inFuelScope(s.B.date));}
-function avgL100(){const ok=scopedSegments().filter(s=>s.plausible);return ok.length?ok.reduce((a,s)=>a+s.l100,0)/ok.length:null;}
+function avgL100(){const ok=scopedSegments().filter(s=>s.plausible);if(!ok.length)return null;const sl=ok.reduce((a,s)=>a+s.spent,0),sd=ok.reduce((a,s)=>a+s.dist,0);return sd>0?sl/sd*100:null;} // b15: pooled (зважений за пробігом), не mean-of-ratios
 
 // --- distance / money / split / cadence ---
 function scopedDistance(){const ev=odoEvents().filter(e=>inFuelScope(e.date));return ev.length<2?null:ev[ev.length-1].odo-ev[0].odo;}
@@ -1194,14 +1195,23 @@ function refuelCost(r){return (r.sum!=null)?+r.sum:((r.liters!=null&&r.price!=nu
 function fuelMoney(){
   const rf=scopedRefuels();let cost=0,lit=0;
   rf.forEach(r=>{cost+=refuelCost(r);if(r.liters!=null)lit+=+r.liters;});
-  const dist=scopedDistance();
-  return {cost,liters:lit,count:rf.length,avgPrice:lit>0?cost/lit:null,per100:(dist&&dist>0)?cost/dist*100:null,avgFill:rf.length?lit/rf.length:null};
+  const avgPrice=lit>0?cost/lit:null, cons=avgL100();
+  // b15: вартість/100 виводиться з розходу (cons×ціна) — завжди узгоджена з «Мій розхід», не окрема база відстані
+  return {cost,liters:lit,count:rf.length,avgPrice,cons,per100:(cons!=null&&avgPrice!=null)?cons*avgPrice:null,avgFill:rf.length?lit/rf.length:null};
 }
 function fuelSplit(){
   let wk=0,vk=0;
   S.records.forEach(r=>{if(!inFuelScope(r.date))return;if(r.type==='work')wk+=(+r.km||0);else vk+=(+r.km||0);});
-  const tot=wk+vk, m=fuelMoney(), share=tot>0?wk/tot:null;
-  return {wk,vk,tot,wPct:share!=null?Math.round(share*100):null,wCost:share!=null?m.cost*share:null,vCost:share!=null?m.cost*(1-share):null,wLit:share!=null?m.liters*share:null,vLit:share!=null?m.liters*(1-share):null};
+  // b15: атрибуція лише за залогованими км (км×розхід), а не розкидання всього купленого палива.
+  // unlog = реально проїхано (одометр) − залоговано; робить неповноту видимою (лікує L1+L3).
+  const m=fuelMoney(), cons=m.cons, cpl=m.avgPrice;
+  const odo=scopedDistance(), logged=wk+vk, unlog=(odo!=null&&odo>logged)?odo-logged:0;
+  const base=(odo!=null&&odo>0)?odo:logged;
+  const wLit=cons!=null?wk*cons/100:null, vLit=cons!=null?vk*cons/100:null;
+  return {wk,vk,logged,unlog,odo,tot:logged,
+    wW:base>0?wk/base*100:0, vW:base>0?vk/base*100:0, uW:base>0?unlog/base*100:0,
+    unlogPct:base>0?Math.round(unlog/base*100):0,
+    wLit,vLit,wCost:(wLit!=null&&cpl!=null)?wLit*cpl:null, vCost:(vLit!=null&&cpl!=null)?vLit*cpl:null};
 }
 function fuelCadence(){
   const rf=scopedRefuels();if(rf.length<2)return null;
@@ -1229,8 +1239,9 @@ function sparkline(vals){
 // R1: компактний горизонтальний стан-бар — read-only echo гейджа форми (display-only, pointer-events:none)
 function stateBlock(cur){
   const lvl=cur.fuel,lit=Math.round(lvl*L_PER_TICK),avg=avgL100();
-  let range=latestRange(),approx=false;
-  if(range==null&&avg){range=Math.round(lit*100/avg);approx=true;}
+  let range=null,approx=false;
+  if(avg){range=Math.round(lvl*L_PER_TICK*100/avg);approx=true;}  // b15: app-оцінка (рівень/розхід) — за замовчуванням, узгоджена з «Мій розхід»
+  else {range=latestRange();}                                     // fallback: ручне з борткомпʼютера, поки розходу ще нема
   const low=lvl<=3,meta=(range!=null)?`${lvl}/12 · ${approx?'≈':''}${fmtNum(range)} км запас`:`${lvl}/12`;
   const DROP='<path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/>';
   let groups='';
@@ -1258,7 +1269,7 @@ function consumptionBlock(){
   const skipNote=skip>0?`<div class="fl-skip">${skip} ${plural(skip,['відрізок','відрізки','відрізків'])} не враховано (доливка / мало км)</div>`:'';
   return `<section class="fl-card">${head}
     <div class="fc-row">
-      <div class="fc-main"><div class="fc-val">${f1(avg)}<span> L/100</span></div>
+      <div class="fc-main"><div class="fc-val">${f1(avg)}<span> л/100</span></div>
         <div class="fc-lbl">середній за період${dir!=='flat'?` · <span class="fc-trend ${dir}">${arrow}\u202F${f1(Math.abs(delta))}</span> ост. бак`:''}</div></div>
       <div class="fc-spark">${sparkline(ok.map(s=>s.l100))}</div>
     </div>${skipNote}
@@ -1268,12 +1279,16 @@ function splitBlock(){
   const head=`<div class="sec-h"><span class="sec-t">Робота vs власне</span><span class="sec-c">за пробігом</span></div>`;
   const sp=fuelSplit();
   if(sp.tot<=0)return `<section class="fl-card">${head}<div class="fl-note">Немає записів з пробігом за цей період.</div></section>`;
-  const wp=sp.wPct,vp=100-wp,m=fuelMoney(),ck=m.cost>0,lk=m.liters>0;
+  const lk=sp.wLit!=null, ck=sp.wCost!=null;
+  const showU=sp.uW>10;                               // сірий лише коли неповнота суттєва (інакше — нагадування зайве)
+  let wW=sp.wW,vW=sp.vW,uW=sp.uW;
+  if(!showU){const s=wW+vW; wW=s>0?wW/s*100:0; vW=s>0?vW/s*100:0; uW=0;} // майже все залоговано → 2 сегменти на всю смугу
   return `<section class="fl-card">${head}
-    <div class="split-bar"><span class="split-w" style="width:${wp}%"></span><span class="split-v" style="width:${vp}%"></span></div>
+    <div class="split-bar"><span class="split-w" style="width:${wW.toFixed(1)}%"></span><span class="split-v" style="width:${vW.toFixed(1)}%"></span>${showU?`<span class="split-u" style="width:${uW.toFixed(1)}%"></span>`:''}</div>
     <div class="split-leg">
       <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
       <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Власне</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
+      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без замітки</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
     </div>
   </section>`;
 }
