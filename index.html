@@ -220,8 +220,9 @@ body[data-filter="vibe"] .sum-cell.accent .sum-val,
 body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 /* Batch12 тинт за змістом (Вісь-3): постійна тонка заливка за типом + іконки за типом */
 .sum-grid .sum-cell[data-act="work"]{background:color-mix(in srgb,var(--accent) 8%,var(--surface-2))}
-.sum-grid .sum-cell[data-act="vibe"]{background:color-mix(in srgb,var(--vibe) 8%,var(--surface-2))}
+.sum-grid .sum-cell[data-act="vibe"]{background:color-mix(in srgb,var(--vibe) 11%,var(--surface-2))}
 .sum-grid .sum-cell[data-act="fuel"]{background:color-mix(in srgb,var(--info) 9%,var(--surface-2))}
+[data-theme="dark"] .sum-grid .sum-cell[data-act="fuel"]{background:color-mix(in srgb,var(--info) 11%,var(--surface-2))}
 .sum-cell[data-act="vibe"] .sum-ico{background:var(--vibe-soft);color:var(--vibe-text)}
 .sum-cell[data-act="fuel"] .sum-ico{background:color-mix(in srgb,var(--info) 18%,var(--surface-2));color:var(--info)}
 .sum-cell[data-act="month"] .sum-ico{background:var(--surface-3);color:var(--text-secondary)}
@@ -232,6 +233,11 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 .cta-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:transparent;border:1.5px solid var(--border-accent);border-radius:var(--r);color:var(--accent-text);font-size:14px;font-weight:700;cursor:pointer;transition:background .14s,transform .1s,color .14s}
 .cta-btn svg{width:18px;height:18px;flex-shrink:0}
 .cta-btn:active{background:var(--accent-soft);transform:scale(.975)}
+/* 14b: Запис = нейтр. primary (типо-агностична); Заправка = синій secondary (паливо) */
+.cta-rec{background:var(--text-primary);border-color:var(--text-primary);color:var(--surface-1)}
+.cta-rec:active{background:var(--text-secondary);border-color:var(--text-secondary);transform:scale(.975)}
+.cta-rf{background:color-mix(in srgb,var(--info) 10%,var(--surface-2));border-color:var(--info);color:var(--info)}
+.cta-rf:active{background:color-mix(in srgb,var(--info) 18%,var(--surface-2));transform:scale(.975)}
 
 /* ===== SECTION HEAD ===== */
 .sec-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 9px}
@@ -260,13 +266,13 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 .rec-km{font-size:15px;font-weight:800;color:var(--accent-text);letter-spacing:-.3px;margin-bottom:2px}
 .rec-km.vibe{color:var(--vibe-text)}
 .rec-fuel{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--text-secondary)}
-.rec-fuel svg{width:11px;height:11px;color:var(--accent-text)}
+.rec-fuel svg{width:11px;height:11px;color:color-mix(in srgb,var(--info) 62%,var(--text-muted))}
 .rec-liters{font-size:10.5px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
 
 /* Compact refuel item (concept v1.3 Розділ C.2) */
 .rf{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;position:relative;overflow:hidden;cursor:pointer;transition:background .14s}
 .rf:active{background:var(--surface-3)}
-.rf-ico{width:30px;height:30px;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rf-ico{width:30px;height:30px;border-radius:50%;background:color-mix(in srgb,var(--info) 16%,var(--surface-2));color:var(--info);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .rf-ico svg{width:16px;height:16px}
 .rf-mid{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px}
 .rf-t{font-size:13.5px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -345,14 +351,16 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 .jd-km{font-size:15px;font-weight:800;color:var(--accent-text);letter-spacing:-.3px}
 .jd-km.zero{color:var(--text-muted)}
 .jd-fuel{display:flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--text-secondary)}
-.jd-fuel svg{width:11px;height:11px;color:var(--accent-text)}
+.jd-fuel svg{width:11px;height:11px;color:color-mix(in srgb,var(--info) 62%,var(--text-muted))}
 .jd-liters{font-size:10px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
 .jd-chev{color:var(--text-muted);flex-shrink:0;transition:transform .18s}
 .jd.exp .jd-chev{transform:rotate(90deg)}
 .jd-exp{padding:0 13px 13px;border-top:1px solid var(--border-subtle)}
 .jd-exp .sec-h{margin:11px 2px 8px}
-.jd-exp .rec,.jd-exp .rf{background:var(--surface-1)}
+.jd-exp .rec,.jd-exp .rf{background:var(--surface-1);box-shadow:0 1px 3px rgba(20,30,25,.05)}
 .jd-exp .rec:active,.jd-exp .rf:active{background:var(--surface-3)}
+[data-theme="dark"] .jd-exp .rec,[data-theme="dark"] .jd-exp .rf{background:var(--surface-3);box-shadow:none}
+[data-theme="dark"] .jd-exp .rec:active,[data-theme="dark"] .jd-exp .rf:active{background:var(--surface-4)}
 .jd-empty{font-size:12.5px;color:var(--text-muted);padding:12px 2px 4px;font-weight:500;text-align:center}
 .jd-open{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:11px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);color:var(--accent-text);font-size:13px;font-weight:700;cursor:pointer;transition:background .12s}
 .jd-open:active{background:var(--accent-soft)}
@@ -431,21 +439,21 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fg-end{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:16px;font-size:10px;font-weight:800;color:var(--text-muted)}
 .fg-end .fg-drop{width:12px;height:12px}
 .fg-end-e .fg-drop{color:var(--text-muted);opacity:.55}
-.fg-end-f .fg-drop-full{color:var(--accent-text)}
+.fg-end-f .fg-drop-full{color:var(--info)}
 .fg-lbl{line-height:1}
 .fg-grid{flex:1;display:flex;gap:5px;touch-action:none;user-select:none;-webkit-user-select:none;padding:7px 8px;background:var(--surface-1);border:1px solid var(--border-subtle);border-radius:9px;box-shadow:inset 0 1px 3px rgba(0,0,0,.10)}
 .fg-group{display:flex;gap:5px;flex:1}
 .fg-group + .fg-group{margin-left:7px}
 .fg-cell{flex:1;height:32px;min-width:12px;border-radius:5px;background:var(--surface-3);border:1px solid var(--border-subtle);transition:background .1s,transform .1s,border-color .1s,box-shadow .1s;cursor:pointer}
-.fg-cell.on{background:var(--accent);border-color:var(--accent);box-shadow:0 1px 4px color-mix(in srgb,var(--accent) 40%,transparent)}
+.fg-cell.on{background:var(--info);border-color:var(--info);box-shadow:0 1px 4px color-mix(in srgb,var(--info) 40%,transparent)}
 .fg-cell.pulse{transform:scaleY(1.14)}
 /* Batch 9.2: Dark — підняти контейнер НАД аркушем (запас яскравості лише вгору). Панель=surface-3, порожні сегменти=surface-2 (вглиб) */
 [data-theme="dark"] .fg-grid{background:var(--surface-3);border-color:var(--border-default);box-shadow:0 1px 2px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.05)}
-[data-theme="dark"] .fg-cell{background:color-mix(in srgb,var(--accent) 6%,var(--surface-2))}/* 9.5: шепіт зеленого, нейтральніше (Light empty теж майже нейтральні) */
-[data-theme="dark"] .fg-cell.on{background:linear-gradient(180deg,color-mix(in srgb,var(--accent-hover) 88%,#fff) 0%,var(--accent-hover) 100%);border-color:var(--accent-hover);box-shadow:none}/* 9.6: субтильний градієнт зверху-вниз = об'єм LED-поділки (тіні на dark невидимі) */
+[data-theme="dark"] .fg-cell{background:color-mix(in srgb,var(--info) 6%,var(--surface-2))}/* 9.5: шепіт зеленого, нейтральніше (Light empty теж майже нейтральні) */
+[data-theme="dark"] .fg-cell.on{background:linear-gradient(180deg,color-mix(in srgb,var(--info) 78%,#fff) 0%,var(--info) 100%);border-color:var(--info);box-shadow:none}/* 9.6: субтильний градієнт зверху-вниз = об'єм LED-поділки (тіні на dark невидимі) */
 .fg-val{margin-top:10px;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text-secondary);font-variant-numeric:tabular-nums}
-.fg-val svg{width:14px;height:14px;color:var(--accent-text);flex-shrink:0}
-.fg-val b{color:var(--accent-text);font-weight:800}
+.fg-val svg{width:14px;height:14px;color:var(--info);flex-shrink:0}
+.fg-val b{color:var(--info);font-weight:800}
 
 /* Form footer — parallel actions (concept v1.3 Розділ F) */
 .sh-foot{display:flex;gap:10px;margin-top:6px}
@@ -495,17 +503,32 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fl-note{font-size:13px;color:var(--text-muted);line-height:1.55}
 .fl-cta{margin-top:2px;padding:11px 18px;background:var(--accent);color:#fff;border-radius:var(--rs);font-size:13.5px;font-weight:800;cursor:pointer;transition:transform .1s,background .12s}
 .fl-cta:active{transform:scale(.97);background:var(--accent-text)}
-/* Ring gauge */
-.fr-card{background:color-mix(in srgb,var(--info) 7%,var(--surface-2))}
-.fr-card.low{background:color-mix(in srgb,var(--crit) 8%,var(--surface-2))}
-.fr-ring{position:relative;width:200px;height:200px;margin:2px auto 0}
-.fr-svg{width:100%;height:100%;display:block}
-.fr-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;pointer-events:none}
-.fr-liters{font-size:34px;font-weight:800;letter-spacing:-1px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
-.fr-liters span{font-size:15px;font-weight:700;color:var(--text-secondary)}
-.fr-card.low .fr-liters{color:var(--crit)}
-.fr-sub{font-size:12px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
-.fr-warn{margin-top:6px;text-align:center;font-size:12.5px;font-weight:700;color:var(--crit)}
+/* Fuel state bar (R1) — read-only echo of form gauge */
+.fl-state{background:color-mix(in srgb,var(--info) 7%,var(--surface-2))}
+.fl-state.low{background:color-mix(in srgb,var(--crit) 8%,var(--surface-2))}
+[data-theme="dark"] .fl-state:not(.low){background:var(--surface-2)}
+[data-theme="dark"] .fl-state.low{background:color-mix(in srgb,var(--crit) 12%,var(--surface-2))}
+.fs-top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:11px}
+.fs-liters{display:flex;align-items:center;gap:7px;font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
+.fs-liters span{font-size:14px;font-weight:700;color:var(--text-secondary)}
+.fs-drop{width:18px;height:18px;color:var(--info);flex-shrink:0}
+.fl-state.low .fs-liters,.fl-state.low .fs-drop{color:var(--crit)}
+.fs-meta{font-size:12px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums;text-align:right;line-height:1.4}
+.fs-bar{display:flex;align-items:center;gap:9px;pointer-events:none}
+.fs-end{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:15px;font-size:10px;font-weight:800;color:var(--text-muted)}
+.fs-edrop{width:11px;height:11px}
+.fs-end-e .fs-edrop{color:var(--text-muted);opacity:.5}
+.fs-end-f .fs-edrop{color:var(--info)}
+.fs-grid{flex:1;display:flex;gap:5px}
+.fs-group{display:flex;gap:5px;flex:1}
+.fs-group + .fs-group{margin-left:6px}
+.fs-cell{flex:1;height:15px;min-width:10px;border-radius:4px;background:var(--surface-4);border:1px solid var(--border-subtle)}
+[data-theme="dark"] .fs-cell:not(.on){background:color-mix(in srgb,var(--info) 7%,var(--surface-3));border-color:var(--border-default)}
+.fs-cell.on{background:var(--info);border-color:var(--info)}
+.fl-state.low .fs-cell.on{background:var(--crit);border-color:var(--crit)}
+.fs-warn{margin-top:9px;font-size:12.5px;font-weight:700;color:var(--crit)}
+/* Card hierarchy — lite reference sections (Гроші / Заправки) */
+.fl-lite{background:none;border:none;box-shadow:none;border-radius:0;padding:13px 2px 2px;margin-bottom:6px;border-top:1px solid var(--border-subtle)}
 /* Consumption */
 .fc-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .fc-val{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
@@ -948,11 +971,11 @@ function renderSummary(){
 // ---------- render: CTA pair ----------
 function renderCTA(){
   return `<div class="cta-row">
-    <button class="cta-btn" id="cta-rec">
+    <button class="cta-btn cta-rec" id="cta-rec">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
       Запис
     </button>
-    <button class="cta-btn" id="cta-rf">
+    <button class="cta-btn cta-rf" id="cta-rf">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg>
       Заправка
     </button>
@@ -1178,7 +1201,7 @@ function fuelSplit(){
   let wk=0,vk=0;
   S.records.forEach(r=>{if(!inFuelScope(r.date))return;if(r.type==='work')wk+=(+r.km||0);else vk+=(+r.km||0);});
   const tot=wk+vk, m=fuelMoney(), share=tot>0?wk/tot:null;
-  return {wk,vk,tot,wPct:share!=null?Math.round(share*100):null,wCost:share!=null?m.cost*share:null,vCost:share!=null?m.cost*(1-share):null};
+  return {wk,vk,tot,wPct:share!=null?Math.round(share*100):null,wCost:share!=null?m.cost*share:null,vCost:share!=null?m.cost*(1-share):null,wLit:share!=null?m.liters*share:null,vLit:share!=null?m.liters*(1-share):null};
 }
 function fuelCadence(){
   const rf=scopedRefuels();if(rf.length<2)return null;
@@ -1194,13 +1217,6 @@ function topStations(){
 }
 
 // --- SVG helpers ---
-function polarXY(cx,cy,r,deg){const a=(deg-90)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
-function arcPath(cx,cy,r,d0,d1){const[x0,y0]=polarXY(cx,cy,r,d0),[x1,y1]=polarXY(cx,cy,r,d1),large=((d1-d0)%360+360)%360>180?1:0;return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;}
-function ringSVG(level){
-  const cx=80,cy=80,r=60,segs=12,base=215,step=270/segs,gap=3,low=(level!=null&&level<=3),col=low?'var(--crit)':'var(--info)';let p='';
-  for(let i=0;i<segs;i++){const on=(level!=null)&&(i<Math.round(level));p+=`<path d="${arcPath(cx,cy,r,base+i*step+gap/2,base+(i+1)*step-gap/2)}" stroke="${on?col:'var(--surface-4)'}" stroke-width="12" stroke-linecap="round"/>`;}
-  return `<svg class="fr-svg" viewBox="0 0 160 160" fill="none">${p}</svg>`;
-}
 function sparkline(vals){
   if(!vals||vals.length<2)return '';
   const w=88,h=30,pad=4,mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),rng=(mx-mn)||1;
@@ -1210,19 +1226,31 @@ function sparkline(vals){
 }
 
 // --- block renderers ---
-function ringBlock(cur){
+// R1: компактний горизонтальний стан-бар — read-only echo гейджа форми (display-only, pointer-events:none)
+function stateBlock(cur){
   const lvl=cur.fuel,lit=Math.round(lvl*L_PER_TICK),avg=avgL100();
   let range=latestRange(),approx=false;
   if(range==null&&avg){range=Math.round(lit*100/avg);approx=true;}
-  const low=lvl<=3,sub=(range!=null)?`${lvl}/12 · ${approx?'≈':''}${fmtNum(range)} км запас`:`${lvl}/12`;
-  return `<section class="fl-card fr-card${low?' low':''}">
-    <div class="fr-ring">${ringSVG(lvl)}
-      <div class="fr-center"><div class="fr-liters">≈\u202F${lit}<span> л</span></div><div class="fr-sub">${esc(sub)}</div></div>
-    </div>${low?`<div class="fr-warn">Низький рівень — час заправитись</div>`:''}
+  const low=lvl<=3,meta=(range!=null)?`${lvl}/12 · ${approx?'≈':''}${fmtNum(range)} км запас`:`${lvl}/12`;
+  const DROP='<path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/>';
+  let groups='';
+  for(let g=0;g<4;g++){let cells='';for(let k=1;k<=3;k++){const idx=g*3+k;cells+=`<span class="fs-cell${idx<=lvl?' on':''}"></span>`;}groups+=`<div class="fs-group">${cells}</div>`;}
+  return `<section class="fl-card fl-state${low?' low':''}">
+    <div class="sec-h"><span class="sec-t">Зараз у баку</span></div>
+    <div class="fs-top">
+      <div class="fs-liters"><svg class="fs-drop" viewBox="0 0 24 24" fill="currentColor">${DROP}</svg>≈\u202F${lit}<span> л</span></div>
+      <div class="fs-meta">${esc(meta)}</div>
+    </div>
+    <div class="fs-bar" aria-hidden="true">
+      <span class="fs-end fs-end-e"><svg class="fs-edrop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${DROP}</svg><span>E</span></span>
+      <div class="fs-grid">${groups}</div>
+      <span class="fs-end fs-end-f"><svg class="fs-edrop" viewBox="0 0 24 24" fill="currentColor">${DROP}</svg><span>F</span></span>
+    </div>
+    ${low?`<div class="fs-warn">Низький рівень — час заправитись</div>`:''}
   </section>`;
 }
 function consumptionBlock(){
-  const head=`<div class="sec-h"><span class="sec-t">Мій розхід</span><span class="sec-c">tank-to-tank</span></div>`;
+  const head=`<div class="sec-h"><span class="sec-t">Мій розхід</span><span class="sec-c">за заправками</span></div>`;
   const segs=scopedSegments(),ok=segs.filter(s=>s.plausible),skip=segs.length-ok.length;
   if(!ok.length)return `<section class="fl-card">${head}<div class="fl-note">Потрібно щонайменше дві заправки з одометром, щоб порахувати розхід.</div></section>`;
   const avg=avgL100(),last=ok[ok.length-1].l100,delta=last-avg;
@@ -1240,30 +1268,30 @@ function splitBlock(){
   const head=`<div class="sec-h"><span class="sec-t">Робота vs власне</span><span class="sec-c">за пробігом</span></div>`;
   const sp=fuelSplit();
   if(sp.tot<=0)return `<section class="fl-card">${head}<div class="fl-note">Немає записів з пробігом за цей період.</div></section>`;
-  const wp=sp.wPct,vp=100-wp,m=fuelMoney(),ck=m.cost>0;
+  const wp=sp.wPct,vp=100-wp,m=fuelMoney(),ck=m.cost>0,lk=m.liters>0;
   return `<section class="fl-card">${head}
     <div class="split-bar"><span class="split-w" style="width:${wp}%"></span><span class="split-v" style="width:${vp}%"></span></div>
     <div class="split-leg">
-      <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${ck?` · ${money(sp.wCost)}`:''}</span></div>
-      <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Власне</span><span class="sl-v">${fmtNum(sp.vk)} км${ck?` · ${money(sp.vCost)}`:''}</span></div>
+      <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
+      <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Власне</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
     </div>
   </section>`;
 }
 function moneyBlock(){
-  const m=fuelMoney(),head=`<div class="sec-h"><span class="sec-t">Гроші</span><span class="sec-c">${m.count} ${plural(m.count,['заправка','заправки','заправок'])}</span></div>`;
-  if(m.count<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
+  const m=fuelMoney(),head=`<div class="sec-h"><span class="sec-t">Гроші</span><span class="sec-c">за період</span></div>`;
+  if(m.count<1)return `<section class="fl-lite">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
   const rows=[['Витрати на паливо',m.cost>0?money(m.cost):'—'],['Вартість 100 км',m.per100!=null?money(m.per100):'—'],['Середня ціна літра',m.avgPrice!=null?m.avgPrice.toFixed(2)+'\u00A0₴':'—']];
-  return `<section class="fl-card">${head}${rows.map(r=>`<div class="fm-row"><span class="fm-k">${r[0]}</span><span class="fm-v">${r[1]}</span></div>`).join('')}</section>`;
+  return `<section class="fl-lite">${head}${rows.map(r=>`<div class="fm-row"><span class="fm-k">${r[0]}</span><span class="fm-v">${r[1]}</span></div>`).join('')}</section>`;
 }
 function patternBlock(){
-  const head=`<div class="sec-h"><span class="sec-t">Заправки</span><span class="sec-c">патерн</span></div>`;
+  const head=`<div class="sec-h"><span class="sec-t">Заправки</span><span class="sec-c">звички</span></div>`;
   const rf=scopedRefuels();
-  if(rf.length<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
+  if(rf.length<1)return `<section class="fl-lite">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
   const m=fuelMoney(),cad=fuelCadence(),tops=topStations(),prices=rf.filter(r=>r.price!=null).map(r=>+r.price);
   const cp=[];if(cad){if(cad.days&&cad.days>0)cp.push('раз на '+cad.days+' '+plural(cad.days,['день','дні','днів']));if(cad.km!=null&&cad.km>0)cp.push('~'+fmtNum(cad.km)+' км');}
   const cadTxt=cp.length?cp.join(' · '):'замало даних';
   const st=tops.map(t=>`<div class="fp-st"><span class="fp-st-n">${esc(t.azs)}</span><span class="fp-st-c">${t.count}×</span><span class="fp-st-p">${t.avgPrice!=null?t.avgPrice.toFixed(2)+'\u00A0₴/л':'—'}</span></div>`).join('');
-  return `<section class="fl-card">${head}
+  return `<section class="fl-lite">${head}
     <div class="fm-row"><span class="fm-k">Як часто</span><span class="fm-v">${cadTxt}</span></div>
     <div class="fm-row"><span class="fm-k">Середній залив</span><span class="fm-v">${m.avgFill!=null?f1(m.avgFill)+' л':'—'}</span></div>
     <div class="fp-sub">Де заправляюсь</div>${st}
@@ -1289,7 +1317,7 @@ function renderFuel(){
     $('fl-add').addEventListener('click',()=>openRefuelForm());
     return;
   }
-  scroll.innerHTML=fuelPeriods()+ringBlock(cur)+consumptionBlock()+splitBlock()+moneyBlock()+patternBlock();
+  scroll.innerHTML=fuelPeriods()+stateBlock(cur)+consumptionBlock()+splitBlock()+moneyBlock()+patternBlock();
 }
 
 // ---------- master render ----------
