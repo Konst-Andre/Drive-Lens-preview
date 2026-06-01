@@ -505,41 +505,45 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fl-cta{margin-top:2px;padding:11px 18px;background:var(--accent);color:#fff;border-radius:var(--rs);font-size:13.5px;font-weight:800;cursor:pointer;transition:transform .1s,background .12s}
 .fl-cta:active{transform:scale(.97);background:var(--accent-text)}
 /* Fuel state bar (R1) — read-only echo of form gauge */
-.fl-state{background:color-mix(in srgb,var(--info) 7%,var(--surface-2))}
-.fl-state.low{background:color-mix(in srgb,var(--crit) 8%,var(--surface-2))}
-[data-theme="dark"] .fl-state:not(.low){background:var(--surface-2)}
-[data-theme="dark"] .fl-state.low{background:color-mix(in srgb,var(--crit) 12%,var(--surface-2))}
+.fl-state{background:color-mix(in srgb,var(--info) 10%,var(--surface-2));border-color:color-mix(in srgb,var(--info) 35%,var(--border-subtle))}/* b16b B2/S3: головна картка — помітний паливний тинт + рамка */
+[data-theme="dark"] .fl-state{background:color-mix(in srgb,var(--info) 16%,var(--surface-2));border-color:color-mix(in srgb,var(--info) 42%,var(--border-default))}/* b16b B2: відрізнити від нейтральних карток на темній */
+/* b16a D1: low більше НЕ червоний — лише текстова підказка (fs-warn). Низьке паливо = життя, не помилка */
 .fs-top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:11px}
 .fs-liters{display:flex;align-items:center;gap:7px;font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
 .fs-liters span{font-size:14px;font-weight:700;color:var(--text-secondary)}
 .fs-drop{width:18px;height:18px;color:var(--info);flex-shrink:0}
-.fl-state.low .fs-liters,.fl-state.low .fs-drop{color:var(--crit)}
 .fs-meta{font-size:12px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums;text-align:right;line-height:1.4}
 .fs-bar{display:flex;align-items:center;gap:9px;pointer-events:none}
 .fs-end{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:15px;font-size:10px;font-weight:800;color:var(--text-muted)}
 .fs-edrop{width:11px;height:11px}
-.fs-end-e .fs-edrop{color:var(--text-muted);opacity:.5}
+.fs-end-e .fs-edrop{color:var(--text-secondary);opacity:.85}/* b16b TH6: E-маркер видимий на темній */
 .fs-end-f .fs-edrop{color:var(--info)}
 .fs-grid{flex:1;display:flex;gap:5px}
 .fs-group{display:flex;gap:5px;flex:1}
 .fs-group + .fs-group{margin-left:6px}
-.fs-cell{flex:1;height:15px;min-width:10px;border-radius:4px;background:var(--surface-4);border:1px solid var(--border-subtle)}
-[data-theme="dark"] .fs-cell:not(.on){background:color-mix(in srgb,var(--info) 7%,var(--surface-3));border-color:var(--border-default)}
+.fs-cell{flex:1;height:13px;min-width:10px;border-radius:3px;background:var(--surface-4);border:1px solid var(--border-subtle)}/* b16b S4: пласкіше, менш «кнопкове» */
+[data-theme="dark"] .fs-cell:not(.on){background:var(--surface-4);border-color:var(--border-default)}/* b16b TH1: видимий трек порожніх на темній */
 .fs-cell.on{background:var(--info);border-color:var(--info)}
-.fl-state.low .fs-cell.on{background:var(--crit);border-color:var(--crit)}
-.fs-warn{margin-top:9px;font-size:12.5px;font-weight:700;color:var(--crit)}
+/* b16b S6: приладова шкала чвертей під баром (дзеркалить структуру grid) */
+.fs-scale{display:flex;align-items:center;gap:9px;margin-top:4px;pointer-events:none}
+.fs-end-sp{flex-shrink:0;width:15px}
+.fs-sgrid{flex:1;display:flex;gap:5px}
+.fs-sg{flex:1;display:flex;justify-content:flex-end;position:relative}
+.fs-sg + .fs-sg{margin-left:6px}
+.fs-q{font-size:9px;font-weight:700;color:var(--text-muted);transform:translateX(50%);line-height:1}
+.fs-q.half{color:var(--text-secondary)}
+.fs-warn{margin-top:9px;font-size:12.5px;font-weight:700;color:var(--info)}/* b16a D1: підказка, не тривога */
 /* Card hierarchy — lite reference sections (Гроші / Заправки) */
-.fl-lite{background:none;border:none;box-shadow:none;border-radius:0;padding:13px 2px 2px;margin-bottom:6px;border-top:1px solid var(--border-subtle)}
+/* b16a2: fl-lite прибрано — усе уніфіковано в fl-card (плаский lite поряд з картками = крінж на device) */
 /* Consumption */
 .fc-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .fc-val{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
 .fc-val span{font-size:13px;font-weight:700;color:var(--text-secondary)}
-.fc-lbl{margin-top:5px;font-size:12px;font-weight:600;color:var(--text-muted)}
-.fc-trend{font-weight:800;font-variant-numeric:tabular-nums}
-.fc-trend.down{color:var(--ok)}.fc-trend.up{color:var(--crit)}
-.fc-spark{flex-shrink:0}
-.spark{width:88px;height:30px;display:block}
+.fc-lbl{margin-top:5px;font-size:12px;font-weight:600;color:var(--text-secondary)}/* b16b B3: читабельніше (несе дельту) */
+.fc-trend{font-weight:800;font-variant-numeric:tabular-nums;color:var(--text-secondary)}/* b16a D1: напрям несе стрілка, не колір — без crit/ok */
 .fl-skip{margin-top:9px;font-size:11.5px;color:var(--text-muted)}
+/* b16a D2: .spark + sparkline() лишено як примітив під відкладений Tab-1 hero (C2). Tab-3 виклики прибрано */
+.spark{width:88px;height:30px;display:block}
 /* Split bar */
 .split-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-4);margin-bottom:11px}
 .split-w{background:var(--accent)}.split-v{background:var(--vibe)}.split-u{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
@@ -548,19 +552,19 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sl-dot.work{background:var(--accent)}.sl-dot.vibe{background:var(--vibe)}.sl-dot.unlog{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
 .sl-k{font-weight:700;color:var(--text-secondary);min-width:58px}
-.sl-v{color:var(--text-muted);font-weight:600;font-variant-numeric:tabular-nums}
+.sl-v{color:var(--text-secondary);font-weight:600;font-variant-numeric:tabular-nums}/* b16b B3: не примарний */
 /* Money + pattern rows */
 .fm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-subtle)}
 .fm-row:last-child{border-bottom:none}
 .fm-k{font-size:13px;font-weight:600;color:var(--text-secondary)}
 .fm-v{font-size:14px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;text-align:right}
-.fp-sub{margin:12px 0 7px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text-muted)}
+/* b16a2: острівець fp-stations прибрано — секція «Заправки» вже картка; підсекція = заголовок+список */
+.fp-sub{margin:12px 0 7px;font-size:12px;font-weight:700;color:var(--text-primary)}/* b16a A3: заголовок підсекції яскравий, без капсів */
 .fp-st{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border-subtle)}
 .fp-st:last-of-type{border-bottom:none}
-.fp-st-n{flex:1;font-size:13px;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fp-st-c{font-size:12px;font-weight:700;color:var(--text-secondary);font-variant-numeric:tabular-nums}
-.fp-st-p{font-size:12px;color:var(--text-muted);font-variant-numeric:tabular-nums;min-width:66px;text-align:right}
-.fp-spark .spark{width:100%;height:34px}
+.fp-st-n{flex:1;font-size:13px;font-weight:600;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}/* b16a A3: назва АЗС приглушена */
+.fp-st-c{font-size:12px;font-weight:700;color:var(--text-muted);font-variant-numeric:tabular-nums}
+.fp-st-p{font-size:13px;font-weight:700;color:var(--text-primary);font-variant-numeric:tabular-nums;min-width:66px;text-align:right}/* b16a A3+R4: ціна = головне число */
 </style>
 </head>
 <body>
@@ -1227,6 +1231,7 @@ function topStations(){
 }
 
 // --- SVG helpers ---
+// b16a: RESERVED — примітив під відкладений Tab-1 hero sparkline (C2, feedback log). Tab-3 виклики прибрано (D2). Не видаляти без рішення.
 function sparkline(vals){
   if(!vals||vals.length<2)return '';
   const w=88,h=30,pad=4,mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),rng=(mx-mn)||1;
@@ -1257,6 +1262,7 @@ function stateBlock(cur){
       <div class="fs-grid">${groups}</div>
       <span class="fs-end fs-end-f"><svg class="fs-edrop" viewBox="0 0 24 24" fill="currentColor">${DROP}</svg><span>F</span></span>
     </div>
+    <div class="fs-scale" aria-hidden="true"><span class="fs-end-sp"></span><div class="fs-sgrid"><div class="fs-sg"><span class="fs-q">¼</span></div><div class="fs-sg"><span class="fs-q half">½</span></div><div class="fs-sg"><span class="fs-q">¾</span></div><div class="fs-sg"></div></div><span class="fs-end-sp"></span></div>
     ${low?`<div class="fs-warn">Низький рівень — час заправитись</div>`:''}
   </section>`;
 }
@@ -1271,7 +1277,6 @@ function consumptionBlock(){
     <div class="fc-row">
       <div class="fc-main"><div class="fc-val">${f1(avg)}<span> л/100</span></div>
         <div class="fc-lbl">середній за період${dir!=='flat'?` · <span class="fc-trend ${dir}">${arrow}\u202F${f1(Math.abs(delta))}</span> ост. бак`:''}</div></div>
-      <div class="fc-spark">${sparkline(ok.map(s=>s.l100))}</div>
     </div>${skipNote}
   </section>`;
 }
@@ -1294,23 +1299,22 @@ function splitBlock(){
 }
 function moneyBlock(){
   const m=fuelMoney(),head=`<div class="sec-h"><span class="sec-t">Гроші</span><span class="sec-c">за період</span></div>`;
-  if(m.count<1)return `<section class="fl-lite">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
+  if(m.count<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
   const rows=[['Витрати на паливо',m.cost>0?money(m.cost):'—'],['Вартість 100 км',m.per100!=null?money(m.per100):'—'],['Середня ціна літра',m.avgPrice!=null?m.avgPrice.toFixed(2)+'\u00A0₴':'—']];
-  return `<section class="fl-lite">${head}${rows.map(r=>`<div class="fm-row"><span class="fm-k">${r[0]}</span><span class="fm-v">${r[1]}</span></div>`).join('')}</section>`;
+  return `<section class="fl-card">${head}${rows.map(r=>`<div class="fm-row"><span class="fm-k">${r[0]}</span><span class="fm-v">${r[1]}</span></div>`).join('')}</section>`;
 }
 function patternBlock(){
   const head=`<div class="sec-h"><span class="sec-t">Заправки</span><span class="sec-c">звички</span></div>`;
   const rf=scopedRefuels();
-  if(rf.length<1)return `<section class="fl-lite">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
-  const m=fuelMoney(),cad=fuelCadence(),tops=topStations(),prices=rf.filter(r=>r.price!=null).map(r=>+r.price);
+  if(rf.length<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
+  const m=fuelMoney(),cad=fuelCadence(),tops=topStations();
   const cp=[];if(cad){if(cad.days&&cad.days>0)cp.push('раз на '+cad.days+' '+plural(cad.days,['день','дні','днів']));if(cad.km!=null&&cad.km>0)cp.push('~'+fmtNum(cad.km)+' км');}
   const cadTxt=cp.length?cp.join(' · '):'замало даних';
   const st=tops.map(t=>`<div class="fp-st"><span class="fp-st-n">${esc(t.azs)}</span><span class="fp-st-c">${t.count}×</span><span class="fp-st-p">${t.avgPrice!=null?t.avgPrice.toFixed(2)+'\u00A0₴/л':'—'}</span></div>`).join('');
-  return `<section class="fl-lite">${head}
+  return `<section class="fl-card">${head}
     <div class="fm-row"><span class="fm-k">Як часто</span><span class="fm-v">${cadTxt}</span></div>
     <div class="fm-row"><span class="fm-k">Середній залив</span><span class="fm-v">${m.avgFill!=null?f1(m.avgFill)+' л':'—'}</span></div>
-    <div class="fp-sub">Де заправляюсь</div>${st}
-    ${prices.length>1?`<div class="fp-sub">Ціна за літр у часі</div><div class="fp-spark">${sparkline(prices)}</div>`:''}
+    ${tops.length?`<div class="fp-sub">Де заправляюсь</div>${st}`:''}
   </section>`;
 }
 function fuelPeriods(){
