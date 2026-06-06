@@ -44,6 +44,8 @@
   --vibe:#C9A86A; --vibe-soft:#F3E9D6; --vibe-text:#9C7430;
   /* Status (semantic, sparingly) */
   --ok:#2E9E5C; --warn:#C8841C; --crit:#C8331C; --info:#3E7C94;
+  /* Neutral action (типо-агностична дія, напр. «Запис») — перлина, не макс-ink */
+  --neutral:#3E4A45;
   /* Borders */
   --border-subtle:rgba(0,0,0,.06); --border-default:rgba(0,0,0,.12); --border-accent:#40916C;
   /* App-bar */
@@ -53,13 +55,16 @@
   --sh2:0 2px 6px rgba(20,30,25,.08),0 8px 24px rgba(20,30,25,.08);
   --r:14px; --rs:10px; --rxs:6px;
   --sab:env(safe-area-inset-bottom,0px);
+  color-scheme:light;/* B19 #2: native-контроли (календар, time-пікер, спінери) у світлій темі */
 }
 [data-theme="dark"]{
+  color-scheme:dark;/* B19 #2 */
   --surface-1:#0E1311; --surface-2:#1D2723; --surface-3:#2A3530; --surface-4:#36433C;
   --text-primary:#F0F4F2; --text-secondary:#A1AAA6; --text-muted:#6B7570;
   --accent:#40916C; --accent-hover:#52B788; --accent-soft:#1E3A2D; --accent-text:#4FAE7A;
   --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
   --ok:#4FAE7A; --warn:#D4A055; --crit:#C75450; --info:#6B9BB8;
+  --neutral:#CDD5D1;
   --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-accent:#40916C;
   --appbar-bg:rgba(13,17,16,0.92);
   --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
@@ -67,11 +72,13 @@
 }
 @media(prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
+    color-scheme:dark;/* B19 #2 */
     --surface-1:#0E1311; --surface-2:#1D2723; --surface-3:#2A3530; --surface-4:#36433C;
     --text-primary:#F0F4F2; --text-secondary:#A1AAA6; --text-muted:#6B7570;
     --accent:#40916C; --accent-hover:#52B788; --accent-soft:#1E3A2D; --accent-text:#4FAE7A;
     --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
     --ok:#4FAE7A; --warn:#D4A055; --crit:#C75450; --info:#6B9BB8;
+    --neutral:#CDD5D1;
     --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-accent:#40916C;
     --appbar-bg:rgba(13,17,16,0.92);
     --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
@@ -223,7 +230,7 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 .sum-grid .sum-cell[data-act="work"]{background:color-mix(in srgb,var(--accent) 8%,var(--surface-2))}
 .sum-grid .sum-cell[data-act="vibe"]{background:color-mix(in srgb,var(--vibe) 11%,var(--surface-2))}
 .sum-grid .sum-cell[data-act="fuel"]{background:color-mix(in srgb,var(--info) 9%,var(--surface-2))}
-[data-theme="dark"] .sum-grid .sum-cell[data-act="fuel"]{background:color-mix(in srgb,var(--info) 11%,var(--surface-2))}
+[data-theme="dark"] .sum-grid .sum-cell[data-act="fuel"]{background:color-mix(in srgb,var(--info) 14%,var(--surface-2))}/* 17.3: 11→14% — cool-на-cool зливався з зелено-сірим surface; виміряно lum-lift +15.4≈vibe, не кричить (A39). Світлу 9% не чіпаю */
 .sum-cell[data-act="vibe"] .sum-ico{background:var(--vibe-soft);color:var(--vibe-text)}
 .sum-cell[data-act="fuel"] .sum-ico{background:color-mix(in srgb,var(--info) 18%,var(--surface-2));color:var(--info)}
 .sum-cell[data-act="month"] .sum-ico{background:var(--surface-3);color:var(--text-secondary)}
@@ -234,10 +241,12 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 .cta-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;background:transparent;border:1.5px solid var(--border-accent);border-radius:var(--r);color:var(--accent-text);font-size:14px;font-weight:700;cursor:pointer;transition:background .14s,transform .1s,color .14s}
 .cta-btn svg{width:18px;height:18px;flex-shrink:0}
 .cta-btn:active{background:var(--accent-soft);transform:scale(.975)}
-/* 14b: Запис = нейтр. primary (типо-агностична); Заправка = синій secondary (паливо) */
-.cta-rec{background:var(--text-primary);border-color:var(--text-primary);color:var(--surface-1)}
-.cta-rec:active{background:var(--text-secondary);border-color:var(--text-secondary);transform:scale(.975)}
-.cta-rf{background:color-mix(in srgb,var(--info) 10%,var(--surface-2));border-color:var(--info);color:var(--info)}
+/* 16d: Запис = нейтр. типо-агностична — форма як «Заправка», тон --neutral (перлина, A35); Заправка = синій secondary (паливо) */
+/* 17.1: рамку приглушено до 45% — повний --neutral (dark #CDD5D1 near-white) кричав на pine; weight-match до мід-тонної рамки «Заправки». Заливка+текст лишаються */
+.cta-rec{background:color-mix(in srgb,var(--neutral) 12%,var(--surface-2));border-color:color-mix(in srgb,var(--neutral) 45%,var(--surface-2));color:var(--neutral)}
+.cta-rec:active{background:color-mix(in srgb,var(--neutral) 20%,var(--surface-2));transform:scale(.975)}
+/* 17.2: рамку Заправки приглушено до 58% — баланс із приглушеною (17.1) рамкою «Запис»: дві рівні сестри, не «гучна+тиха». Токен-адаптивне: light #3E7C94→soft teal, dark #6B9BB8→muted blue. A35 (паливо=синій) збережено */
+.cta-rf{background:color-mix(in srgb,var(--info) 10%,var(--surface-2));border-color:color-mix(in srgb,var(--info) 58%,var(--surface-2));color:var(--info)}
 .cta-rf:active{background:color-mix(in srgb,var(--info) 18%,var(--surface-2));transform:scale(.975)}
 
 /* ===== SECTION HEAD ===== */
@@ -414,6 +423,19 @@ html.pwa-full .nav-i{padding-top:8px;padding-bottom:calc(8px + var(--sab))}
 .inp:focus{outline:none;border-color:var(--border-accent);background:var(--surface-2)}
 .inp.invalid{border-color:var(--crit)}
 input[type=time].inp{width:auto;min-width:120px}/* F14: не тягнути Час на всю ширину */
+/* B19.1 #1 — Variant A (device-обрано через compare, wsd 2.4): Дата+Час обидва по контенту, ліво-пак. Скоуп :has() лише на рядок з часом — інші fld-row (text+text) цілі 50/50 */
+.fld-row .fld:has(input[type=time]){flex:0 0 auto}/* Час: по контенту */
+.fld-row:has(input[type=time]) .fld:has(input[type=date]){flex:0 1 auto}/* Дата: по контенту, може стиснутись (анти-overflow); НЕ flex:1 — розтяг давав float значення */
+.fld-row:has(input[type=time]) .fld:has(input[type=date]) .inp{width:auto;max-width:100%}/* native date: контентна ширина, не 100%. Спец.(0,5,2)>бази(0,3,0) */
+/* 17 (Batch A): перемикач типу у шіті «Запис» — форма як верхній сегмент, колір за A35 (work=accent, vibe=vibe) */
+.type-seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px}
+.type-seg .ty-i{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;font-size:13.5px;font-weight:700;color:var(--text-secondary);transition:background .14s,color .14s,box-shadow .14s;cursor:pointer}
+.type-seg .ty-i svg{width:16px;height:16px;flex-shrink:0}
+/* 17.1: світла активна пігулка — soft-тинт за типом (біла на сірому track була слабка); текст --*-text для контрасту на soft. Темну НЕ чіпаю (нижче, surface-4) */
+.type-seg .ty-i.act[data-ty="work"]{background:var(--accent-soft);color:var(--accent-text);box-shadow:var(--sh1)}
+.type-seg .ty-i.act[data-ty="vibe"]{background:var(--vibe-soft);color:var(--vibe-text);box-shadow:var(--sh1)}
+[data-theme="dark"] .type-seg .ty-i.act[data-ty="work"]{background:var(--surface-4);color:var(--accent-text)}
+[data-theme="dark"] .type-seg .ty-i.act[data-ty="vibe"]{background:var(--surface-4);color:var(--vibe-text)}
 textarea.inp{resize:none;line-height:1.5}
 select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238A968F' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:34px}
 .fld-cc{display:flex;gap:8px;align-items:center}
@@ -509,10 +531,13 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 [data-theme="dark"] .fl-state{background:color-mix(in srgb,var(--info) 16%,var(--surface-2));border-color:color-mix(in srgb,var(--info) 42%,var(--border-default))}/* b16b B2: відрізнити від нейтральних карток на темній */
 /* b16a D1: low більше НЕ червоний — лише текстова підказка (fs-warn). Низьке паливо = життя, не помилка */
 .fs-top{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:11px}
-.fs-liters{display:flex;align-items:center;gap:7px;font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
-.fs-liters span{font-size:14px;font-weight:700;color:var(--text-secondary)}
-.fs-drop{width:18px;height:18px;color:var(--info);flex-shrink:0}
-.fs-meta{font-size:12px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums;text-align:right;line-height:1.4}
+.fs-liters{display:flex;align-items:center;gap:9px}
+.fs-chip{flex-shrink:0;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:color-mix(in srgb,var(--info) 24%,var(--surface-2))}/* b16c: чип-кружечок як Hero — контрастний фон, щоб крапля не тонула в паливному тинті картки */
+.fs-drop{width:15px;height:15px;color:var(--info);flex-shrink:0}
+.fs-num{font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
+.fs-approx{font-size:17px;font-weight:700;color:var(--text-secondary)}/* b16c: ≈ кваліфікатор, не конкурує з числом */
+.fs-unit{font-size:14px;font-weight:700;color:var(--text-secondary)}
+.fs-meta{font-size:12px;font-weight:600;color:var(--text-secondary);font-variant-numeric:tabular-nums;text-align:right;line-height:1.4}/* b16c: muted тонув на паливному тинті — піднято до secondary */
 .fs-bar{display:flex;align-items:center;gap:9px;pointer-events:none}
 .fs-end{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:15px;font-size:10px;font-weight:800;color:var(--text-muted)}
 .fs-edrop{width:11px;height:11px}
@@ -524,14 +549,18 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fs-cell{flex:1;height:13px;min-width:10px;border-radius:3px;background:var(--surface-4);border:1px solid var(--border-subtle)}/* b16b S4: пласкіше, менш «кнопкове» */
 [data-theme="dark"] .fs-cell:not(.on){background:var(--surface-4);border-color:var(--border-default)}/* b16b TH1: видимий трек порожніх на темній */
 .fs-cell.on{background:var(--info);border-color:var(--info)}
-/* b16b S6: приладова шкала чвертей під баром (дзеркалить структуру grid) */
-.fs-scale{display:flex;align-items:center;gap:9px;margin-top:4px;pointer-events:none}
+/* b16c: поділки-риски ділень під баром (без дробів — лічба поділок, не математика); дзеркалить структуру grid */
+.fs-scale{display:flex;align-items:flex-start;gap:9px;margin-top:5px;pointer-events:none}
 .fs-end-sp{flex-shrink:0;width:15px}
 .fs-sgrid{flex:1;display:flex;gap:5px}
 .fs-sg{flex:1;display:flex;justify-content:flex-end;position:relative}
 .fs-sg + .fs-sg{margin-left:6px}
-.fs-q{font-size:9px;font-weight:700;color:var(--text-muted);transform:translateX(50%);line-height:1}
-.fs-q.half{color:var(--text-secondary)}
+.fs-tick{display:block;width:2px;height:6px;border-radius:1px;background:var(--text-muted);transform:translateX(calc(50% + 5.5px))}/* риска в центрі 11px-щілини (gap5+margin6) — авто-вирівняна під межі груп */
+.fs-tick.half{height:9px;background:var(--text-secondary)}/* середина бака — природний якір, без гліфа ½ */
+/* 17 (рідер, гейдж-мікро з 16c device-тесту): на темній поділки/обідок чипа бліді (тинт-різниця ~8%) — підсилюємо ЛИШЕ для dark */
+[data-theme="dark"] .fs-tick{background:var(--text-secondary)}
+[data-theme="dark"] .fs-tick.half{background:var(--text-primary)}
+[data-theme="dark"] .fs-chip{background:color-mix(in srgb,var(--info) 34%,var(--surface-2));border:1px solid color-mix(in srgb,var(--info) 42%,var(--surface-2))}
 .fs-warn{margin-top:9px;font-size:12.5px;font-weight:700;color:var(--info)}/* b16a D1: підказка, не тривога */
 /* Card hierarchy — lite reference sections (Гроші / Заправки) */
 /* b16a2: fl-lite прибрано — усе уніфіковано в fl-card (плаский lite поряд з картками = крінж на device) */
@@ -547,11 +576,11 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 /* Split bar */
 .split-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-4);margin-bottom:11px}
 .split-w{background:var(--accent)}.split-v{background:var(--vibe)}.split-u{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
-.split-leg{display:flex;flex-direction:column;gap:7px}
-.split-li{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.split-leg{display:grid;grid-template-columns:auto auto 1fr;gap:7px 8px;align-items:center;font-size:12.5px}/* b16c: грид → підписи авто-вирівняні до найширшого, значення стартують з однієї вертикалі */
+.split-li{display:contents}
 .sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sl-dot.work{background:var(--accent)}.sl-dot.vibe{background:var(--vibe)}.sl-dot.unlog{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
-.sl-k{font-weight:700;color:var(--text-secondary);min-width:58px}
+.sl-k{font-weight:700;color:var(--text-secondary)}
 .sl-v{color:var(--text-secondary);font-weight:600;font-variant-numeric:tabular-nums}/* b16b B3: не примарний */
 /* Money + pattern rows */
 .fm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-subtle)}
@@ -712,7 +741,22 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
     <div class="sh-head"><span class="sh-title" id="rec-title">Новий запис</span><button class="sh-x" onclick="closeSheet('sh-rec')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
-      <div class="fld"><label class="fld-l" for="r-time">Час</label><input class="inp" type="time" id="r-time" autocomplete="off"></div>
+      <div class="fld"><label class="fld-l">Тип</label>
+        <div class="type-seg" id="r-type" role="group" aria-label="Тип поїздки">
+          <button type="button" class="ty-i" data-ty="work">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Робочий
+          </button>
+          <button type="button" class="ty-i" data-ty="vibe">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+            Вайб
+          </button>
+        </div>
+      </div>
+      <div class="fld-row">
+        <div class="fld"><label class="fld-l" for="r-date">Дата</label><input class="inp" type="date" id="r-date" autocomplete="off"></div>
+        <div class="fld"><label class="fld-l" for="r-time">Час</label><input class="inp" type="time" id="r-time" autocomplete="off"></div>
+      </div>
       <div class="fld"><label class="fld-l" for="r-route">Маршрут</label><input class="inp" type="text" id="r-route" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="Лівий берег → Центр"></div>
       <div class="fld-row">
         <div class="fld"><label class="fld-l" for="r-odo">Одометр</label><input class="inp" type="text" id="r-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 643"></div>
@@ -734,7 +778,10 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
     <div class="sh-head"><span class="sh-title" id="rf-title">Заправка</span><button class="sh-x" onclick="closeSheet('sh-rf')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
-      <div class="fld"><label class="fld-l" for="f-time">Час</label><input class="inp" type="time" id="f-time" autocomplete="off"></div>
+      <div class="fld-row">
+        <div class="fld"><label class="fld-l" for="f-date">Дата</label><input class="inp" type="date" id="f-date" autocomplete="off"></div>
+        <div class="fld"><label class="fld-l" for="f-time">Час</label><input class="inp" type="time" id="f-time" autocomplete="off"></div>
+      </div>
       <div class="fld"><label class="fld-l">АЗС</label>
         <div class="pk" id="f-azs">
           <button type="button" class="inp pk-btn" id="f-azs-btn" data-val="WOG"><span id="f-azs-cur">WOG</span><svg class="pk-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
@@ -1254,7 +1301,7 @@ function stateBlock(cur){
   return `<section class="fl-card fl-state${low?' low':''}">
     <div class="sec-h"><span class="sec-t">Зараз у баку</span></div>
     <div class="fs-top">
-      <div class="fs-liters"><svg class="fs-drop" viewBox="0 0 24 24" fill="currentColor">${DROP}</svg>≈\u202F${lit}<span> л</span></div>
+      <div class="fs-liters"><span class="fs-chip"><svg class="fs-drop" viewBox="0 0 24 24" fill="currentColor">${DROP}</svg></span><span class="fs-num"><span class="fs-approx">≈</span>\u202F${lit}<span class="fs-unit"> л</span></span></div>
       <div class="fs-meta">${esc(meta)}</div>
     </div>
     <div class="fs-bar" aria-hidden="true">
@@ -1262,7 +1309,7 @@ function stateBlock(cur){
       <div class="fs-grid">${groups}</div>
       <span class="fs-end fs-end-f"><svg class="fs-edrop" viewBox="0 0 24 24" fill="currentColor">${DROP}</svg><span>F</span></span>
     </div>
-    <div class="fs-scale" aria-hidden="true"><span class="fs-end-sp"></span><div class="fs-sgrid"><div class="fs-sg"><span class="fs-q">¼</span></div><div class="fs-sg"><span class="fs-q half">½</span></div><div class="fs-sg"><span class="fs-q">¾</span></div><div class="fs-sg"></div></div><span class="fs-end-sp"></span></div>
+    <div class="fs-scale" aria-hidden="true"><span class="fs-end-sp"></span><div class="fs-sgrid"><div class="fs-sg"><i class="fs-tick"></i></div><div class="fs-sg"><i class="fs-tick half"></i></div><div class="fs-sg"><i class="fs-tick"></i></div><div class="fs-sg"></div></div><span class="fs-end-sp"></span></div>
     ${low?`<div class="fs-warn">Низький рівень — час заправитись</div>`:''}
   </section>`;
 }
@@ -1281,7 +1328,7 @@ function consumptionBlock(){
   </section>`;
 }
 function splitBlock(){
-  const head=`<div class="sec-h"><span class="sec-t">Робота vs власне</span><span class="sec-c">за пробігом</span></div>`;
+  const head=`<div class="sec-h"><span class="sec-t">Робота / Вайб</span><span class="sec-c">за пробігом</span></div>`;
   const sp=fuelSplit();
   if(sp.tot<=0)return `<section class="fl-card">${head}<div class="fl-note">Немає записів з пробігом за цей період.</div></section>`;
   const lk=sp.wLit!=null, ck=sp.wCost!=null;
@@ -1291,9 +1338,9 @@ function splitBlock(){
   return `<section class="fl-card">${head}
     <div class="split-bar"><span class="split-w" style="width:${wW.toFixed(1)}%"></span><span class="split-v" style="width:${vW.toFixed(1)}%"></span>${showU?`<span class="split-u" style="width:${uW.toFixed(1)}%"></span>`:''}</div>
     <div class="split-leg">
-      <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
-      <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Власне</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
-      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без замітки</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
+      <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈\u202F${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
+      <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Вайб</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈\u202F${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
+      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без запису</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
     </div>
   </section>`;
 }
@@ -1308,11 +1355,12 @@ function patternBlock(){
   const rf=scopedRefuels();
   if(rf.length<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
   const m=fuelMoney(),cad=fuelCadence(),tops=topStations();
-  const cp=[];if(cad){if(cad.days&&cad.days>0)cp.push('раз на '+cad.days+' '+plural(cad.days,['день','дні','днів']));if(cad.km!=null&&cad.km>0)cp.push('~'+fmtNum(cad.km)+' км');}
-  const cadTxt=cp.length?cp.join(' · '):'замало даних';
+  const cadDays=(cad&&cad.days&&cad.days>0)?('раз на '+cad.days+' '+plural(cad.days,['день','дні','днів'])):null;
+  const cadKm=(cad&&cad.km!=null&&cad.km>0)?('≈\u202F'+fmtNum(cad.km)+' км'):null;
   const st=tops.map(t=>`<div class="fp-st"><span class="fp-st-n">${esc(t.azs)}</span><span class="fp-st-c">${t.count}×</span><span class="fp-st-p">${t.avgPrice!=null?t.avgPrice.toFixed(2)+'\u00A0₴/л':'—'}</span></div>`).join('');
   return `<section class="fl-card">${head}
-    <div class="fm-row"><span class="fm-k">Як часто</span><span class="fm-v">${cadTxt}</span></div>
+    <div class="fm-row"><span class="fm-k">Як часто</span><span class="fm-v">${cadDays||'замало даних'}</span></div>
+    ${cadKm?`<div class="fm-row"><span class="fm-k">Між заправками</span><span class="fm-v">${cadKm}</span></div>`:''}
     <div class="fm-row"><span class="fm-k">Середній залив</span><span class="fm-v">${m.avgFill!=null?f1(m.avgFill)+' л':'—'}</span></div>
     ${tops.length?`<div class="fp-sub">Де заправляюсь</div>${st}`:''}
   </section>`;
@@ -1395,9 +1443,22 @@ function getFuel(id){return $(id)._fuel;}
 // ============================================================
 function num(v){v=String(v||'').replace(/\s/g,'').replace(',','.');const n=parseFloat(v);return isNaN(n)?null:n;}
 
+// 17 (Batch A): тип у шіті «Запис». Дефолт = контекст фільтра → день тижня; завжди override.
+function isWeekendISO(iso){const wd=new Date(iso+'T00:00').getDay();return wd===0||wd===6;}
+function recTypeDefault(){
+  if(S.filter==='work')return 'work';
+  if(S.filter==='vibe')return 'vibe';
+  return isWeekendISO(S.activeDay)?'vibe':'work';   // фільтр «Всі» → за днем тижня
+}
+function setRecType(ty){document.querySelectorAll('#r-type .ty-i').forEach(b=>b.classList.toggle('act',b.dataset.ty===ty));}
+function getRecType(){const a=document.querySelector('#r-type .ty-i.act');return a?a.dataset.ty:'work';}
+
 function openRecordForm(id){
   const ed = id ? S.records.find(r=>r.id===id) : null;
   S.editRecId = ed ? id : null;
+  setRecType(ed ? ed.type : recTypeDefault());
+  $('r-date').value = ed ? ed.date : S.activeDay;   // BatchB: бекдейтинг; дефолт = переглянутий день
+  $('r-date').max = todayISO();                      // у журнал не пишемо наперед
   $('r-time').value = ed ? ed.time : nowHM();
   $('r-range').value = ed && ed.range!=null ? ed.range : '';
   $('r-route').value = ed ? ed.route : '';
@@ -1411,7 +1472,7 @@ function openRecordForm(id){
   openSheet('sh-rec','sh-rec');
 }
 $('r-note').addEventListener('input',e=>$('r-cc').textContent=e.target.value.length);
-function prevOdo(){const rs=dayRecords();for(let i=rs.length-1;i>=0;i--){if(rs[i].odo!=null)return rs[i].odo;}return null;}
+$('r-type').addEventListener('click',e=>{const b=e.target.closest('.ty-i');if(b)setRecType(b.dataset.ty);});
 // Batch 10: попередній odo ТОГО Ж дня за часом, виключаючи сам запис (для km при edit)
 function prevOdoBefore(date,time,exclId){
   const rs=S.records.filter(r=>r.date===date&&r.id!==exclId&&r.time<time&&r.odo!=null).sort((a,b)=>a.time.localeCompare(b.time));
@@ -1423,13 +1484,14 @@ $('r-save').addEventListener('click',()=>{
   routeEl.classList.remove('invalid');
   const odo=num($('r-odo').value), odoR=odo!=null?Math.round(odo):null;
   const time=$('r-time').value||nowHM();
+  const date=$('r-date').value||S.activeDay;   // BatchB: обрана дата (бекдейтинг)
   const addr=$('r-note').value.trim()||'—';
   const rng=num($('r-range').value);
   const fuel=getFuel('r-fuel');
   if(S.editRecId){
     const r=S.records.find(x=>x.id===S.editRecId);
     if(r){
-      r.time=time;r.route=route;r.addr=addr;r.odo=odoR;r.fuel=fuel;
+      r.time=time;r.date=date;r.route=route;r.addr=addr;r.odo=odoR;r.fuel=fuel;r.type=getRecType();
       if(rng!=null)r.range=Math.round(rng);else delete r.range;
       // km — незалежна відстань поїздки. Перерах. ЛИШЕ цього запису за same-day prev; інакше зберегти наявне.
       const prev=prevOdoBefore(r.date,r.time,r.id);
@@ -1437,10 +1499,10 @@ $('r-save').addEventListener('click',()=>{
     }
     S.editRecId=null;saveData();closeSheet('sh-rec');render();syncCycle();toast('Зміни збережено');
   }else{
-    const prev=prevOdo();
+    const prev=prevOdoBefore(date,time);   // BatchB: same-day-before обраної дати, не activeDay
     let km=null;
     if(odoR!=null&&prev!=null&&odoR>=prev)km=Math.round(odoR-prev);
-    const rec={id:uid(),date:S.activeDay,time:time,route:route,addr:addr,km:km,odo:odoR,type:S.filter==='vibe'?'vibe':'work',fuel:fuel};
+    const rec={id:uid(),date:date,time:time,route:route,addr:addr,km:km,odo:odoR,type:getRecType(),fuel:fuel};
     if(rng!=null)rec.range=Math.round(rng);
     S.records.push(rec);saveData();closeSheet('sh-rec');render();syncCycle();toast('Запис збережено');
   }
@@ -1449,6 +1511,8 @@ $('r-save').addEventListener('click',()=>{
 function openRefuelForm(id){
   const ed = id ? S.refuels.find(r=>r.id===id) : null;
   S.editRfId = ed ? id : null;
+  $('f-date').value = ed ? ed.date : S.activeDay;   // BatchB: бекдейтинг
+  $('f-date').max = todayISO();
   $('f-time').value = ed ? ed.time : nowHM();
   $('f-liters').value = ed && ed.liters!=null ? ed.liters : '';
   $('f-price').value = ed && ed.price!=null ? ed.price : '';
@@ -1523,6 +1587,7 @@ $('f-save').addEventListener('click',()=>{
   const azsVal=$('f-azs-btn').dataset.val;
   const azs=azsVal==='__other'?($('f-azs-other').value.trim()||'Інша АЗС'):azsVal;
   const fields={
+    date:$('f-date').value||S.activeDay,   // BatchB: бекдейтинг (override S.activeDay у new; оновлює r у edit)
     time:$('f-time').value||nowHM(),azs:azs,liters:+l.toFixed(2),
     price:p!=null?+p.toFixed(2):null,sum:sm!=null?+sm.toFixed(2):(p!=null?+(l*p).toFixed(2):null),
     ftype:typePicker.get(),odo:Math.round(num($('f-odo').value)||0)||null,fuel:getFuel('f-fuel'),
