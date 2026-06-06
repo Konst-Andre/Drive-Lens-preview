@@ -275,6 +275,7 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 .rec-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-start;flex-shrink:0;gap:2px}
 .rec-km{font-size:15px;font-weight:800;color:var(--accent-text);letter-spacing:-.3px;margin-bottom:2px}
 .rec-km.vibe{color:var(--vibe-text)}
+.rec-km.rec-km-flag{font-size:11px;font-weight:700;color:var(--warn);letter-spacing:0;max-width:96px;text-align:right;line-height:1.15}/* B21: non-monotonic odo — тихе нагадування, no-red (amber=warn) */
 .rec-fuel{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;color:var(--text-secondary)}
 .rec-fuel svg{width:11px;height:11px;color:color-mix(in srgb,var(--info) 62%,var(--text-muted))}
 .rec-liters{font-size:10.5px;font-weight:600;color:var(--text-muted);font-variant-numeric:tabular-nums}
@@ -418,6 +419,9 @@ html.pwa-full .nav-i{padding-top:8px;padding-bottom:calc(8px + var(--sab))}
 .fld-row{display:flex;gap:10px}
 .fld-row .fld{flex:1;min-width:0;margin-bottom:13px}
 .fld-row .fld .inp{width:100%;min-width:0}
+.fld-row.is-hidden{display:none}/* B21.1: спец.(0,2,0)>.fld-row(0,1,0) — без !important; НЕ [hidden] (його перебиває display:flex) */
+.fld-l .fld-auto{margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;color:var(--text-muted);opacity:.85}/* B21.1: бейдж «авто» — префіл успадкований; ховається на dirty */
+.hide-auto .fld-l .fld-auto{display:none}
 .fld-l{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px}
 .inp{width:100%;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);padding:12px 13px;color:var(--text-primary);font-weight:600;transition:border-color .14s,background .14s}
 .inp:focus{outline:none;border-color:var(--border-accent);background:var(--surface-2)}
@@ -759,8 +763,12 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
       <div class="fld"><label class="fld-l" for="r-route">Маршрут</label><input class="inp" type="text" id="r-route" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="Лівий берег → Центр"></div>
       <div class="fld-row">
-        <div class="fld"><label class="fld-l" for="r-odo">Одометр</label><input class="inp" type="text" id="r-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 643"></div>
+        <div class="fld"><label class="fld-l" for="r-odo-start">Одометр з<span class="fld-auto">авто</span></label><input class="inp" type="text" id="r-odo-start" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 726"></div>
+        <div class="fld"><label class="fld-l" for="r-odo">Одометр до</label><input class="inp" type="text" id="r-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 742"></div>
+      </div>
+      <div class="fld-row is-hidden"><!-- B21.1: «Запас ходу» прихований (опц. введення; годує лише Tab-3 fallback). DOM лишається → save читає '', edit seed зберігає range. -->
         <div class="fld"><label class="fld-l" for="r-range">Запас ходу (км)</label><input class="inp" type="text" id="r-range" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" autocomplete="off" placeholder="222"></div>
+        <div class="fld" aria-hidden="true"></div>
       </div>
       <div class="fld"><label class="fld-l">Рівень палива</label><div class="fuel-sel" id="r-fuel"></div></div>
       <div class="fld"><label class="fld-l" for="r-note">Примітка</label><textarea class="inp" id="r-note" rows="2" maxlength="120" enterkeyhint="done" autocomplete="off" spellcheck="false" placeholder="напр. «север-калин-правда» або «вайб 16км»"></textarea><div class="char-c"><span id="r-cc">0</span>/120</div></div>
@@ -840,7 +848,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 <div class="toast" id="toast"></div>
 <script>
 /* ============================================================
-   Drive Lens — preview Batch 9.6 (Tab 1 Огляд + Tab 2 Журнал) — 9.5 + fuel градієнт-обʼєм (Dark) + hero-картки → детальний екран (без дублю фільтра)
+   Drive Lens — preview Batch 21 (Model B: одометр «з/до», km=tripKm похідне; міграція mv:2; UX2 літраж бака; hero-fuel; APP_BUILD)
    Етап 1: mock data + localStorage. Real data flow (concept v1.3 §I).
    Усі handlers реальні (wsd Кластер 3.9 — без заглушок).
    ============================================================ */
@@ -852,8 +860,10 @@ function todayISO(){const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth
 function nowHM(){const d=new Date();return pad(d.getHours())+':'+pad(d.getMinutes());}
 function fmtDate(iso){const[y,m,d]=iso.split('-');return d+'.'+m+'.'+y;}
 function isToday(iso){return iso===todayISO();}
-function L100(){return 4.2;} // 1 поділ ≈ 4.2 л (бак 50л / 12)
-function liters(lvl){return (lvl*L100()).toFixed(1);}
+function lPerTick(){return (Number(SETTINGS.tankL)||50)/12;} // 1 поділ = бак/12 (UX2: tankL з Налаштувань; функція, не const — інакше зміна не підхопиться)
+function liters(lvl){return (lvl*lPerTick()).toFixed(1);}
+// Model B (B2): km — живо-похідне, НІКОЛИ не зберігається. tripKm=END−START, самодостатнє.
+function tripKm(r){return (r.odo!=null&&r.odoStart!=null&&(+r.odo)>=(+r.odoStart))?Math.round((+r.odo)-(+r.odoStart)):null;}
 function fmtNum(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'\u00A0');} // 17742 → 17 742
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
@@ -865,16 +875,18 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 // ---------- state ----------
-const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m'};
-const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true};
+const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false};
+const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
+// Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
+const APP_BUILD={batch:21,stage:'Етап 1',date:'2026-06-06'};
 
 function seed(){
   const t=todayISO();
   S.records=[
-    {id:uid(),date:t,time:'08:15',route:'Лівий берег → Центр',addr:'вул. Робоча 23',km:32,type:'work',fuel:9,odo:17683},
-    {id:uid(),date:t,time:'11:40',route:'Центр → Перемога',addr:'пр. Гагаріна 115',km:18,type:'work',fuel:8,odo:17701},
-    {id:uid(),date:t,time:'15:30',route:'Перемога → Сонячний',addr:'ТЦ Вавилон',km:25,type:'work',fuel:8,range:222,odo:17726},
-    {id:uid(),date:t,time:'18:50',route:'Дім → магазин',addr:'АТБ Тополя',km:16,type:'vibe',fuel:8,odo:17742}
+    {id:uid(),date:t,time:'08:15',route:'Лівий берег → Центр',addr:'вул. Робоча 23',odoStart:17651,type:'work',fuel:9,odo:17683},
+    {id:uid(),date:t,time:'11:40',route:'Центр → Перемога',addr:'пр. Гагаріна 115',odoStart:17683,type:'work',fuel:8,odo:17701},
+    {id:uid(),date:t,time:'15:30',route:'Перемога → Сонячний',addr:'ТЦ Вавилон',odoStart:17701,type:'work',fuel:8,range:222,odo:17726},
+    {id:uid(),date:t,time:'18:50',route:'Дім → магазин',addr:'АТБ Тополя',odoStart:17726,type:'vibe',fuel:8,odo:17742}
   ];
   S.refuels=[
     {id:uid(),date:t,time:'12:30',azs:'WOG Слобожанський',liters:30.5,price:54.90,sum:1674.45,ftype:'А-95',odo:17701,fuel:11}
@@ -882,18 +894,18 @@ function seed(){
   // --- минулі дні (mock-історія для Журналу: місяці + тижні + work/vibe + заправки) ---
   const d1=addDays(t,-1),d2=addDays(t,-2),d5=addDays(t,-5),d9=addDays(t,-9),d16=addDays(t,-16),d33=addDays(t,-33),d38=addDays(t,-38);
   S.records.push(
-    {id:uid(),date:d1,time:'09:05',route:'Дім → Лівобережний',addr:'вул. Космічна 4',km:21,type:'work',fuel:7,odo:17611},
-    {id:uid(),date:d1,time:'13:20',route:'Лівобережний → Амур',addr:'пр. Праці 22',km:28,type:'work',fuel:6,odo:17639},
-    {id:uid(),date:d1,time:'19:30',route:'Дім → СпортЛайф',addr:'ТРЦ Караван',km:12,type:'vibe',fuel:6,odo:17651,range:140},
-    {id:uid(),date:d2,time:'08:40',route:'Дім → Центр',addr:'вул. Шевченка 1',km:24,type:'work',fuel:11,odo:17560},
-    {id:uid(),date:d2,time:'16:10',route:'Центр → Тополя',addr:'пр. Героїв 12',km:19,type:'work',fuel:10,odo:17579},
-    {id:uid(),date:d5,time:'10:00',route:'Дім → Новокодацький',addr:'вул. Будівельників 9',km:33,type:'work',fuel:8,odo:17402},
-    {id:uid(),date:d5,time:'14:45',route:'Новокодацький → Соборний',addr:'пр. Яворницького 50',km:22,type:'work',fuel:7,odo:17424,range:165},
-    {id:uid(),date:d9,time:'11:15',route:'Дім → Самарський',addr:'вул. Калинова 70',km:38,type:'work',fuel:9,odo:17210},
-    {id:uid(),date:d9,time:'20:00',route:'Дім → кіно',addr:'ТРЦ Most City',km:14,type:'vibe',fuel:8,odo:17224},
-    {id:uid(),date:d16,time:'09:30',route:'Дім → Індустріальний',addr:'пр. Слобожанський 31',km:27,type:'work',fuel:10,odo:16940},
-    {id:uid(),date:d33,time:'10:20',route:'Дім → Чечелівський',addr:'вул. Робоча 166',km:31,type:'work',fuel:9,odo:16320},
-    {id:uid(),date:d38,time:'12:00',route:'Дім → дача',addr:'с. Любимівка',km:46,type:'vibe',fuel:5,odo:16080,range:60}
+    {id:uid(),date:d1,time:'09:05',route:'Дім → Лівобережний',addr:'вул. Космічна 4',odoStart:17590,type:'work',fuel:7,odo:17611},
+    {id:uid(),date:d1,time:'13:20',route:'Лівобережний → Амур',addr:'пр. Праці 22',odoStart:17611,type:'work',fuel:6,odo:17639},
+    {id:uid(),date:d1,time:'19:30',route:'Дім → СпортЛайф',addr:'ТРЦ Караван',odoStart:17639,type:'vibe',fuel:6,odo:17651,range:140},
+    {id:uid(),date:d2,time:'08:40',route:'Дім → Центр',addr:'вул. Шевченка 1',odoStart:17536,type:'work',fuel:11,odo:17560},
+    {id:uid(),date:d2,time:'16:10',route:'Центр → Тополя',addr:'пр. Героїв 12',odoStart:17560,type:'work',fuel:10,odo:17579},
+    {id:uid(),date:d5,time:'10:00',route:'Дім → Новокодацький',addr:'вул. Будівельників 9',odoStart:17369,type:'work',fuel:8,odo:17402},
+    {id:uid(),date:d5,time:'14:45',route:'Новокодацький → Соборний',addr:'пр. Яворницького 50',odoStart:17402,type:'work',fuel:7,odo:17424,range:165},
+    {id:uid(),date:d9,time:'11:15',route:'Дім → Самарський',addr:'вул. Калинова 70',odoStart:17172,type:'work',fuel:9,odo:17210},
+    {id:uid(),date:d9,time:'20:00',route:'Дім → кіно',addr:'ТРЦ Most City',odoStart:17210,type:'vibe',fuel:8,odo:17224},
+    {id:uid(),date:d16,time:'09:30',route:'Дім → Індустріальний',addr:'пр. Слобожанський 31',odoStart:16913,type:'work',fuel:10,odo:16940},
+    {id:uid(),date:d33,time:'10:20',route:'Дім → Чечелівський',addr:'вул. Робоча 166',odoStart:16289,type:'work',fuel:9,odo:16320},
+    {id:uid(),date:d38,time:'12:00',route:'Дім → дача',addr:'с. Любимівка',odoStart:16034,type:'vibe',fuel:5,odo:16080,range:60}
   );
   S.refuels.push(
     {id:uid(),date:d1,time:'18:10',azs:'ОККО Слобожанський',liters:28.0,price:55.20,sum:1545.60,ftype:'А-95',odo:17650,fuel:11},
@@ -902,12 +914,33 @@ function seed(){
     {id:uid(),date:d33,time:'11:00',azs:'WOG Слобожанський',liters:29.7,price:52.40,sum:1556.28,ftype:'А-95',odo:16325,fuel:11}
   );
 }
+// Model B міграція mv:2 (one-shot, idempotent). Бекфіл odoStart глобальним ланцюгом, прибрати збережене km.
+function migrateV2(o){
+  if(!o||o.mv>=2)return false;                       // idempotent guard: вже мігровано → нічого
+  const records=o.records||[], refuels=o.refuels||[];
+  // хронологічний список END-одометрів (записи .odo + заправки .odo)
+  const ev=[];
+  records.forEach(r=>{if(r.odo!=null)ev.push({date:r.date,time:r.time,odo:+r.odo});});
+  refuels.forEach(r=>{if(r.odo!=null)ev.push({date:r.date,time:r.time,odo:+r.odo});});
+  ev.sort((a,b)=>a.date===b.date?a.time.localeCompare(b.time):a.date.localeCompare(b.date));
+  records.forEach(r=>{
+    if(r.odoStart==null){
+      let prevOdo=null;
+      for(const e of ev){const before=(e.date<r.date)||(e.date===r.date&&e.time<r.time);if(before)prevOdo=e.odo;}
+      // genesis (нема попередника): зберегти історичну відстань першої поїздки
+      r.odoStart=(prevOdo!=null)?prevOdo:(r.km!=null&&r.odo!=null?(+r.odo-+r.km):(r.odo!=null?+r.odo:null));
+    }
+    delete r.km;                                       // km більше НЕ зберігається
+  });
+  o.mv=2;
+  return true;
+}
 function loadData(){
   const raw=lsGet(DATA_KEY);
-  if(raw){try{const o=JSON.parse(raw);S.records=o.records||[];S.refuels=o.refuels||[];return;}catch(e){}}
+  if(raw){try{const o=JSON.parse(raw);const changed=migrateV2(o);S.records=o.records||[];S.refuels=o.refuels||[];if(changed)saveData();return;}catch(e){}}
   seed();saveData();
 }
-function saveData(){lsSet(DATA_KEY,JSON.stringify({records:S.records,refuels:S.refuels}));}
+function saveData(){lsSet(DATA_KEY,JSON.stringify({records:S.records,refuels:S.refuels,mv:2}));}
 function loadSettings(){
   const raw=lsGet(SET_KEY);
   if(raw){try{Object.assign(SETTINGS,JSON.parse(raw));}catch(e){}}
@@ -925,7 +958,7 @@ function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show')
 function recordsOf(day){return S.records.filter(r=>r.date===day).sort((a,b)=>a.time.localeCompare(b.time));}
 function refuelsOf(day){return S.refuels.filter(r=>r.date===day).sort((a,b)=>a.time.localeCompare(b.time));}
 function filteredOf(day){const rs=recordsOf(day);if(S.filter==='all')return rs;return rs.filter(r=>r.type===(S.filter==='work'?'work':'vibe'));}
-function dayKm(day){return filteredOf(day).reduce((s,r)=>s+(+r.km||0),0);}
+function dayKm(day){return filteredOf(day).reduce((s,r)=>s+(tripKm(r)||0),0);}
 // ---- Journal view model (D5): єдине джерело — scope(journalDays) + тип(filteredOf) + search ----
 function matchSearch(r){
   const q=(S.search||'').trim().toLowerCase();
@@ -935,13 +968,13 @@ function matchSearch(r){
 }
 function jRecsOf(day){return filteredOf(day).filter(matchSearch);}   // тип AND search
 function jRfsOf(day){return refuelsOf(day).filter(matchSearch);}     // заправки: search only, ігнорують тип (D5)
-function jDayKm(day){return jRecsOf(day).reduce((s,r)=>s+(+r.km||0),0);}
+function jDayKm(day){return jRecsOf(day).reduce((s,r)=>s+(tripKm(r)||0),0);}
 function lastFuelOf(day){const ev=recordsOf(day).concat(refuelsOf(day)).filter(e=>e.fuel!=null).sort((a,b)=>a.time.localeCompare(b.time));return ev.length?ev[ev.length-1].fuel:null;}
 function dayRecords(){return recordsOf(S.activeDay);}
 function dayRefuels(){return refuelsOf(S.activeDay);}
 function filteredRecords(){return filteredOf(S.activeDay);}
 function lastSnap(){const rs=dayRecords();return rs.length?rs[rs.length-1]:null;}
-function lastRange(){const rs=dayRecords();for(let i=rs.length-1;i>=0;i--){if(rs[i].range!=null)return rs[i].range;}return null;}
+// B21.1: lastRange() видалено — мертвий код (жодного виклику; запас ходу годує лише latestRange-fallback Tab-3)
 // month-to-date пробіг: baseline = останній одометр ПОПЕРЕДНЬОГО місяця (як у маршрутному листі)
 function odoEvents(){
   const ev=[];
@@ -991,11 +1024,11 @@ function renderFilterRow(){
 // ---------- render: summary 2x2 + smart accent ----------
 function renderSummary(){
   const rs=dayRecords();
-  const work=rs.filter(r=>r.type==='work').reduce((s,r)=>s+(+r.km||0),0);
-  const vibe=rs.filter(r=>r.type==='vibe').reduce((s,r)=>s+(+r.km||0),0);
-  const snap=lastSnap();
-  const fuelTxt=snap?`${snap.fuel}/12`:'—';
-  const fuelSub=snap?`≈ ${liters(snap.fuel)} л`:'паливо не введено';
+  const work=rs.filter(r=>r.type==='work').reduce((s,r)=>s+(tripKm(r)||0),0);
+  const vibe=rs.filter(r=>r.type==='vibe').reduce((s,r)=>s+(tripKm(r)||0),0);
+  const hf=lastFuelOf(S.activeDay);                    // вкл. заправки → покриває день лише із заправкою
+  const fuelTxt=hf!=null?`${hf}/12`:'—';
+  const fuelSub=hf!=null?`≈ ${liters(hf)} л`:'паливо не введено';
   const mp=monthProgress(S.activeDay);
   const monthTxt=mp.km!=null?`${fmtNum(mp.km)} км`:'—';
   const monthSub=(mp.startOdo!=null&&mp.endOdo!=null)?`${fmtNum(mp.startOdo)} → ${fmtNum(mp.endOdo)}`:'потрібен одометр';
@@ -1051,7 +1084,9 @@ function recItem(r,n){
       ${showChip?`<span class="rec-chip ${isWork?'work':'vibe'}">${isWork?'Робочий':'Вайб'}</span>`:''}
     </div>
     <div class="rec-right">
-      <div class="rec-km${isWork?'':' vibe'}">${r.km!=null?esc(r.km)+' км':'—'}</div>
+      ${(r.odo!=null&&r.odoStart!=null&&(+r.odo)<(+r.odoStart))
+        ? `<div class="rec-km${isWork?'':' vibe'} rec-km-flag">перевір одометр</div>`
+        : `<div class="rec-km${isWork?'':' vibe'}">${tripKm(r)!=null?esc(tripKm(r))+' км':'—'}</div>`}
       ${r.fuel!=null?`<div class="rec-fuel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg>${r.fuel}/12</div><div class="rec-liters">≈ ${liters(r.fuel)} л</div>`:`<div class="rec-fuel">—</div>`}
     </div>
     </div>
@@ -1086,7 +1121,7 @@ function renderRecords(){
     </div>`;
   }
   if(recs.length){
-    const total=recs.reduce((s,r)=>s+(+r.km||0),0);
+    const total=recs.reduce((s,r)=>s+(tripKm(r)||0),0);
     html+=`<div class="sec-h"><span class="sec-t">Записи дня</span><span class="sec-c">${recs.length} · ${total} км</span></div>`;
     html+=recs.map((r,i)=>recItem(r,i+1)).join('');
   }
@@ -1137,7 +1172,7 @@ function dayCard(day){
     const recs=jRecsOf(day), rfs=jRfsOf(day);
     let inner='';
     if(recs.length){
-      const tk=recs.reduce((s,r)=>s+(+r.km||0),0);
+      const tk=recs.reduce((s,r)=>s+(tripKm(r)||0),0);
       inner+=`<div class="sec-h"><span class="sec-t">Записи дня</span><span class="sec-c">${recs.length} · ${tk} км</span></div>`;
       inner+=recs.map((r,i)=>recItem(r,i+1)).join('');
     }
@@ -1203,7 +1238,7 @@ function renderJournal(){
 // ============================================================
 // Tab 3 — Паливо (Batch 13): аналітика, без фейкових чисел
 // ============================================================
-const L_PER_TICK=L100();            // 4.2 л/поділ (бак 50л/12) — джерело правди те саме, що у формі
+// UX2: місткість бака рухома → lPerTick() (функція з SETTINGS.tankL), не заморожена const
 function f1(n){return (Math.round(n*10)/10).toFixed(1);}
 function money(n){return fmtNum(n)+'\u00A0₴';}
 
@@ -1230,7 +1265,7 @@ function tankSegments(){
   for(let i=1;i<rf.length;i++){
     const A=rf[i-1], B=rf[i], dist=(+B.odo)-(+A.odo), litersB=(B.liters!=null)?+B.liters:null;
     if(litersB==null||!(dist>0)){segs.push({B,dist,l100:null,plausible:false});continue;}
-    const spent=((+A.fuel - +B.fuel)*L_PER_TICK)+litersB;
+    const spent=((+A.fuel - +B.fuel)*lPerTick())+litersB;
     const l100=spent/dist*100;
     const plausible=(dist>=50 && l100>=3 && l100<=25 && spent>0);
     segs.push({B,dist,spent,l100,plausible});
@@ -1241,7 +1276,16 @@ function scopedSegments(){return tankSegments().filter(s=>inFuelScope(s.B.date))
 function avgL100(){const ok=scopedSegments().filter(s=>s.plausible);if(!ok.length)return null;const sl=ok.reduce((a,s)=>a+s.spent,0),sd=ok.reduce((a,s)=>a+s.dist,0);return sd>0?sl/sd*100:null;} // b15: pooled (зважений за пробігом), не mean-of-ratios
 
 // --- distance / money / split / cadence ---
-function scopedDistance(){const ev=odoEvents().filter(e=>inFuelScope(e.date));return ev.length<2?null:ev[ev.length-1].odo-ev[0].odo;}
+function scopedDistance(){
+  // B21: span включає START-одометри → власна відстань першої поїздки не губиться (+46 на seed, 1662→1708).
+  // НЕ через odoEvents (лише END-и) — інакше перша поїздка втрачає свій старт.
+  const vals=[];
+  S.records.forEach(r=>{if(inFuelScope(r.date)){if(r.odo!=null)vals.push(+r.odo);if(r.odoStart!=null)vals.push(+r.odoStart);}});
+  S.refuels.forEach(r=>{if(inFuelScope(r.date)&&r.odo!=null)vals.push(+r.odo);});
+  if(vals.length<2)return null;
+  const mx=Math.max.apply(null,vals),mn=Math.min.apply(null,vals);
+  return mx>mn?mx-mn:null;
+}
 function refuelCost(r){return (r.sum!=null)?+r.sum:((r.liters!=null&&r.price!=null)?(+r.liters*+r.price):0);}
 function fuelMoney(){
   const rf=scopedRefuels();let cost=0,lit=0;
@@ -1252,12 +1296,12 @@ function fuelMoney(){
 }
 function fuelSplit(){
   let wk=0,vk=0;
-  S.records.forEach(r=>{if(!inFuelScope(r.date))return;if(r.type==='work')wk+=(+r.km||0);else vk+=(+r.km||0);});
+  S.records.forEach(r=>{if(!inFuelScope(r.date))return;const k=tripKm(r)||0;if(r.type==='work')wk+=k;else vk+=k;});
   // b15: атрибуція лише за залогованими км (км×розхід), а не розкидання всього купленого палива.
   // unlog = реально проїхано (одометр) − залоговано; робить неповноту видимою (лікує L1+L3).
   const m=fuelMoney(), cons=m.cons, cpl=m.avgPrice;
   const odo=scopedDistance(), logged=wk+vk, unlog=(odo!=null&&odo>logged)?odo-logged:0;
-  const base=(odo!=null&&odo>0)?odo:logged;
+  const base=Math.max(odo!=null?odo:0,logged);   // B21.1: при перекритті START (logged>span) ширини не вилазять; норма (odo≥logged) — без змін
   const wLit=cons!=null?wk*cons/100:null, vLit=cons!=null?vk*cons/100:null;
   return {wk,vk,logged,unlog,odo,tot:logged,
     wW:base>0?wk/base*100:0, vW:base>0?vk/base*100:0, uW:base>0?unlog/base*100:0,
@@ -1290,9 +1334,9 @@ function sparkline(vals){
 // --- block renderers ---
 // R1: компактний горизонтальний стан-бар — read-only echo гейджа форми (display-only, pointer-events:none)
 function stateBlock(cur){
-  const lvl=cur.fuel,lit=Math.round(lvl*L_PER_TICK),avg=avgL100();
+  const lvl=cur.fuel,lit=Math.round(lvl*lPerTick()),avg=avgL100();
   let range=null,approx=false;
-  if(avg){range=Math.round(lvl*L_PER_TICK*100/avg);approx=true;}  // b15: app-оцінка (рівень/розхід) — за замовчуванням, узгоджена з «Мій розхід»
+  if(avg){range=Math.round(lvl*lPerTick()*100/avg);approx=true;}  // b15: app-оцінка (рівень/розхід) — за замовчуванням, узгоджена з «Мій розхід»
   else {range=latestRange();}                                     // fallback: ручне з борткомпʼютера, поки розходу ще нема
   const low=lvl<=3,meta=(range!=null)?`${lvl}/12 · ${approx?'≈':''}${fmtNum(range)} км запас`:`${lvl}/12`;
   const DROP='<path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/>';
@@ -1340,7 +1384,7 @@ function splitBlock(){
     <div class="split-leg">
       <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈\u202F${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
       <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Вайб</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈\u202F${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
-      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без запису</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
+      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без замітки</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
     </div>
   </section>`;
 }
@@ -1463,6 +1507,14 @@ function openRecordForm(id){
   $('r-range').value = ed && ed.range!=null ? ed.range : '';
   $('r-route').value = ed ? ed.route : '';
   $('r-odo').value = ed && ed.odo!=null ? ed.odo : '';
+  // B21 Model B: START. Edit → збережений odoStart (fallback — ланцюг); New → префіл останнім відомим одометром до дати/часу.
+  let st;
+  if(ed){st = ed.odoStart!=null ? ed.odoStart : prevEndBefore(ed.date,ed.time,ed.id);}
+  else {st = prevEndBefore($('r-date').value,$('r-time').value,null);}
+  $('r-odo-start').value = (st!=null) ? st : '';      // genesis → порожньо
+  // B21.1: edit → старт established (бейдж off, без авто-перепрефілу); new → авто-префіл (бейдж on якщо непорожньо)
+  S.odoStartDirty = !!ed;
+  refreshOdoBadge();
   $('r-note').value = (ed && ed.addr && ed.addr!=='—') ? ed.addr : '';
   $('r-cc').textContent = $('r-note').value.length;
   document.querySelectorAll('#sh-rec .inp').forEach(i=>i.classList.remove('invalid'));
@@ -1473,16 +1525,35 @@ function openRecordForm(id){
 }
 $('r-note').addEventListener('input',e=>$('r-cc').textContent=e.target.value.length);
 $('r-type').addEventListener('click',e=>{const b=e.target.closest('.ty-i');if(b)setRecType(b.dataset.ty);});
-// Batch 10: попередній odo ТОГО Ж дня за часом, виключаючи сам запис (для km при edit)
-function prevOdoBefore(date,time,exclId){
-  const rs=S.records.filter(r=>r.date===date&&r.id!==exclId&&r.time<time&&r.odo!=null).sort((a,b)=>a.time.localeCompare(b.time));
-  return rs.length?rs[rs.length-1].odo:null;
+// B21.1: бейдж «авто» видно лише коли START — незайманий авто-префіл І непорожній
+function refreshOdoBadge(){
+  const show = !S.odoStartDirty && $('r-odo-start').value!=='';
+  $('sh-rec').classList.toggle('hide-auto', !show);
+}
+// B21: користувач торкнувся START руками → established (бейдж off) + стоп авто-перепрефіл
+$('r-odo-start').addEventListener('input',()=>{S.odoStartDirty=true;refreshOdoBadge();});
+// B21: зміна дати/часу → re-prefill START, якщо користувач його ще не чіпав
+function rePrefillStart(){
+  if(S.odoStartDirty)return;
+  const st=prevEndBefore($('r-date').value,$('r-time').value,S.editRecId);
+  $('r-odo-start').value=(st!=null)?st:'';
+  refreshOdoBadge();   // авто-значення змінилось → оновити видимість бейджа
+}
+$('r-date').addEventListener('change',rePrefillStart);
+$('r-time').addEventListener('change',rePrefillStart);
+// B21: останній відомий одометр (END запису / odo заправки) СТРОГО до (date,time), глобально, виключаючи exclId
+function prevEndBefore(date,time,exclId){
+  let best=null;
+  const scan=(arr,skip)=>arr.forEach(r=>{if(skip&&r.id===exclId)return;if(r.odo==null)return;const before=(r.date<date)||(r.date===date&&r.time<time);if(before){const key=r.date+r.time;if(!best||key>best.key)best={key,odo:+r.odo};}});
+  scan(S.records,true);scan(S.refuels,false);
+  return best?best.odo:null;
 }
 $('r-save').addEventListener('click',()=>{
   const route=$('r-route').value.trim(), routeEl=$('r-route');
   if(!route){routeEl.classList.add('invalid');toast('Вкажіть маршрут');return;}
   routeEl.classList.remove('invalid');
   const odo=num($('r-odo').value), odoR=odo!=null?Math.round(odo):null;
+  const odoS=num($('r-odo-start').value), odoSR=odoS!=null?Math.round(odoS):null;   // B21: START
   const time=$('r-time').value||nowHM();
   const date=$('r-date').value||S.activeDay;   // BatchB: обрана дата (бекдейтинг)
   const addr=$('r-note').value.trim()||'—';
@@ -1491,18 +1562,13 @@ $('r-save').addEventListener('click',()=>{
   if(S.editRecId){
     const r=S.records.find(x=>x.id===S.editRecId);
     if(r){
-      r.time=time;r.date=date;r.route=route;r.addr=addr;r.odo=odoR;r.fuel=fuel;r.type=getRecType();
+      r.time=time;r.date=date;r.route=route;r.addr=addr;r.odo=odoR;r.odoStart=odoSR;r.fuel=fuel;r.type=getRecType();
       if(rng!=null)r.range=Math.round(rng);else delete r.range;
-      // km — незалежна відстань поїздки. Перерах. ЛИШЕ цього запису за same-day prev; інакше зберегти наявне.
-      const prev=prevOdoBefore(r.date,r.time,r.id);
-      if(odoR!=null&&prev!=null&&odoR>=prev)r.km=Math.round(odoR-prev);
+      delete r.km;   // B21 Model B: km — похідне (tripKm), ніколи не зберігається
     }
     S.editRecId=null;saveData();closeSheet('sh-rec');render();syncCycle();toast('Зміни збережено');
   }else{
-    const prev=prevOdoBefore(date,time);   // BatchB: same-day-before обраної дати, не activeDay
-    let km=null;
-    if(odoR!=null&&prev!=null&&odoR>=prev)km=Math.round(odoR-prev);
-    const rec={id:uid(),date:date,time:time,route:route,addr:addr,km:km,odo:odoR,type:getRecType(),fuel:fuel};
+    const rec={id:uid(),date:date,time:time,route:route,addr:addr,odoStart:odoSR,odo:odoR,type:getRecType(),fuel:fuel};
     if(rng!=null)rec.range=Math.round(rng);
     S.records.push(rec);saveData();closeSheet('sh-rec');render();syncCycle();toast('Запис збережено');
   }
@@ -1575,7 +1641,7 @@ function makePicker(cfg){ // cfg:{root,btn,cur,list,options,allowOther,otherInpu
 const azsPicker=makePicker({root:'f-azs',btn:'f-azs-btn',cur:'f-azs-cur',list:'f-azs-list',options:AZS,allowOther:true,otherInput:'f-azs-other'});
 const typePicker=makePicker({root:'f-type-pk',btn:'f-type-btn',cur:'f-type-cur',list:'f-type-list',options:FUEL_TYPES,allowOther:false});
 $('f-note').addEventListener('input',e=>$('f-cc').textContent=e.target.value.length);
-$('f-full').addEventListener('click',()=>{$('f-fuel')._fuel=12;buildFuel('f-fuel',12);if(!$('f-liters').value)toast('Повний бак ≈ 50 л');});
+$('f-full').addEventListener('click',()=>{$('f-fuel')._fuel=12;buildFuel('f-fuel',12);if(!$('f-liters').value)toast('Повний бак ≈ '+(SETTINGS.tankL||50)+' л');});
 function recalcSum(){const l=num($('f-liters').value),p=num($('f-price').value);if(l!=null&&p!=null)$('f-sum').value=(l*p).toFixed(2);}
 $('f-liters').addEventListener('input',recalcSum);
 $('f-price').addEventListener('input',recalcSum);
@@ -1644,12 +1710,16 @@ function openSettings(){
     <div class="set-i"><div><div class="set-l">Нагадування</div><div class="set-d">«закрити день» увечері</div></div>
       <label class="sw"><input type="checkbox" id="set-rem"><span class="sw-tr"></span></label></div>
     <div class="set-i"><div><div class="set-l">Автозбереження</div><div class="set-d">локальний чернетка форм</div></div>
-      <label class="sw"><input type="checkbox" id="set-auto"><span class="sw-tr"></span></label></div>`);
+      <label class="sw"><input type="checkbox" id="set-auto"><span class="sw-tr"></span></label></div>
+    <div class="set-i"><div><div class="set-l">Місткість бака (л)</div><div class="set-d">масштабує паливну математику</div></div>
+      <input class="inp" type="text" id="set-tank" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" autocomplete="off" spellcheck="false" style="width:96px;text-align:right" placeholder="50"></div>`);
   $('set-units').value=SETTINGS.units;$('set-cur').value=SETTINGS.currency;$('set-rem').checked=SETTINGS.reminders;$('set-auto').checked=SETTINGS.autosave;
+  $('set-tank').value=SETTINGS.tankL!=null?SETTINGS.tankL:50;
   $('set-units').addEventListener('change',e=>{SETTINGS.units=e.target.value;saveSettings();toast('Збережено');});
   $('set-cur').addEventListener('change',e=>{SETTINGS.currency=e.target.value;saveSettings();toast('Збережено');});
   $('set-rem').addEventListener('change',e=>{SETTINGS.reminders=e.target.checked;saveSettings();});
   $('set-auto').addEventListener('change',e=>{SETTINGS.autosave=e.target.checked;saveSettings();});
+  $('set-tank').addEventListener('change',e=>{const v=num(e.target.value);SETTINGS.tankL=(v!=null&&v>0)?v:50;e.target.value=SETTINGS.tankL;saveSettings();if(S.tab==='fuel')renderFuel();toast('Бак: '+SETTINGS.tankL+' л');});
 }
 function doExport(){
   const payload={app:'Drive Lens',exported:new Date().toISOString(),records:S.records,refuels:S.refuels,settings:SETTINGS};
@@ -1681,10 +1751,11 @@ function openHelp(){
   genSheet('Допомога',faq.map(f=>`<div class="faq-i"><div class="faq-q">${esc(f[0])}</div><div class="faq-a">${esc(f[1])}</div></div>`).join(''));
 }
 function openAbout(){
+  const bd=APP_BUILD.date.split('-');   // ISO → DD.MM.YYYY
   genSheet('Про додаток',`
     <div class="about-row"><span class="ar-k">Продукт</span><span class="ar-v">Drive·Lens</span></div>
-    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch 9.6 (Етап 1)</span></div>
-    <div class="about-row"><span class="ar-k">Дата збірки</span><span class="ar-v">29.05.2026</span></div>
+    <div class="about-row"><span class="ar-k">Версія</span><span class="ar-v">preview Batch ${APP_BUILD.batch} (${esc(APP_BUILD.stage)})</span></div>
+    <div class="about-row"><span class="ar-k">Дата збірки</span><span class="ar-v">${bd[2]}.${bd[1]}.${bd[0]}</span></div>
     <div class="about-row"><span class="ar-k">Сімейство</span><span class="ar-v">Lens (KPI · QR · Drive)</span></div>
     <div class="about-row"><span class="ar-k">Репозиторій</span><a class="ar-v" href="https://github.com/konst-andre" target="_blank" rel="noopener">github.com/konst-andre</a></div>
     <div class="note-banner" style="margin-top:14px">
@@ -1745,7 +1816,7 @@ function rowEdit(kind,id){if(kind==='rec')openRecordForm(id);else openRefuelForm
 function rowDelete(kind,id){
   if(kind==='rec'){
     const r=S.records.find(x=>x.id===id);
-    confirmAction('Видалити запис?', r?`${esc(r.time)} · ${esc(r.route)}${r.km!=null?' · '+r.km+' км':''}`:'',
+    confirmAction('Видалити запис?', r?`${esc(r.time)} · ${esc(r.route)}${tripKm(r)!=null?' · '+tripKm(r)+' км':''}`:'',
       ()=>{S.records=S.records.filter(x=>x.id!==id);saveData();render();syncCycle();toast('Видалено');});
   }else{
     const r=S.refuels.find(x=>x.id===id);
