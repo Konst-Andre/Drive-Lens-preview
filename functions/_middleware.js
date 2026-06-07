@@ -6,31 +6,41 @@ export async function onRequest(context) {
   // 🔑 НАЛАШТУВАННЯ БЕЗПЕКИ: ЗМІНЮЙТЕ ПАРОЛЬ СУТО ТУТ!
   // =========================================================================
   const PASSWORD = "0000"; 
-  
-  // Якщо захочете примусово скинути авторизацію у всіх — змініть "v1" на "v2"
   const APP_VERSION = "v1"; 
   // =========================================================================
 
   const COOKIE_NAME = `drive_lens_session_${APP_VERSION}`;
-
-  // 1. Перевірка кукі-перепустки
   const cookieHeader = request.headers.get("Cookie") || "";
-  if (cookieHeader.includes(`${COOKIE_NAME}=authenticated`)) {
+  const isAuthenticated = cookieHeader.includes(`${COOKIE_NAME}=authenticated`);
+
+  // ЗАХИСТ ВІД АВТОЗАПОВНЕННЯ ТА ЗАСТРЯГАННЯ ХРОМУ (АБСОЛЮТНІ РЕДІРЕКТИ):
+  // 1. Якщо користувач вже авторизований і випадково потрапив на /login-action
+  if (isAuthenticated && url.pathname === "/login-action") {
+    return Response.redirect(`${url.origin}/`, 302);
+  }
+
+  // 2. Якщо користувач НЕ авторизований, але браузер смикає /login-action через звичайний GET
+  if (!isAuthenticated && request.method === "GET" && url.pathname === "/login-action") {
+    return Response.redirect(`${url.origin}/`, 302);
+  }
+
+  // 3. Звичайна перевірка кукі-перепустки для доступу до сайту
+  if (isAuthenticated) {
     return await context.next(); 
   }
 
-  // 2. Обробка введення пароля
+  // 4. Обробка натискання кнопки "Увійти" (POST запит)
   if (request.method === "POST" && url.pathname === "/login-action") {
     try {
       const formData = await request.formData();
       const enteredPassword = formData.get("password");
 
       if (enteredPassword === PASSWORD) {
-        // Якщо пароль підійшов — записуємо кукі на 1 рік
+        // УСПІХ: Видаємо кукі і примусово перенаправляємо на ПОВНУ абсолютну адресу сайту
         return new Response(null, {
           status: 302,
           headers: {
-            "Location": "/",
+            "Location": `${url.origin}/`,
             "Set-Cookie": `${COOKIE_NAME}=authenticated; Path=/; Max-Age=31536000; Secure; SameSite=Strict; HttpOnly`
           }
         });
@@ -42,7 +52,7 @@ export async function onRequest(context) {
     }
   }
 
-  // 3. Якщо кукі немає — показуємо форму
+  // 5. Якщо кукі немає — показуємо форму
   return getLoginHTML();
 }
 
