@@ -6,37 +6,32 @@ export async function onRequest(context) {
   // 🔑 НАЛАШТУВАННЯ БЕЗПЕКИ: ЗМІНЮЙТЕ ПАРОЛЬ СУТО ТУТ!
   // =========================================================================
   const PASSWORD = "0000"; 
-  const APP_VERSION = "v1"; 
+  const APP_VERSION = "v2"; 
   // =========================================================================
 
   const COOKIE_NAME = `drive_lens_session_${APP_VERSION}`;
   const cookieHeader = request.headers.get("Cookie") || "";
   const isAuthenticated = cookieHeader.includes(`${COOKIE_NAME}=authenticated`);
 
-  // ЗАХИСТ ВІД АВТОЗАПОВНЕННЯ ТА ЗАСТРЯГАННЯ ХРОМУ (АБСОЛЮТНІ РЕДІРЕКТИ):
-  // 1. Якщо користувач вже авторизований і випадково потрапив на /login-action
+  // ЗАХИСТ ВІД АВТОЗАПОВНЕННЯ ТА ЗАСТРЯГАННЯ БРАУЗЕРА:
   if (isAuthenticated && url.pathname === "/login-action") {
     return Response.redirect(`${url.origin}/`, 302);
   }
 
-  // 2. Якщо користувач НЕ авторизований, але браузер смикає /login-action через звичайний GET
   if (!isAuthenticated && request.method === "GET" && url.pathname === "/login-action") {
     return Response.redirect(`${url.origin}/`, 302);
   }
 
-  // 3. Звичайна перевірка кукі-перепустки для доступу до сайту
   if (isAuthenticated) {
     return await context.next(); 
   }
 
-  // 4. Обробка натискання кнопки "Увійти" (POST запит)
   if (request.method === "POST" && url.pathname === "/login-action") {
     try {
       const formData = await request.formData();
       const enteredPassword = formData.get("password");
 
       if (enteredPassword === PASSWORD) {
-        // УСПІХ: Видаємо кукі і примусово перенаправляємо на ПОВНУ абсолютну адресу сайту
         return new Response(null, {
           status: 302,
           headers: {
@@ -45,126 +40,186 @@ export async function onRequest(context) {
           }
         });
       } else {
-        return getLoginHTML("Неправильний пароль. Спробуйте ще раз!");
+        return getLoginHTML("Неправильний ключ. Спробуйте ще раз!");
       }
     } catch (e) {
       return getLoginHTML("Помилка обробки даних.");
     }
   }
 
-  // 5. Якщо кукі немає — показуємо форму
   return getLoginHTML();
 }
 
-// Повністю готовий інтерфейс з одним полем пароля
+// Інтерфейс, який повністю повторює дизайн-токени та кольори Drive-Lens
 function getLoginHTML(errorMessage = "") {
-  const BACKGROUND_IMAGE_URL = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop";
-
   return new Response(`
   <!DOCTYPE html>
   <html lang="uk">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторизація | Drive Lens</title>
+    <title>Авторизація | Drive-Lens</title>
     <style>
+      /* 🎨 СВІТЛА ТЕМА (За замовчуванням, як на твоїх скріншотах) */
+      :root {
+        --bg-main: radial-gradient(circle at center, #f4f6f5 0%, #eaeceb 100%);
+        --bg-container: #ffffff;
+        --bg-input: #edf0ef;
+        --text-main: #1a201c;
+        --text-muted: #667770;
+        --accent: #10b981; 
+        --accent-hover: #059669;
+        --border: rgba(0, 0, 0, 0.06);
+        --shadow: 0 20px 40px -15px rgba(26, 32, 28, 0.08);
+        --error-bg: rgba(239, 68, 68, 0.08);
+        --error-text: #dc2626;
+        --input-text: #1a201c;
+      }
+
+      /* 🌙 ТЕМНА ТЕМА (Автоматично вмикається системою PC/iOS/Android) */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg-main: radial-gradient(circle at center, #141a17 0%, #0d1210 100%);
+          --bg-container: #1b2320;
+          --bg-input: #111614;
+          --text-main: #f3f4f6;
+          --text-muted: #889a90;
+          --accent: #10b981; /* Точний фірмовий зелений колір з твого додатка */
+          --accent-hover: #34d399;
+          --border: rgba(255, 255, 255, 0.05);
+          --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          --error-bg: rgba(239, 68, 68, 0.15);
+          --error-text: #fca5a5;
+          --input-text: #ffffff;
+        }
+      }
+
       * { box-sizing: border-box; margin: 0; padding: 0; }
+      
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
-        background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)), url('${BACKGROUND_IMAGE_URL}');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        color: #f8fafc;
+        background: var(--bg-main);
+        color: var(--text-main);
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
         padding: 20px;
+        transition: background 0.3s ease;
       }
+
       .login-container {
-        background: rgba(30, 41, 59, 0.7);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        padding: 3rem 2.5rem;
-        border-radius: 24px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        background: var(--bg-container);
+        padding: 3rem 2rem;
+        border-radius: 20px;
+        box-shadow: var(--shadow);
         width: 100%;
-        max-width: 380px;
+        max-width: 360px;
         text-align: center;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        border: 1px solid var(--border);
+        transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
       }
+
+      /* Стилізація логотипу точнісінько як у шапці твого сайту */
+      .logo-area {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 0.6rem;
+      }
+
+      /* Маленька зелена точка-індикатор авторизації з оригінального UI */
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        background-color: var(--accent);
+        border-radius: 50%;
+        display: inline-block;
+      }
+
       h2 {
-        color: #2dd4bf;
-        font-size: 2rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        margin-bottom: 0.5rem;
+        font-size: 1.6rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-main);
       }
+
       p {
-        color: #94a3b8;
-        font-size: 0.95rem;
-        margin-bottom: 2.5rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 2.2rem;
       }
+
       .input-group {
         position: relative;
         margin-bottom: 1.2rem;
       }
+
       input[type="password"] {
         width: 100%;
-        padding: 14px 20px;
+        padding: 14px 16px;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        background: rgba(15, 23, 42, 0.6);
-        color: #ffffff;
+        border: 1px solid var(--border);
+        background: var(--bg-input);
+        color: var(--input-text);
         font-size: 1rem;
         transition: all 0.2s ease;
         text-align: center;
       }
+
       input[type="password"]:focus {
         outline: none;
-        border-color: #2dd4bf;
-        background: rgba(15, 23, 42, 0.8);
-        box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
       }
+
       button {
         width: 100%;
         padding: 14px;
-        background: #2dd4bf;
-        color: #0f172a;
+        background: var(--accent);
+        color: #ffffff;
         border: none;
         border-radius: 12px;
-        font-size: 1rem;
-        font-weight: 700;
+        font-size: 0.95rem;
+        font-weight: 600;
         cursor: pointer;
         transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(45, 212, 191, 0.25);
       }
+
       button:hover {
-        background: #14b8a6;
-        transform: translateY(-1px);
+        background: var(--accent-hover);
+        transform: translateY(-0.5px);
       }
+
+      button:active {
+        transform: translateY(0.5px);
+      }
+
       .error-msg {
-        background: rgba(239, 68, 68, 0.1);
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        color: #fca5a5;
+        background: var(--error-bg);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        color: var(--error-text);
         font-size: 0.85rem;
-        padding: 10px;
+        padding: 12px;
         border-radius: 10px;
         margin-bottom: 1.2rem;
         animation: shake 0.4s ease-in-out;
       }
+
       @keyframes shake {
         0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-6px); }
-        75% { transform: translateX(6px); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
       }
     </style>
   </head>
   <body>
     <div class="login-container">
-      <h2>Drive Lens</h2>
+      <div class="logo-area">
+        <h2>Drive-Lens</h2>
+        <span class="status-dot"></span>
+      </div>
       <p>Введіть ключ доступу для запуску панелі</p>
       
       <form action="/login-action" method="POST">
