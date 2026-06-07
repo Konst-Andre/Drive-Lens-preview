@@ -420,8 +420,6 @@ html.pwa-full .nav-i{padding-top:8px;padding-bottom:calc(8px + var(--sab))}
 .fld-row .fld{flex:1;min-width:0;margin-bottom:13px}
 .fld-row .fld .inp{width:100%;min-width:0}
 .fld-row.is-hidden{display:none}/* B21.1: спец.(0,2,0)>.fld-row(0,1,0) — без !important; НЕ [hidden] (його перебиває display:flex) */
-.fld-l .fld-auto{margin-left:6px;font-size:10px;font-weight:700;letter-spacing:.2px;text-transform:uppercase;color:var(--text-muted);opacity:.85}/* B21.1: бейдж «авто» — префіл успадкований; ховається на dirty */
-.hide-auto .fld-l .fld-auto{display:none}
 .fld-l{display:block;font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:6px}
 .inp{width:100%;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);padding:12px 13px;color:var(--text-primary);font-weight:600;transition:border-color .14s,background .14s}
 .inp:focus{outline:none;border-color:var(--border-accent);background:var(--surface-2)}
@@ -763,8 +761,8 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       </div>
       <div class="fld"><label class="fld-l" for="r-route">Маршрут</label><input class="inp" type="text" id="r-route" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="Лівий берег → Центр"></div>
       <div class="fld-row">
-        <div class="fld"><label class="fld-l" for="r-odo-start">Одометр з<span class="fld-auto">авто</span></label><input class="inp" type="text" id="r-odo-start" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 726"></div>
-        <div class="fld"><label class="fld-l" for="r-odo">Одометр до</label><input class="inp" type="text" id="r-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 742"></div>
+        <div class="fld"><label class="fld-l" for="r-odo-start">Було</label><input class="inp" type="text" id="r-odo-start" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 742"></div>
+        <div class="fld"><label class="fld-l" for="r-odo">Стало</label><input class="inp" type="text" id="r-odo" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" enterkeyhint="next" autocomplete="off" spellcheck="false" placeholder="17 768"></div>
       </div>
       <div class="fld-row is-hidden"><!-- B21.1: «Запас ходу» прихований (опц. введення; годує лише Tab-3 fallback). DOM лишається → save читає '', edit seed зберігає range. -->
         <div class="fld"><label class="fld-l" for="r-range">Запас ходу (км)</label><input class="inp" type="text" id="r-range" inputmode="numeric" pattern="[0-9]*" enterkeyhint="next" autocomplete="off" placeholder="222"></div>
@@ -1512,9 +1510,8 @@ function openRecordForm(id){
   if(ed){st = ed.odoStart!=null ? ed.odoStart : prevEndBefore(ed.date,ed.time,ed.id);}
   else {st = prevEndBefore($('r-date').value,$('r-time').value,null);}
   $('r-odo-start').value = (st!=null) ? st : '';      // genesis → порожньо
-  // B21.1: edit → старт established (бейдж off, без авто-перепрефілу); new → авто-префіл (бейдж on якщо непорожньо)
+  // B21.1: edit → старт established (без авто-перепрефілу); new → авто-префіл; «Було» само пояснює успадкування
   S.odoStartDirty = !!ed;
-  refreshOdoBadge();
   $('r-note').value = (ed && ed.addr && ed.addr!=='—') ? ed.addr : '';
   $('r-cc').textContent = $('r-note').value.length;
   document.querySelectorAll('#sh-rec .inp').forEach(i=>i.classList.remove('invalid'));
@@ -1525,19 +1522,13 @@ function openRecordForm(id){
 }
 $('r-note').addEventListener('input',e=>$('r-cc').textContent=e.target.value.length);
 $('r-type').addEventListener('click',e=>{const b=e.target.closest('.ty-i');if(b)setRecType(b.dataset.ty);});
-// B21.1: бейдж «авто» видно лише коли START — незайманий авто-префіл І непорожній
-function refreshOdoBadge(){
-  const show = !S.odoStartDirty && $('r-odo-start').value!=='';
-  $('sh-rec').classList.toggle('hide-auto', !show);
-}
-// B21: користувач торкнувся START руками → established (бейдж off) + стоп авто-перепрефіл
-$('r-odo-start').addEventListener('input',()=>{S.odoStartDirty=true;refreshOdoBadge();});
+// B21: користувач торкнувся START руками → established + стоп авто-перепрефіл
+$('r-odo-start').addEventListener('input',()=>{S.odoStartDirty=true;});
 // B21: зміна дати/часу → re-prefill START, якщо користувач його ще не чіпав
 function rePrefillStart(){
   if(S.odoStartDirty)return;
   const st=prevEndBefore($('r-date').value,$('r-time').value,S.editRecId);
   $('r-odo-start').value=(st!=null)?st:'';
-  refreshOdoBadge();   // авто-значення змінилось → оновити видимість бейджа
 }
 $('r-date').addEventListener('change',rePrefillStart);
 $('r-time').addEventListener('change',rePrefillStart);
