@@ -56,35 +56,40 @@ function getLoginHTML(errorMessage = "") {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Авторизація | Drive-Lens</title>
   <style>
-    /* ── TOKENS ── */
+
+    /* ══════════════════════════════════════
+       DESIGN TOKENS
+    ══════════════════════════════════════ */
     :root {
-      --bg-main:           #040705;
-      --bg-image:          url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-dark.jpg');
-      --overlay:           rgba(4, 7, 5, 0.42);
-      --bg-card:           rgba(12, 24, 18, 0.60);
-      --bg-input:          rgba(4, 12, 8, 0.72);
-      --input-border:      rgba(17, 168, 119, 0.25);
-      --input-border-f:    rgba(17, 168, 119, 0.72);
-      --text-main:         #eef4f1;
-      --text-muted:        #6a8075;
-      --text-label:        rgba(17, 168, 119, 0.55);
-      --accent:            #11a877;
-      --accent-hi:         #19d496;
-      --btn-grad:          linear-gradient(175deg, #18d492 0%, #0e9668 55%, #0a7552 100%);
-      --btn-shadow:        rgba(17, 168, 119, 0.28);
-      --border-card:       rgba(17, 168, 119, 0.18);
-      --border-top:        rgba(255, 255, 255, 0.12);
+      --bg-main:        #040705;
+      --bg-image:       url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-dark.jpg');
+      --overlay:        rgba(4, 7, 5, 0.42);
+      --bg-card:        rgba(12, 24, 18, 0.60);
+      --bg-input:       rgba(4, 12, 8, 0.72);
+      --input-border:   rgba(17, 168, 119, 0.25);
+      --input-border-f: rgba(17, 168, 119, 0.72);
+      --text-main:      #eef4f1;
+      --text-muted:     #6a8075;
+      --text-label:     rgba(17, 168, 119, 0.55);
+      --accent:         #11a877;
+      --accent-hi:      #19d496;
+      --btn-grad:       linear-gradient(175deg, #18d492 0%, #0e9668 55%, #0a7552 100%);
+      --btn-shadow:     rgba(17, 168, 119, 0.28);
+      --border-card:    rgba(17, 168, 119, 0.18);
+      --border-top:     rgba(255, 255, 255, 0.12);
       --shadow-card:
         0 0 0 1px rgba(17, 168, 119, 0.10),
         0 40px 80px -20px rgba(0, 0, 0, 0.90),
         0 12px 32px -8px rgba(0, 0, 0, 0.60);
-      --tg:                #229ED9;
-      --err-bg:            rgba(239, 68, 68, 0.10);
-      --err-border:        rgba(239, 68, 68, 0.22);
-      --err-text:          #fca5a5;
-      --icon-filter:       drop-shadow(0 0 10px rgba(17, 168, 119, 0.38));
+      --tg:             #229ED9;
+      --tg-bg:          rgba(34, 158, 217, 0.08);
+      --tg-border:      rgba(34, 158, 217, 0.22);
+      --err-bg:         rgba(239, 68, 68, 0.10);
+      --err-border:     rgba(239, 68, 68, 0.22);
+      --err-text:       #fca5a5;
+      --icon-filter:    drop-shadow(0 0 10px rgba(17, 168, 119, 0.40));
 
-      /* Dark input: inner light top-highlight + depth shadow */
+      /* Dark input: inner light top-highlight + depth */
       --input-shadow:
         inset 0 1px 0   rgba(255, 255, 255, 0.07),
         inset 0 3px 8px rgba(0, 0, 0, 0.65),
@@ -96,7 +101,7 @@ function getLoginHTML(errorMessage = "") {
         --bg-main:        #e8f0ec;
         --bg-image:       url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-light.jpg');
         --overlay:        rgba(220, 235, 228, 0.20);
-        --bg-card:        rgba(255, 255, 255, 0.65);
+        --bg-card:        rgba(248, 252, 250, 0.72);
         --bg-input:       rgba(235, 248, 242, 0.92);
         --input-border:   rgba(17, 168, 119, 0.44);
         --input-border-f: rgba(17, 168, 119, 0.72);
@@ -110,12 +115,14 @@ function getLoginHTML(errorMessage = "") {
           0 30px 60px -15px rgba(0, 0, 0, 0.14),
           0 10px 24px -6px rgba(10, 40, 25, 0.10);
         --btn-shadow:     rgba(17, 168, 119, 0.32);
+        --tg-bg:          rgba(34, 158, 217, 0.10);
+        --tg-border:      rgba(34, 158, 217, 0.35);
         --err-bg:         rgba(220, 38, 38, 0.08);
         --err-border:     rgba(220, 38, 38, 0.20);
         --err-text:       #b91c1c;
-        --icon-filter:    drop-shadow(0 2px 4px rgba(17, 168, 119, 0.18));
+        --icon-filter:    drop-shadow(0 2px 5px rgba(17, 168, 119, 0.22));
 
-        /* Light input: classic inset shadow = volume via depth */
+        /* Light input: classic inset depth */
         --input-shadow:
           inset 0 2px 6px  rgba(0, 0, 0, 0.10),
           inset 0 1px 2px  rgba(0, 0, 0, 0.08),
@@ -123,14 +130,21 @@ function getLoginHTML(errorMessage = "") {
       }
     }
 
-    /* ── RESET ── */
+    /* ══════════════════════════════════════
+       RESET
+    ══════════════════════════════════════ */
     *, *::before, *::after {
-      box-sizing: border-box; margin: 0; padding: 0;
-      -webkit-user-select: none; user-select: none;
-      -webkit-touch-callout: none; touch-action: manipulation;
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      touch-action: manipulation;
     }
 
-    /* ── BODY ── */
+    /* ══════════════════════════════════════
+       BODY + BACKGROUND
+    ══════════════════════════════════════ */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
                    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -159,7 +173,9 @@ function getLoginHTML(errorMessage = "") {
       z-index: 0;
     }
 
-    /* ── CARD ── */
+    /* ══════════════════════════════════════
+       CARD
+    ══════════════════════════════════════ */
     .card {
       position: relative;
       z-index: 10;
@@ -176,7 +192,7 @@ function getLoginHTML(errorMessage = "") {
       animation: cardReveal 0.60s cubic-bezier(0.34, 1.42, 0.64, 1) both;
     }
 
-    /* Top-edge shimmer line */
+    /* Top-edge shimmer */
     .card::before {
       content: "";
       position: absolute;
@@ -194,7 +210,9 @@ function getLoginHTML(errorMessage = "") {
       z-index: 1;
     }
 
-    /* ── BRAND ICON ── */
+    /* ══════════════════════════════════════
+       BRAND ICON — Speedometer/Lens hybrid
+    ══════════════════════════════════════ */
     .brand-icon {
       display: flex;
       justify-content: center;
@@ -207,7 +225,9 @@ function getLoginHTML(errorMessage = "") {
       filter: var(--icon-filter);
     }
 
-    /* ── TITLE ── */
+    /* ══════════════════════════════════════
+       TITLE
+    ══════════════════════════════════════ */
     .title {
       font-size: 1.85rem;
       font-weight: 700;
@@ -220,6 +240,7 @@ function getLoginHTML(errorMessage = "") {
       line-height: 1;
     }
 
+    /* SONAR DOT — visible on both themes */
     .dot {
       width: 7px;
       height: 7px;
@@ -227,7 +248,7 @@ function getLoginHTML(errorMessage = "") {
       border-radius: 50%;
       margin-top: 3px;
       flex-shrink: 0;
-      animation: dotPulse 2.8s ease-in-out infinite;
+      animation: dotSonar 2.6s ease-out infinite;
     }
 
     .subtitle {
@@ -240,7 +261,9 @@ function getLoginHTML(errorMessage = "") {
       color: var(--text-label);
     }
 
-    /* ── DIVIDER ── */
+    /* ══════════════════════════════════════
+       DIVIDER
+    ══════════════════════════════════════ */
     .divider {
       height: 1px;
       background: linear-gradient(
@@ -251,9 +274,14 @@ function getLoginHTML(errorMessage = "") {
         transparent 100%
       );
       margin-bottom: 1.6rem;
+      opacity: 0.9;
     }
 
-    /* ── INPUT ── */
+    /* ══════════════════════════════════════
+       INPUT
+    ══════════════════════════════════════ */
+    .field { margin-bottom: 0.9rem; }
+
     .field-label {
       display: block;
       font-size: 0.68rem;
@@ -264,10 +292,6 @@ function getLoginHTML(errorMessage = "") {
       text-align: left;
       margin-bottom: 0.45rem;
       padding-left: 2px;
-    }
-
-    .field {
-      margin-bottom: 0.9rem;
     }
 
     input[type="password"] {
@@ -282,7 +306,7 @@ function getLoginHTML(errorMessage = "") {
       text-align: center;
       letter-spacing: 0.45rem;
       box-shadow: var(--input-shadow);
-      transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+      transition: border-color 0.28s ease, box-shadow 0.28s ease, background 0.28s ease;
       -webkit-user-select: text;
       user-select: text;
     }
@@ -294,9 +318,17 @@ function getLoginHTML(errorMessage = "") {
       opacity: 0.28;
     }
 
+    /* Breathing border in dark theme when empty */
+    @media not (prefers-color-scheme: light) {
+      input[type="password"]:placeholder-shown:not(:focus) {
+        animation: inputBreath 3.2s ease-in-out infinite;
+      }
+    }
+
     input[type="password"]:focus {
       outline: none;
       border-color: var(--input-border-f);
+      animation: none;
       box-shadow:
         var(--input-shadow),
         0 0 0 3px rgba(17, 168, 119, 0.14),
@@ -309,7 +341,9 @@ function getLoginHTML(errorMessage = "") {
       }
     }
 
-    /* ── BUTTON ── */
+    /* ══════════════════════════════════════
+       BUTTON — Full pill, intentional contrast with input
+    ══════════════════════════════════════ */
     .btn-submit {
       width: 100%;
       padding: 15px;
@@ -320,7 +354,7 @@ function getLoginHTML(errorMessage = "") {
       font-size: 0.92rem;
       letter-spacing: 0.02em;
       border: none;
-      border-radius: 14px;
+      border-radius: 50px;
       cursor: pointer;
       position: relative;
       overflow: hidden;
@@ -330,12 +364,11 @@ function getLoginHTML(errorMessage = "") {
       transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
     }
 
-    /* Shimmer on hover */
+    /* Shimmer sweep on hover */
     .btn-submit::after {
       content: "";
       position: absolute;
-      top: 0; bottom: 0;
-      left: -110%;
+      top: 0; bottom: 0; left: -110%;
       width: 60%;
       background: linear-gradient(
         105deg,
@@ -348,14 +381,22 @@ function getLoginHTML(errorMessage = "") {
       pointer-events: none;
     }
 
-    .btn-submit:hover            { transform: translateY(-1px); filter: brightness(1.06);
-                                   box-shadow: 0 8px 28px var(--btn-shadow), inset 0 1px 1px rgba(255,255,255,0.40); }
-    .btn-submit:hover::after     { left: 160%; }
-    .btn-submit:active           { transform: translateY(1px); filter: brightness(0.96);
-                                   box-shadow: 0 2px 8px var(--btn-shadow), inset 0 2px 4px rgba(0,0,0,0.15); }
-    .btn-submit:disabled         { opacity: 0.60; cursor: not-allowed; }
+    .btn-submit:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+      box-shadow: 0 8px 28px var(--btn-shadow), inset 0 1px 1px rgba(255,255,255,0.40);
+    }
+    .btn-submit:hover::after { left: 160%; }
+    .btn-submit:active {
+      transform: translateY(1px);
+      filter: brightness(0.96);
+      box-shadow: 0 2px 8px var(--btn-shadow), inset 0 2px 4px rgba(0,0,0,0.15);
+    }
+    .btn-submit:disabled { opacity: 0.60; cursor: not-allowed; }
 
-    /* ── ERROR ── */
+    /* ══════════════════════════════════════
+       ERROR
+    ══════════════════════════════════════ */
     .error-msg {
       background: var(--err-bg);
       border: 1px solid var(--err-border);
@@ -368,7 +409,9 @@ function getLoginHTML(errorMessage = "") {
       animation: shake 0.38s ease-in-out;
     }
 
-    /* ── FOOTER ── */
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
     .footer {
       margin-top: 1.4rem;
       display: flex;
@@ -388,6 +431,7 @@ function getLoginHTML(errorMessage = "") {
       flex: 1;
       min-width: 20px;
       height: 1px;
+      flex-shrink: 1;
     }
     .hline-l { background: linear-gradient(90deg, transparent, var(--border-card)); }
     .hline-r { background: linear-gradient(90deg, var(--border-card), transparent); }
@@ -414,8 +458,8 @@ function getLoginHTML(errorMessage = "") {
       font-size: 0.74rem;
       font-weight: 600;
       color: var(--tg);
-      background: rgba(34, 158, 217, 0.08);
-      border: 1px solid rgba(34, 158, 217, 0.22);
+      background: var(--tg-bg);
+      border: 1px solid var(--tg-border);
       padding: 7px 16px;
       border-radius: 20px;
       transition: all 0.22s ease;
@@ -432,67 +476,109 @@ function getLoginHTML(errorMessage = "") {
       background: var(--tg);
       border-color: var(--tg);
       color: #fff;
-      box-shadow: 0 4px 16px rgba(34, 158, 217, 0.30);
+      box-shadow: 0 4px 16px rgba(34,158,217,0.30);
     }
-
     .tg-link:hover svg, .tg-link:active svg {
       fill: #fff;
       transform: scale(1.08) rotate(-5deg);
     }
 
-    /* ── RESPONSIVE ── */
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
     @media (max-width: 400px) {
       .card { padding: 2.2rem 1.4rem 1.8rem; border-radius: 24px; }
       .title { font-size: 1.65rem; }
       .brand-icon svg { width: 36px; height: 36px; }
     }
 
-    /* ── KEYFRAMES ── */
+    /* ══════════════════════════════════════
+       KEYFRAMES
+    ══════════════════════════════════════ */
     @keyframes cardReveal {
       from { opacity: 0; transform: translateY(22px) scale(0.97); }
       to   { opacity: 1; transform: translateY(0)    scale(1);    }
     }
 
-    @keyframes dotPulse {
-      0%, 100% { transform: scale(1);    box-shadow: 0 0 5px rgba(25,212,150,0.50); }
-      50%      { transform: scale(1.40); box-shadow: 0 0 14px rgba(25,212,150,0.85), 0 0 28px rgba(17,168,119,0.30); }
+    /* Sonar/radar ripple — visible on both dark and light */
+    @keyframes dotSonar {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(25, 212, 150, 0.75);
+      }
+      55% {
+        transform: scale(1.15);
+        box-shadow: 0 0 0 8px rgba(25, 212, 150, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(25, 212, 150, 0);
+      }
+    }
+
+    /* Breathing border — dark theme empty input */
+    @keyframes inputBreath {
+      0%, 100% { border-color: rgba(17, 168, 119, 0.25); }
+      50%       { border-color: rgba(17, 168, 119, 0.52); }
     }
 
     @keyframes shake {
-      0%,100% { transform: translateX(0);  }
+      0%,100% { transform: translateX(0);   }
       20%     { transform: translateX(-5px); }
       40%     { transform: translateX( 5px); }
       60%     { transform: translateX(-3px); }
       80%     { transform: translateX( 3px); }
     }
+
   </style>
 </head>
 <body>
 
 <div class="card">
 
-  <!-- GPS/Lens brand icon -->
+  <!--
+    ICON: Speedometer + Lens hybrid
+    Arc = speedometer dial (Drive)
+    Outer ring + center aperture = lens (Lens)
+    Needle at ~65% = active / in motion
+  -->
   <div class="brand-icon">
     <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Outer thin ring -->
-      <circle cx="21" cy="21" r="19.5" stroke="rgba(17,168,119,0.28)" stroke-width="1.5"/>
-      <!-- GPS pin body -->
-      <path d="M21 8.5
-               C15.7 8.5 11.5 12.8 11.5 18
-               C11.5 24.5 21 34 21 34
-               C21 34 30.5 24.5 30.5 18
-               C30.5 12.8 26.3 8.5 21 8.5 Z"
-            fill="rgba(17,168,119,0.14)"
-            stroke="#11a877"
-            stroke-width="2"
-            stroke-linejoin="round"/>
-      <!-- Lens ring inside pin -->
-      <circle cx="21" cy="18" r="4.8"
-              fill="rgba(17,168,119,0.16)"
+      <!-- Outer ring (lens barrel) -->
+      <circle cx="21" cy="21" r="19"
+              stroke="rgba(17,168,119,0.28)"
+              stroke-width="1.5"/>
+
+      <!-- Speedometer arc: 240° from 8-o'clock to 4-o'clock over 12-o'clock
+           r=13, circumference≈81.68, arc=54.5, gap=27.2
+           rotate(150) moves start from 3-o'clock to 8-o'clock -->
+      <circle cx="21" cy="21" r="13"
               stroke="#11a877"
-              stroke-width="1.8"/>
-      <!-- Center dot -->
-      <circle cx="21" cy="18" r="2" fill="#19d496"/>
+              stroke-width="2"
+              stroke-dasharray="54.5 27.2"
+              stroke-linecap="round"
+              transform="rotate(150 21 21)"
+              opacity="0.72"/>
+
+      <!-- Tick marks at 8, 10, 12, 2, 4 o'clock positions -->
+      <line x1="11.5" y1="26.5" x2="8.9"  y2="28.0" stroke="#11a877" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <line x1="11.5" y1="15.5" x2="8.9"  y2="14.0" stroke="#11a877" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <line x1="21"   y1="10"   x2="21"   y2="7"    stroke="#11a877" stroke-width="1.5" stroke-linecap="round" opacity="0.72"/>
+      <line x1="30.5" y1="15.5" x2="33.1" y2="14.0" stroke="#11a877" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+      <line x1="30.5" y1="26.5" x2="33.1" y2="28.0" stroke="#11a877" stroke-width="1.2" stroke-linecap="round" opacity="0.55"/>
+
+      <!-- Needle pointing at ~65% of arc (1-2 o'clock area = active/moving) -->
+      <line x1="21" y1="21" x2="27.5" y2="12.1"
+            stroke="#19d496"
+            stroke-width="2.2"
+            stroke-linecap="round"/>
+
+      <!-- Center pivot cap -->
+      <circle cx="21" cy="21" r="2.6"
+              fill="rgba(17,168,119,0.20)"
+              stroke="#11a877"
+              stroke-width="1.5"/>
+      <circle cx="21" cy="21" r="1.2" fill="#19d496"/>
     </svg>
   </div>
 
@@ -536,7 +622,10 @@ function getLoginHTML(errorMessage = "") {
       <div class="hline hline-r"></div>
     </div>
 
-    <a href="https://t.me/Konst_Andre" target="_blank" rel="noopener noreferrer" class="tg-link">
+    <a href="https://t.me/Konst_Andre"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="tg-link">
       <svg viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
                  10-4.48 10-10S17.52 2 12 2zm4.64 6.8
