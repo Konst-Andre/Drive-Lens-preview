@@ -62,7 +62,7 @@ function getLoginHTML(errorMessage = "") {
     ══════════════════════════════════════ */
     :root {
       --bg-main:        #040705;
-      --bg-image:       url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-dark.jpg');
+      --bg-image:       url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-dark.png');
       --overlay:        rgba(4, 7, 5, 0.42);
       --bg-card:        rgba(12, 24, 18, 0.60);
       --bg-input:       rgba(4, 12, 8, 0.72);
@@ -99,7 +99,7 @@ function getLoginHTML(errorMessage = "") {
     @media (prefers-color-scheme: light) {
       :root {
         --bg-main:        #e8f0ec;
-        --bg-image:       url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-light.jpg');
+        --bg-image:       url('https://raw.githubusercontent.com/Konst-Andre/Drive-Lens-preview/main/assets/bg-light.png');
         --overlay:        rgba(220, 235, 228, 0.20);
         --bg-card:        rgba(248, 252, 250, 0.72);
         --bg-input:       rgba(235, 248, 242, 0.92);
