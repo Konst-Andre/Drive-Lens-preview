@@ -46,6 +46,8 @@
   --ok:#2E9E5C; --warn:#C8841C; --crit:#C8331C; --info:#3E7C94;
   /* Neutral action (типо-агностична дія, напр. «Запис») — перлина, не макс-ink */
   --neutral:#3E4A45;
+  /* Tab-4 банер: скрим під текстом-героя (Cookbook A42) — від surface-1 (вгорі, де текст) до прозорого */
+  --scrim-1:rgba(244,247,245,.92); --scrim-2:rgba(244,247,245,.55);
   /* Borders */
   --border-subtle:rgba(0,0,0,.06); --border-default:rgba(0,0,0,.12); --border-accent:#40916C;
   /* App-bar */
@@ -65,6 +67,7 @@
   --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
   --ok:#4FAE7A; --warn:#D4A055; --crit:#C75450; --info:#6B9BB8;
   --neutral:#CDD5D1;
+  --scrim-1:rgba(14,19,17,.94); --scrim-2:rgba(14,19,17,.55);
   --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-accent:#40916C;
   --appbar-bg:rgba(13,17,16,0.92);
   --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
@@ -79,6 +82,7 @@
     --vibe:#C9A86A; --vibe-soft:#332A18; --vibe-text:#D7B97D;
     --ok:#4FAE7A; --warn:#D4A055; --crit:#C75450; --info:#6B9BB8;
     --neutral:#CDD5D1;
+    --scrim-1:rgba(14,19,17,.94); --scrim-2:rgba(14,19,17,.55);
     --border-subtle:rgba(255,255,255,.06); --border-default:rgba(255,255,255,.12); --border-accent:#40916C;
     --appbar-bg:rgba(13,17,16,0.92);
     --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
@@ -596,6 +600,105 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .fp-st-n{flex:1;font-size:13px;font-weight:600;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}/* b16a A3: назва АЗС приглушена */
 .fp-st-c{font-size:12px;font-weight:700;color:var(--text-muted);font-variant-numeric:tabular-nums}
 .fp-st-p{font-size:13px;font-weight:700;color:var(--text-primary);font-variant-numeric:tabular-nums;min-width:66px;text-align:right}/* b16a A3+R4: ціна = головне число */
+
+/* ========================================================================
+   TAB-4 «МІСЯЦЬ» (Batch 22) — банер A1 + перемикач + гантелі + ритм B3
+   Cookbook A42 (скрим), A43 (layered SVG-фон), A39 (обидві теми)
+   ======================================================================== */
+
+/* --- сезонні токени банера (A43): light незмінні, dark усі 4 підняті над фоном --- */
+.forest{--sky-a:#DCEFE6;--sky-b:#F1F8F4;--far:#AAC9BC;--mid:#6FA68C;--near:#3E6B54;--fog:rgba(255,255,255,.55);--snow:transparent;--bird:#5C7A6C}
+html[data-season="autumn"] .forest{--sky-a:#F5ECD8;--sky-b:#FBF6EC;--far:#DAC8A6;--mid:#C49A5C;--near:#8A5A2B;--fog:rgba(255,255,255,.58);--snow:transparent;--bird:#9C7430}
+html[data-season="winter"] .forest{--sky-a:#E6EDF2;--sky-b:#F8FBFC;--far:#C3CED7;--mid:#9FB1BD;--near:#6E8493;--fog:rgba(255,255,255,.62);--snow:#FFFFFF;--bird:#7E8E99}
+html[data-season="spring"] .forest{--sky-a:#E4F1E7;--sky-b:#F5FBF6;--far:#B7D3BD;--mid:#82B98E;--near:#4E8C5E;--fog:rgba(255,255,255,.52);--snow:transparent;--bird:#5E9A6A}
+/* dark — усі 4 сезони підняті (sky-b ≠ #0E1311, інакше низ банера тоне у фон) */
+html[data-theme="dark"] .forest{--sky-a:#1C2D26;--sky-b:#12201A;--far:#37574B;--mid:#2C4D40;--near:#1E4034;--fog:rgba(160,195,178,.18);--snow:transparent;--bird:#6E8C7E}
+html[data-theme="dark"][data-season="autumn"] .forest{--sky-a:#231C12;--sky-b:#1A1409;--far:#4A3B28;--mid:#5E4A2A;--near:#3A2A18;--fog:rgba(190,170,140,.15);--snow:transparent;--bird:#8A6A38}
+html[data-theme="dark"][data-season="winter"] .forest{--sky-a:#141C22;--sky-b:#10161B;--far:#2A343C;--mid:#36444E;--near:#44555E;--fog:rgba(170,190,205,.16);--snow:rgba(224,234,240,.9);--bird:#7E8E99}
+html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#13211A;--far:#3E6A50;--mid:#2D5740;--near:#1F4A35;--fog:rgba(160,200,170,.18);--snow:transparent;--bird:#6FA877}
+
+/* --- перемикач місяця (перший у скролі, не pinned) --- */
+.mo-sw{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.mo-arrow{flex-shrink:0;width:40px;height:40px;border-radius:var(--rs);background:var(--surface-2);border:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:center;color:var(--text-secondary);box-shadow:var(--sh1);cursor:pointer;transition:background .12s,opacity .12s}
+.mo-arrow:active{background:var(--surface-3)}
+.mo-arrow svg{width:18px;height:18px}
+.mo-arrow.off{opacity:.34;pointer-events:none}
+.mo-lbl{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border-radius:var(--rs);background:var(--surface-2);border:1px solid var(--border-subtle);box-shadow:var(--sh1);font-size:14.5px;font-weight:800;letter-spacing:-.2px;color:var(--text-primary)}
+.mo-lbl svg{width:16px;height:16px;color:var(--text-secondary);flex-shrink:0}
+
+/* --- банер A1 (декор-виняток) --- */
+.banner{position:relative;border-radius:var(--r);overflow:hidden;background:var(--surface-2);box-shadow:var(--sh1);border:1px solid var(--border-default);margin-bottom:14px}
+.banner svg.scene{display:block;width:100%;height:auto}
+.b-txt{position:absolute;inset:0;padding:16px 18px;display:flex;flex-direction:column;justify-content:flex-start;pointer-events:none}
+.b-txt::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,var(--scrim-1) 0%,var(--scrim-2) 40%,transparent 70%);pointer-events:none}/* A42 токен-скрим */
+.b-txt>*{position:relative}
+.b-h{font-size:21px;font-weight:800;letter-spacing:-.4px;line-height:1.1;color:var(--text-primary)}
+.b-h .km{color:var(--accent)}
+[data-theme="dark"] .b-h .km{color:#52B788}
+.b-syn{margin-top:8px;font-size:12.5px;font-weight:600;color:var(--text-secondary);max-width:64%;line-height:1.4}
+.b-grey{margin-top:5px;font-size:11.5px;font-weight:600;color:var(--text-muted);max-width:64%}
+
+/* --- картка-контейнер гантелей/ритму --- */
+.mo-card{background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);box-shadow:var(--sh1),inset 0 1px 0 rgba(255,255,255,.04);padding:15px 14px 13px;margin-bottom:14px}
+
+/* --- гантелі (сигнатурний візуал) --- */
+.dmb{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border-subtle)}
+.dmb:first-of-type{padding-top:2px}
+.dmb:last-of-type{border-bottom:none;padding-bottom:2px}
+.dmb.muted{opacity:.5}
+.dmb-ico{flex-shrink:0;width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent-text)}
+.dmb-ico svg{width:21px;height:21px}
+.dmb-ico.fuel{background:color-mix(in srgb,var(--info) 14%,var(--surface-2));color:var(--info)}/* A39: token-adaptive, звірити обидві теми */
+.dmb-body{flex:1;min-width:0}
+.dmb-name{font-size:11.5px;font-weight:700;color:var(--text-secondary);margin-bottom:5px}
+.dmb-bar{display:flex;align-items:center;gap:9px}
+.dmb-end{flex-shrink:0}
+.dmb-end.prev{text-align:right}
+.dmb-v{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--text-primary);line-height:1.05;font-variant-numeric:tabular-nums}
+.dmb-v span{font-size:10.5px;font-weight:700;color:var(--text-secondary)}
+.dmb-end.prev .dmb-v{color:var(--text-secondary)}
+.dmb-when{font-size:10px;font-weight:600;color:var(--text-muted);margin-top:2px}
+.dmb-conn{flex:1;display:flex;align-items:center;min-width:24px}
+.dmb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dmb-dot.cur{background:var(--accent)}
+[data-theme="dark"] .dmb-dot.cur{background:#52B788}
+.dmb-dot.prev{background:color-mix(in srgb,var(--text-muted) 60%,var(--surface-4))}
+.dmb-line{flex:1;height:2px;border-radius:1px;background:var(--border-default)}
+.dmb-delta{flex-shrink:0;text-align:right;min-width:48px;color:var(--accent-text)}/* зелений = «змінилось», напрям несе стрілка; червоного нема */
+.dmb-delta.flat{color:var(--text-muted)}
+.dmb-pct{font-size:14px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums;line-height:1.05}
+.dmb-arrow{font-size:12px;font-weight:800;line-height:1}
+.dmb-abs{font-size:10.5px;font-weight:600;color:var(--text-muted);margin-top:1px;font-variant-numeric:tabular-nums}
+.dmb-dash{font-size:16px;font-weight:800;color:var(--text-muted)}
+.dmb-why{font-size:10px;font-weight:600;color:var(--text-muted);margin-top:3px;line-height:1.3}
+.dmb-leg{display:flex;justify-content:center;gap:16px;margin-top:11px;font-size:11px;font-weight:600;color:var(--text-secondary)}
+.dmb-leg span{display:inline-flex;align-items:center;gap:6px}
+.dmb-leg i{width:8px;height:8px;border-radius:50%}
+.dmb-leg i.prev{background:color-mix(in srgb,var(--text-muted) 60%,var(--surface-4))}
+.dmb-leg i.cur{background:var(--accent)}
+[data-theme="dark"] .dmb-leg i.cur{background:#52B788}
+
+/* --- ритм місяця (B3 тональний) --- */
+.r-h{font-size:14px;font-weight:800;color:var(--text-primary);margin-bottom:14px}
+.r-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center}
+.r-cell{display:flex;flex-direction:column;align-items:center;gap:7px}
+.disc{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.disc svg{width:24px;height:24px}
+.disc.active{background:var(--accent-soft);color:var(--accent-text)}
+.disc.neu{background:var(--surface-3);color:var(--text-secondary);border:1px solid var(--border-default)}/* пауза+середній: нейтрал, різняться силуетом не кольором */
+[data-theme="dark"] .disc.neu{background:var(--surface-4)}
+.r-lbl{font-size:11px;font-weight:600;color:var(--text-secondary);line-height:1.25;min-height:26px}
+.r-val{font-size:17px;font-weight:800;letter-spacing:-.4px;color:var(--text-primary);font-variant-numeric:tabular-nums}
+.r-val.active{color:var(--accent-text)}
+.r-sub{font-size:11px;font-weight:600;color:var(--text-muted);margin-top:-3px}
+.r-foot{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:15px;padding-top:13px;border-top:1px solid var(--border-subtle);font-size:12px;font-weight:600;color:var(--text-secondary)}
+.r-foot svg{width:14px;height:14px;color:var(--accent);flex-shrink:0}
+.r-foot b{color:var(--accent-text);font-weight:800}
+
+/* --- Tab-4 шапка: сегмент full-width, дата прибрана (концепт §3) --- */
+body[data-tab="month"] .filter-row .seg{flex:1 1 auto;width:100%}
+body[data-tab="month"] .filter-row .seg-i{flex:1;justify-content:center}
+body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn (0,1,0) */
 </style>
 </head>
 <body>
@@ -679,7 +782,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
       <div id="jr-list"></div>
     </div></div>
     <div class="screen" id="sc-fuel"><div class="scroll-a" id="fl-scroll"></div></div>
-    <div class="screen" id="sc-month"><div class="scroll-a"></div></div>
+    <div class="screen" id="sc-month"><div class="scroll-a" id="mo-scroll"></div></div>
   </div>
 
   <!-- ===== BOTTOM NAV ===== -->
@@ -873,10 +976,10 @@ function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
 function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 
 // ---------- state ----------
-const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false};
+const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:21,stage:'Етап 1',date:'2026-06-06'};
+const APP_BUILD={batch:22,stage:'Етап 1',date:'2026-06-09'};
 
 function seed(){
   const t=todayISO();
@@ -997,6 +1100,7 @@ function monthProgress(day){
 
 // ---------- journal date helpers ----------
 const MON_NOM=['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+const MON_GEN=['січня','лютого','березня','квітня','травня','червня','липня','серпня','вересня','жовтня','листопада','грудня'];
 const WD_SHORT=['Нд','Пн','Вт','Ср','Чт','Пт','Сб'];
 const WD_FULL=['Неділя','Понеділок','Вівторок','Середа','Четвер','П’ятниця','Субота'];
 function addDays(iso,delta){const a=iso.split('-').map(Number);const dt=new Date(a[0],a[1]-1,a[2]);dt.setDate(dt.getDate()+delta);return dt.getFullYear()+'-'+pad(dt.getMonth()+1)+'-'+pad(dt.getDate());}
@@ -1382,7 +1486,7 @@ function splitBlock(){
     <div class="split-leg">
       <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈\u202F${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
       <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Вайб</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈\u202F${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
-      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без замітки</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
+      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без запису</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
     </div>
   </section>`;
 }
@@ -1429,12 +1533,242 @@ function renderFuel(){
   scroll.innerHTML=fuelPeriods()+stateBlock(cur)+consumptionBlock()+splitBlock()+moneyBlock()+patternBlock();
 }
 
+// ============================================================
+// TAB-4 «МІСЯЦЬ» (Batch 22) — карта баз (concept FINAL v2, Cookbook A42/A43)
+// Дві км-бази: monthProgress=повний одометр (вкл. незаписане); Σ tripKm=записаний.
+// Датовані метрики (активні дні / пауза / найактивніший / середній) — лише з датованих записів.
+// ============================================================
+const IC_RH={
+ active:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M12 16l1.2 2.4 2.6.4-1.9 1.8.5 2.6L12 22l-2.4 1.2.5-2.6-1.9-1.8 2.6-.4z" transform="translate(0 -2)"/></svg>',
+ pause:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/></svg>',
+ avg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15 A9.5 9.5 0 0 1 21.5 15"/><line x1="12" y1="15" x2="16.5" y2="8.5"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg>'
+};
+const IC_DMB={
+ road:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 L5 21"/><path d="M16 3 L19 21"/><path d="M12 4 v2.5 M12 10 v3 M12 17 v2.5"/></svg>',
+ drop:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 C12 3 5.5 10.5 5.5 15 a6.5 6.5 0 0 0 13 0 C18.5 10.5 12 3 12 3 Z"/></svg>',
+ cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>'
+};
+const MO_ARR_L='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+const MO_ARR_R='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+const MO_CAL='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+const MO_LEAF='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6"/></svg>';
+const MO_SCENE='<svg class="scene" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="dlSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sky-a)"/><stop offset="1" stop-color="var(--sky-b)"/></linearGradient></defs><rect width="400" height="160" fill="url(#dlSky)"/><path d="M0,108 L46,74 L92,98 L150,60 L210,96 L268,66 L330,100 L400,72 L400,160 L0,160 Z" fill="var(--far)"/><path d="M150,60 L138,74 L162,74 Z M268,66 L257,79 L279,79 Z" fill="var(--snow)"/><path d="M0,128 L60,104 L120,124 L190,98 L260,122 L330,102 L400,124 L400,160 L0,160 Z" fill="var(--mid)"/><rect x="0" y="112" width="400" height="20" fill="var(--fog)"/><g fill="var(--near)"><path d="M0,160 L0,140 L10,150 L22,134 L34,150 L46,138 L58,150 L70,132 L82,150 L94,140 L106,150 L118,136 L130,150 L142,138 L154,150 L166,134 L178,150 L190,140 L202,150 L214,136 L226,150 L238,138 L250,150 L262,132 L274,150 L286,140 L298,150 L310,136 L322,150 L334,138 L346,150 L358,134 L370,150 L382,140 L394,150 L400,142 L400,160 Z"/></g><g stroke="var(--bird)" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"><path d="M300,34 q5,-5 10,0 q5,-5 10,0"/><path d="M324,46 q4,-4 8,0 q4,-4 8,0"/></g></svg>';
+
+// ---- календарні хелпери місяця ----
+function curMonth(){const d=new Date();return {y:d.getFullYear(),m:d.getMonth()+1};}
+function daysInMonth(y,m){return new Date(y,m,0).getDate();}
+function isCurMonth(y,m){const c=curMonth();return y===c.y&&m===c.m;}
+function prevMonthOf(y,m){return m===1?{y:y-1,m:12}:{y:y,m:m-1};}
+function monthCapDay(y,m){return isCurMonth(y,m)?new Date().getDate():daysInMonth(y,m);}
+function monthStartISO(y,m){return y+'-'+pad(m)+'-01';}
+function monthEndISO(y,m,cap){return y+'-'+pad(m)+'-'+pad(Math.min(cap,daysInMonth(y,m)));}
+function seasonOf(m){return (m===12||m<=2)?'winter':(m<=5?'spring':(m<=8?'summer':'autumn'));}
+function fmtDM(iso){const a=iso.split('-');return a[2]+'.'+a[1];}
+
+// ---- метрики у вікні [monthStart..endISO] (фільтр-залежні, окрім повного одометра й розходу) ----
+function monthTripRecords(y,m,endISO){
+  const s=monthStartISO(y,m);
+  let rs=S.records.filter(r=>r.date>=s&&r.date<=endISO);
+  if(S.filter!=='all') rs=rs.filter(r=>r.type===(S.filter==='work'?'work':'vibe'));
+  return rs;
+}
+function monthFullKm(y,m,endISO){return monthProgress(endISO).km;}                 // повний одометр (не за типом)
+function monthTypedKm(y,m,endISO){return monthTripRecords(y,m,endISO).reduce((a,r)=>a+(tripKm(r)||0),0);}
+function monthLoggedAll(y,m,endISO){const s=monthStartISO(y,m);return S.records.filter(r=>r.date>=s&&r.date<=endISO).reduce((a,r)=>a+(tripKm(r)||0),0);}
+function monthHeroKm(y,m,endISO){return S.filter==='all'?monthFullKm(y,m,endISO):monthTypedKm(y,m,endISO);}
+function monthActiveDays(y,m,endISO){const set={};monthTripRecords(y,m,endISO).forEach(r=>{set[r.date]=1;});return Object.keys(set).length;}
+// розхід: пулений л/100 по плаузібельних бак-сегментах, чия ЗАКРИВАЮЧА заправка (B) у вікні (метод C). null якщо нема.
+function monthConsumption(y,m,endISO){
+  const s=monthStartISO(y,m);
+  const ok=tankSegments().filter(seg=>seg.B.date>=s&&seg.B.date<=endISO&&seg.plausible);
+  if(!ok.length)return null;
+  const sl=ok.reduce((a,x)=>a+x.spent,0),sd=ok.reduce((a,x)=>a+x.dist,0);
+  return sd>0?sl/sd*100:null;
+}
+// ритм (у межах місяця, день 1..cap; фільтр-залежний)
+function monthRhythm(y,m){
+  const cap=monthCapDay(y,m), endISO=monthEndISO(y,m,cap);
+  const byDay={};
+  monthTripRecords(y,m,endISO).forEach(r=>{(byDay[r.date]=byDay[r.date]||[]).push(r);});
+  let top=null,sumKm=0,active=0;
+  Object.keys(byDay).forEach(iso=>{const km=byDay[iso].reduce((a,r)=>a+(tripKm(r)||0),0);active++;sumKm+=km;if(!top||km>top.km)top={iso,km};});
+  let pause=null,run=0,runStart=null;
+  for(let d=1;d<=cap;d++){
+    const iso=y+'-'+pad(m)+'-'+pad(d);
+    if(byDay[iso]){run=0;runStart=null;}
+    else{if(run===0)runStart=d;run++;if(!pause||run>pause.len)pause={len:run,start:runStart,end:d};}
+  }
+  return {cap,active,sumKm,top,pause,avg:active?Math.round(sumKm/active):null};
+}
+
+// ---- дельта (без червоного: зелений=змінилось, напрям несе стрілка) ----
+function deltaObj(cur,prev){
+  if(cur==null||prev==null)return {has:false};
+  const abs=cur-prev, pct=(prev!==0)?Math.round(abs/prev*100):null;
+  const dir=Math.abs(abs)<1e-9?'flat':(abs>0?'up':'down');
+  return {has:true,abs:abs,pct:pct,dir:dir};
+}
+function sgn(n){return n>0?'+':(n<0?'\u2212':'');}                                   // \u2212 = типографський мінус
+function arrowOf(dir){return dir==='up'?'↑':(dir==='down'?'↓':'→');}
+function deltaBlockKm(cur,prev){
+  const d=deltaObj(cur,prev);
+  if(!d.has)return `<div class="dmb-delta flat"><div class="dmb-pct">—</div></div>`;
+  const pct=d.pct!=null?(sgn(d.pct)+Math.abs(d.pct)+'%'):'—';
+  return `<div class="dmb-delta ${d.dir}"><div class="dmb-pct">${pct}</div><div class="dmb-arrow">${arrowOf(d.dir)}</div><div class="dmb-abs">${sgn(d.abs)}${fmtNum(Math.abs(d.abs))} км</div></div>`;
+}
+function deltaBlockCons(cur,prev){
+  const d=deltaObj(cur,prev);
+  if(!d.has)return `<div class="dmb-delta flat"><div class="dmb-pct">—</div></div>`;
+  return `<div class="dmb-delta ${d.dir}"><div class="dmb-pct">${sgn(d.abs)}${f1(Math.abs(d.abs))}</div><div class="dmb-arrow">${arrowOf(d.dir)}</div><div class="dmb-abs">л/100</div></div>`;
+}
+function deltaBlockDays(cur,prev){
+  const d=deltaObj(cur,prev);
+  if(!d.has)return `<div class="dmb-delta flat"><div class="dmb-pct">—</div></div>`;
+  const n=Math.abs(d.abs);
+  return `<div class="dmb-delta ${d.dir}"><div class="dmb-pct">${sgn(d.abs)}${n}<span style="font-size:11px;font-weight:700"> ${plural(n,['день','дні','днів'])}</span></div><div class="dmb-arrow">${arrowOf(d.dir)}</div></div>`;
+}
+
+// ---- гантеля ----
+function dmbRow(ico,fuelCls,name,curStr,prevStr,curWhen,prevWhen,deltaHTML,muted,why){
+  return `<div class="dmb${muted?' muted':''}">
+    <div class="dmb-ico${fuelCls?' '+fuelCls:''}">${ico}</div>
+    <div class="dmb-body">
+      <div class="dmb-name">${esc(name)}</div>
+      <div class="dmb-bar">
+        <div class="dmb-end"><div class="dmb-v">${curStr}</div><div class="dmb-when">${esc(curWhen)}</div></div>
+        <div class="dmb-conn"><span class="dmb-dot cur"></span><span class="dmb-line"></span><span class="dmb-dot prev"></span></div>
+        <div class="dmb-end prev"><div class="dmb-v">${prevStr}</div><div class="dmb-when">${esc(prevWhen)}</div></div>
+      </div>
+      ${why?`<div class="dmb-why">${esc(why)}</div>`:''}
+    </div>
+    ${deltaHTML}
+  </div>`;
+}
+
+// ---- синопсис банера ----
+function monthSynopsis(y,m,endISO,heroCur,heroPrev){
+  let dom='';
+  if(S.filter==='all'){
+    const s=monthStartISO(y,m);let wk=0,vk=0;
+    S.records.filter(r=>r.date>=s&&r.date<=endISO).forEach(r=>{const k=tripKm(r)||0;if(r.type==='work')wk+=k;else vk+=k;});
+    if(wk===0&&vk===0)dom='';
+    else if(wk>=vk*1.4)dom='здебільшого робочі';
+    else if(vk>=wk*1.4)dom='здебільшого вайб';
+    else dom='робочі й вайб порівну';
+  }else dom=(S.filter==='work'?'робочі поїздки':'вайб-поїздки');
+  const pm=prevMonthOf(y,m), pgen='до '+MON_GEN[pm.m-1];
+  let dphr;
+  if(heroPrev==null||heroPrev===0)dphr='перший місяць історії';
+  else{const pct=Math.round((heroCur-heroPrev)/heroPrev*100);dphr=(pct===0)?('як у '+MON_GEN[pm.m-1]):(sgn(pct)+Math.abs(pct)+'% '+pgen);}
+  const tail=isCurMonth(y,m)?(' (до '+pad(monthCapDay(y,m))+'.'+pad(m)+')'):'';
+  return [dom,dphr].filter(Boolean).join(', ')+tail;
+}
+
+// ---- render Tab-4 ----
+function renderMonth(){
+  if(!S.monthView)S.monthView=curMonth();
+  const y=S.monthView.y, m=S.monthView.m;
+  const cap=monthCapDay(y,m), endISO=monthEndISO(y,m,cap);
+  const pm=prevMonthOf(y,m), pCap=Math.min(cap,daysInMonth(pm.y,pm.m));
+  const pEnd=pm.y+'-'+pad(pm.m)+'-'+pad(pCap);
+  document.documentElement.dataset.season=seasonOf(m);
+
+  // метрики
+  const heroCur=monthHeroKm(y,m,endISO), heroPrev=monthHeroKm(pm.y,pm.m,pEnd);
+  const fullCur=monthFullKm(y,m,endISO), loggedAll=monthLoggedAll(y,m,endISO);
+  const grey=(fullCur!=null&&loggedAll!=null&&fullCur>loggedAll)?(fullCur-loggedAll):0;
+  const consCur=monthConsumption(y,m,endISO), consPrev=monthConsumption(pm.y,pm.m,pEnd);
+  const adCur=monthActiveDays(y,m,endISO), adPrev=monthActiveDays(pm.y,pm.m,pEnd);
+  const rh=monthRhythm(y,m);
+  const cName=MON_NOM[m-1], pName=MON_NOM[pm.m-1];
+
+  // перемикач місяця
+  const atCur=isCurMonth(y,m);
+  const sw=`<div class="mo-sw">
+    <button class="mo-arrow" id="moPrev" type="button" aria-label="Попередній місяць">${MO_ARR_L}</button>
+    <div class="mo-lbl">${MO_CAL}${cName} ${y}</div>
+    <button class="mo-arrow${atCur?' off':''}" id="moNext" type="button" aria-label="Наступний місяць"${atCur?' disabled':''}>${MO_ARR_R}</button>
+  </div>`;
+
+  // банер
+  const heroTxt=heroCur!=null?(fmtNum(heroCur)+' км'):'—';
+  const banner=`<div class="banner forest">${MO_SCENE}
+    <div class="b-txt">
+      <div class="b-h">${cName} — <span class="km">${heroTxt}</span></div>
+      <div class="b-syn">${esc(monthSynopsis(y,m,endISO,heroCur,heroPrev))}</div>
+      ${(S.filter==='all'&&grey>0)?`<div class="b-grey">${fmtNum(grey)} км без запису</div>`:''}
+    </div></div>`;
+
+  // гантелі
+  const kmU='<span>км</span>';
+  const mileCurS=heroCur!=null?(fmtNum(heroCur)+' '+kmU):'—';
+  const milePrevS=heroPrev!=null?(fmtNum(heroPrev)+' '+kmU):'—';
+  const rowMile=dmbRow(IC_DMB.road,'','Пробіг',mileCurS,milePrevS,cName,pName,deltaBlockKm(heroCur,heroPrev),false,'');
+
+  const filt=(S.filter!=='all'), cU='<span>л/100</span>';
+  let consCurS,consPrevS,consDelta,consWhy,consMuted=filt;
+  if(consCur==null){
+    consCurS='—'; consPrevS=(consPrev!=null)?(f1(consPrev)+' '+cU):'—';
+    consDelta=`<div class="dmb-delta flat"><div class="dmb-dash">—</div></div>`;
+    consWhy='замало заправок для порівняння';
+  }else{
+    consCurS=f1(consCur)+' '+cU; consPrevS=(consPrev!=null)?(f1(consPrev)+' '+cU):'—';
+    consDelta=deltaBlockCons(consCur,consPrev);
+    consWhy=filt?'розхід рахується спільно, не за типом':'';
+  }
+  const rowCons=dmbRow(IC_DMB.drop,'fuel','Розхід',consCurS,consPrevS,cName,pName,consDelta,consMuted,consWhy);
+
+  const dU=function(n){return '<span>'+plural(n,['день','дні','днів'])+'</span>';};
+  const rowAD=dmbRow(IC_DMB.cal,'','Активні дні',adCur+' '+dU(adCur),adPrev+' '+dU(adPrev),cName,pName,deltaBlockDays(adCur,adPrev),false,'');
+
+  const leg=`<div class="dmb-leg"><span><i class="prev"></i>${pName}</span><span><i class="cur"></i>${cName}${atCur?(' (до '+pad(cap)+'.'+pad(m)+')'):''}</span></div>`;
+  const dumbCard=`<div class="mo-card"><div class="r-h">${cName} vs ${pName} ${y}</div>${rowMile}${rowCons}${rowAD}${leg}</div>`;
+
+  // ритм
+  const topV=rh.top?fmtDM(rh.top.iso):'—', topSub=rh.top?(fmtNum(rh.top.km)+' км'):'немає поїздок';
+  const pauseV=rh.pause?(rh.pause.len+' '+plural(rh.pause.len,['день','дні','днів'])):'—';
+  const pauseSub=rh.pause?(pad(rh.pause.start)+'–'+pad(rh.pause.end)+'.'+pad(m)):'без пауз';
+  const avgV=rh.avg!=null?fmtNum(rh.avg):'—';
+  const pct=rh.cap?Math.round(rh.active/rh.cap*100):0;
+  const footTxt=`${rh.active} ${plural(rh.active,['активний день','активні дні','активних днів'])} із ${rh.cap}${atCur?'':' у місяці'} <b>(${pct}%)</b>`;
+  const rhCard=`<div class="mo-card">
+    <div class="r-h">Ритм місяця</div>
+    <div class="r-row">
+      <div class="r-cell"><div class="disc active">${IC_RH.active}</div><div class="r-lbl">Найактивніший день</div><div class="r-val active">${topV}</div><div class="r-sub">${topSub}</div></div>
+      <div class="r-cell"><div class="disc neu">${IC_RH.pause}</div><div class="r-lbl">Найдовша пауза</div><div class="r-val">${pauseV}</div><div class="r-sub">${pauseSub}</div></div>
+      <div class="r-cell"><div class="disc neu">${IC_RH.avg}</div><div class="r-lbl">Середній за активний день</div><div class="r-val">${avgV}</div><div class="r-sub">км</div></div>
+    </div>
+    <div class="r-foot">${MO_LEAF}<span>${footTxt}</span></div>
+  </div>`;
+
+  const sc=$('mo-scroll');
+  sc.innerHTML=sw+banner+dumbCard+rhCard;
+  const pB=$('moPrev'); if(pB)pB.addEventListener('click',()=>monthStep(-1));
+  const nB=$('moNext'); if(nB&&!nB.classList.contains('off'))nB.addEventListener('click',()=>monthStep(1));
+  bindMonthSwipe(sc);
+}
+function monthStep(dir){
+  let y=S.monthView.y, m=S.monthView.m+dir;
+  if(m<1){m=12;y--;} if(m>12){m=1;y++;}
+  const c=curMonth();
+  if(y>c.y||(y===c.y&&m>c.m))return;                 // не в майбутнє (нема даних)
+  S.monthView={y:y,m:m}; renderMonth();
+}
+// свайп = бонус (axis-lock end-only, Cookbook A22); тап стрілками — основний
+function bindMonthSwipe(el){
+  if(el._mSw)return; el._mSw=true;
+  let sx=0,sy=0,ax=null;
+  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;ax=null;},{passive:true});
+  el.addEventListener('touchmove',e=>{const cx=e.touches[0].clientX-sx,cy=e.touches[0].clientY-sy;if(ax===null&&(Math.abs(cx)>10||Math.abs(cy)>10))ax=Math.abs(cx)>Math.abs(cy)?'x':'y';},{passive:true});
+  el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(ax==='x'&&Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50)monthStep(dx<0?1:-1);},{passive:true});
+}
+
 // ---------- master render ----------
 function renderContent(){
   if(S.tab==='overview'){renderOverview();return;}
   if(S.tab==='journal'){renderJournal();return;}
   if(S.tab==='fuel'){renderFuel();return;}
-  document.querySelector('#sc-'+S.tab+' .scroll-a').innerHTML=renderDevTab(S.tab);
+  if(S.tab==='month'){renderMonth();return;}
 }
 function render(){renderFilterRow();renderContent();}
 
@@ -1955,20 +2289,8 @@ document.querySelectorAll('.theme-item').forEach(item=>{item.addEventListener('c
 document.addEventListener('click',e=>{if(!themeMenu.hidden&&!themeMenu.contains(e.target)&&!btnTheme.contains(e.target)){themeMenu.hidden=true;btnTheme.setAttribute('aria-expanded','false');}});
 
 // ============================================================
-// BOTTOM NAV + tabs 2-4 (honest dev-status screens — not stubs)
+// BOTTOM NAV + tab switching
 // ============================================================
-const TABMETA={
-  month:{t:'Місяць',b:'Batch 11',d:'Агрегований підсумок місяця: загальний пробіг, робочий vs особистий, заправки, витрата і залишок ліміту.',icon:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'}
-};
-function renderDevTab(key){
-  const m=TABMETA[key];
-  return `<div class="dev-state">
-    <div class="dev-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg></div>
-    <div class="dev-badge">${m.b} — у розробці</div>
-    <div class="dev-txt">${m.t}</div>
-    <div class="dev-hint">${m.d}</div>
-  </div>`;
-}
 function setTab(t){
   S.tab=t;
   // filter-row лишається статично в chrome (seg+date) — НЕ релокуємо у скрол.
@@ -1976,8 +2298,9 @@ function setTab(t){
   const onJournal=(t==='journal');
   $('jStats').hidden=!onJournal;
   $('searchRow').hidden=!onJournal;
-  // Агрегатні таби (Паливо/Місяць) не фільтрують по дню/типу → filter-row ховаємо (Кластер 3.7 — заодно month)
-  $('filterRow').hidden=(t==='fuel'||t==='month');
+  // Tab-4 показує сегмент (full-width); ховаємо лише дату (CSS body[data-tab=month]). Паливо — повністю без filter-row.
+  document.body.dataset.tab=t;
+  $('filterRow').hidden=(t==='fuel');
   document.querySelectorAll('.nav-i').forEach(b=>b.classList.toggle('act',b.dataset.tab===t));
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='sc-'+t));
   document.querySelector('.app-bar').classList.remove('scrolled');
