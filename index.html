@@ -623,8 +623,21 @@ html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#1
 .mo-arrow:active{background:var(--surface-3)}
 .mo-arrow svg{width:18px;height:18px}
 .mo-arrow.off{opacity:.34;pointer-events:none}
-.mo-lbl{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border-radius:var(--rs);background:var(--surface-2);border:1px solid var(--border-subtle);box-shadow:var(--sh1);font-size:14.5px;font-weight:800;letter-spacing:-.2px;color:var(--text-primary)}
+.mo-lbl{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border-radius:var(--rs);background:var(--surface-2);border:1px solid var(--border-subtle);box-shadow:var(--sh1);font-size:14.5px;font-weight:800;letter-spacing:-.2px;color:var(--text-primary);cursor:pointer;transition:background .12s}
+.mo-lbl:active{background:var(--surface-3)}
 .mo-lbl svg{width:16px;height:16px;color:var(--text-secondary);flex-shrink:0}
+/* --- місяць-пікер (sheet, тап по назві) --- */
+.mg-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 14px}
+.mg-y{font-size:16px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums}
+.mg-nav{display:flex;gap:6px}
+.mg-nav button{width:34px;height:34px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.mg-nav button:active{background:var(--surface-4)}
+.mg-nav button.off{opacity:.34;pointer-events:none}
+.mg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mg-cell{font-family:inherit;padding:13px 0;border-radius:11px;background:var(--surface-3);border:1px solid var(--border-subtle);font-size:13.5px;font-weight:700;color:var(--text-primary);cursor:pointer;transition:background .12s}
+.mg-cell:active{background:var(--surface-4)}
+.mg-cell.cur{background:var(--accent-soft);color:var(--accent-text);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.mg-cell.off{opacity:.32;pointer-events:none}
 
 /* --- банер A1 (декор-виняток) --- */
 .banner{position:relative;border-radius:var(--r);overflow:hidden;background:var(--surface-2);box-shadow:var(--sh1);border:1px solid var(--border-default);margin-bottom:14px}
@@ -648,11 +661,13 @@ html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#1
 .dmb.muted{opacity:.5}
 .dmb-ico{flex-shrink:0;width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent-text)}
 .dmb-ico svg{width:21px;height:21px}
-.dmb-ico.fuel{background:color-mix(in srgb,var(--info) 14%,var(--surface-2));color:var(--info)}/* A39: token-adaptive, звірити обидві теми */
+.dmb-ico.fuel{background:color-mix(in srgb,var(--info) 22%,var(--surface-2));color:var(--info)}/* A39: світла 22% (паритет з сусідами) */
+[data-theme="dark"] .dmb-ico.fuel{background:color-mix(in srgb,var(--info) 30%,var(--surface-2))}/* A39: cool-on-cool → темна сильніше */
+.dmb-ico.road{background:var(--surface-3);color:var(--text-secondary);border:1px solid var(--border-default)}/* дорога = нейтральний носій, не «зелена/робота» */
 .dmb-body{flex:1;min-width:0}
 .dmb-name{font-size:11.5px;font-weight:700;color:var(--text-secondary);margin-bottom:5px}
-.dmb-bar{display:flex;align-items:center;gap:9px}
-.dmb-end{flex-shrink:0}
+.dmb-bar{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;gap:9px}/* фікс-колонки: точки ●──● прибиті, не «ходять» при зміні місяця */
+.dmb-end{min-width:0}
 .dmb-end.prev{text-align:right}
 .dmb-v{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--text-primary);line-height:1.05;font-variant-numeric:tabular-nums}
 .dmb-v span{font-size:10.5px;font-weight:700;color:var(--text-secondary)}
@@ -684,7 +699,7 @@ html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#1
 .r-cell{display:flex;flex-direction:column;align-items:center;gap:7px}
 .disc{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .disc svg{width:24px;height:24px}
-.disc.active{background:var(--accent-soft);color:var(--accent-text)}
+.disc.active{background:var(--accent-soft);color:var(--accent-text);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent)}/* обідок: паритет з .disc.neu */
 .disc.neu{background:var(--surface-3);color:var(--text-secondary);border:1px solid var(--border-default)}/* пауза+середній: нейтрал, різняться силуетом не кольором */
 [data-theme="dark"] .disc.neu{background:var(--surface-4)}
 .r-lbl{font-size:11px;font-weight:600;color:var(--text-secondary);line-height:1.25;min-height:26px}
@@ -840,6 +855,24 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
   </div>
 </div>
 
+<!-- ===== SHEET: Month picker ===== -->
+<div class="sh-bg" id="sh-month">
+  <div class="sh-box">
+    <div class="sh-grip-w"><div class="sh-grip"></div></div>
+    <div class="sh-head"><span class="sh-title">Оберіть місяць</span><button class="sh-x" onclick="closeSheet('sh-month')" aria-label="Закрити">×</button></div>
+    <div class="sh-body">
+      <div class="mg-h">
+        <span class="mg-y" id="mgYear">—</span>
+        <div class="mg-nav">
+          <button id="mgPrev" type="button" onclick="mgStepYear(-1)" aria-label="Попередній рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <button id="mgNext" type="button" onclick="mgStepYear(1)" aria-label="Наступний рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+      </div>
+      <div class="mg-grid" id="mgGrid"></div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== SHEET: New record ===== -->
 <div class="sh-bg" id="sh-rec">
   <div class="sh-box">
@@ -979,7 +1012,7 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:22,stage:'Етап 1',date:'2026-06-09'};
+const APP_BUILD={batch:23,stage:'Етап 1',date:'2026-06-10'};
 
 function seed(){
   const t=todayISO();
@@ -1686,7 +1719,7 @@ function renderMonth(){
   const atCur=isCurMonth(y,m);
   const sw=`<div class="mo-sw">
     <button class="mo-arrow" id="moPrev" type="button" aria-label="Попередній місяць">${MO_ARR_L}</button>
-    <div class="mo-lbl">${MO_CAL}${cName} ${y}</div>
+    <button class="mo-lbl" type="button" onclick="openMonthPicker()">${MO_CAL}${cName} ${y}</button>
     <button class="mo-arrow${atCur?' off':''}" id="moNext" type="button" aria-label="Наступний місяць"${atCur?' disabled':''}>${MO_ARR_R}</button>
   </div>`;
 
@@ -1703,7 +1736,7 @@ function renderMonth(){
   const kmU='<span>км</span>';
   const mileCurS=heroCur!=null?(fmtNum(heroCur)+' '+kmU):'—';
   const milePrevS=heroPrev!=null?(fmtNum(heroPrev)+' '+kmU):'—';
-  const rowMile=dmbRow(IC_DMB.road,'','Пробіг',mileCurS,milePrevS,cName,pName,deltaBlockKm(heroCur,heroPrev),false,'');
+  const rowMile=dmbRow(IC_DMB.road,'road','Пробіг',mileCurS,milePrevS,cName,pName,deltaBlockKm(heroCur,heroPrev),false,'');
 
   const filt=(S.filter!=='all'), cU='<span>л/100</span>';
   let consCurS,consPrevS,consDelta,consWhy,consMuted=filt;
@@ -1759,9 +1792,29 @@ function bindMonthSwipe(el){
   if(el._mSw)return; el._mSw=true;
   let sx=0,sy=0,ax=null;
   el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;ax=null;},{passive:true});
-  el.addEventListener('touchmove',e=>{const cx=e.touches[0].clientX-sx,cy=e.touches[0].clientY-sy;if(ax===null&&(Math.abs(cx)>10||Math.abs(cy)>10))ax=Math.abs(cx)>Math.abs(cy)?'x':'y';},{passive:true});
+  el.addEventListener('touchmove',e=>{const cx=e.touches[0].clientX-sx,cy=e.touches[0].clientY-sy;if(ax===null&&(Math.abs(cx)>10||Math.abs(cy)>10))ax=Math.abs(cx)>Math.abs(cy)?'x':'y';if(ax==='x')e.preventDefault();},{passive:false});
   el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(ax==='x'&&Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50)monthStep(dx<0?1:-1);},{passive:true});
 }
+// місяць-пікер: тап по назві → сітка 3×4 (sheet A33); виставляє S.monthView напряму (логіка та сама, що в monthStep)
+const MON_AB=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','Сер','Вер','Жов','Лис','Гру'];
+let mgY=0;
+function openMonthPicker(){ mgY=S.monthView.y; renderMonthGrid(); openSheet('sh-month'); }
+function renderMonthGrid(){
+  const c=curMonth();
+  $('mgYear').textContent=mgY;
+  $('mgNext').classList.toggle('off', mgY>=c.y);                 // не в майбутній рік (нема даних)
+  let h='';
+  for(let i=1;i<=12;i++){
+    const future=(mgY>c.y)||(mgY===c.y&&i>c.m);                  // той самий guard, що в monthStep
+    const cur=(mgY===S.monthView.y&&i===S.monthView.m);
+    h+=`<button class="mg-cell${cur?' cur':''}${future?' off':''}" type="button"${future?' disabled':''} data-m="${i}">${MON_AB[i-1]}</button>`;
+  }
+  const g=$('mgGrid'); g.innerHTML=h;
+  g.querySelectorAll('.mg-cell:not(.off)').forEach(b=>b.addEventListener('click',()=>{
+    S.monthView={y:mgY,m:+b.dataset.m}; closeSheet('sh-month'); renderMonth();
+  }));
+}
+function mgStepYear(d){ const c=curMonth(); const y=mgY+d; if(y>c.y)return; mgY=y; renderMonthGrid(); }
 
 // ---------- master render ----------
 function renderContent(){
@@ -2125,10 +2178,10 @@ function addSwipeClose(bgId,closeFn){
   const box=document.querySelector('#'+bgId+' .sh-box');
   if(!box||box._sw)return;box._sw=true;
   let sy=0,ss=0,gt=false,ig=false;
-  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list')||!!e.target.closest('.cal-grid');},{passive:true});
+  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list')||!!e.target.closest('.cal-grid')||!!e.target.closest('.mg-grid');},{passive:true});
   box.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy;if(gt&&dy>40)closeFn();else if(!ig&&ss===0&&dy>64)closeFn();},{passive:true});
 }
-['sh-menu','sh-date','sh-rec','sh-rf','sh-gen','sh-confirm'].forEach(id=>{
+['sh-menu','sh-date','sh-month','sh-rec','sh-rf','sh-gen','sh-confirm'].forEach(id=>{
   $(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeSheet(id);});
 });
 
