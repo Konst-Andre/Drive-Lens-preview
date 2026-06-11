@@ -186,6 +186,7 @@ button:disabled{cursor:not-allowed}
 .cal-h{display:flex;align-items:center;gap:10px;margin:0 2px 10px}
 .cal-my{flex:1;display:flex;align-items:center;justify-content:center;height:34px;padding:0 14px;border-radius:var(--rs);background:var(--surface-3);border:1px solid var(--border-subtle);font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text-primary);cursor:pointer;transition:background .12s}/* пігулка-місяць: афорданс «чіпай/свайпай» (як Tab-4 .mo-lbl, але surface-3 — бо sheet=surface-2, інакше злилось би) */
 .cal-my:active{background:var(--surface-4)}
+.cal-view[hidden]{display:none}/* b28: спец.(0,2,0) — день/місяць свап у тому ж шіті, А36-safe */
 .cal-nav-btn{width:34px;height:34px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}/* спільна nav-кнопка ОБОХ календарів */
 .cal-nav-btn:active{background:var(--surface-4)}
 .cal-nav-btn.off{opacity:.34;pointer-events:none}
@@ -678,7 +679,8 @@ html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#1
 .mo-lbl svg{width:16px;height:16px;color:var(--text-secondary);flex-shrink:0}
 /* --- місяць-пікер (sheet, тап по назві) --- */
 .mg-h{display:flex;align-items:center;gap:10px;margin:0 2px 14px}
-.mg-y{flex:1;text-align:center;font-size:16px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums}/* лейбл по центру: ◂ 2026 ▸ */
+.mg-y{flex:1;display:flex;align-items:center;justify-content:center;height:34px;border-radius:var(--rs);background:var(--surface-3);border:1px solid var(--border-subtle);font-size:16px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;-webkit-user-select:none;user-select:none}/* b29: пігулка-рік ◂2026▸ зі свайпом (bindSwipeX); спільна для calMonView + Tab-4 sh-month */
+.mg-y:active{background:var(--surface-4)}
 .mg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mg-cell{font-family:inherit;padding:13px 0;border-radius:11px;background:var(--surface-3);border:1px solid var(--border-subtle);font-size:13.5px;font-weight:700;color:var(--text-primary);cursor:pointer;transition:background .12s}
 .mg-cell:active{background:var(--surface-4)}
@@ -882,9 +884,10 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
     <div class="sh-head"><span class="sh-title">Оберіть період</span><button class="sh-x" onclick="closeSheet('sh-date')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
+      <div class="cal-view" id="calDayView">
       <div class="cal-h" id="calHdr">
         <button class="cal-nav-btn" id="calPrev" type="button" aria-label="Попередній місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <span class="cal-my" id="calMY">—</span>
+        <span class="cal-my" id="calMY" role="button" tabindex="0" aria-label="Обрати місяць">—</span>
         <button class="cal-nav-btn" id="calNext" type="button" aria-label="Наступний місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <div class="cal-wd"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span class="we">Сб</span><span class="we">Нд</span></div>
@@ -894,6 +897,15 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
       <div class="cal-foot">
         <button class="cal-reset" id="calReset" type="button">Скинути</button>
         <button class="cal-apply" id="calApply" type="button">Показати</button>
+      </div>
+      </div>
+      <div class="cal-view" id="calMonView" hidden>
+        <div class="mg-h">
+          <button class="cal-nav-btn" id="calMgPrev" type="button" aria-label="Попередній рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <span class="mg-y" id="calMgY">—</span>
+          <button class="cal-nav-btn" id="calMgNext" type="button" aria-label="Наступний рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+        </div>
+        <div class="mg-grid" id="calMgGrid"></div>
       </div>
     </div>
   </div>
@@ -1054,7 +1066,7 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:27,stage:'Етап 1',date:'2026-06-11'};
+const APP_BUILD={batch:29,stage:'Етап 1',date:'2026-06-11'};
 
 function seed(){
   const t=todayISO();
@@ -1186,7 +1198,10 @@ function plural(n,f){const a=n%10,b=n%100;if(a===1&&b!==11)return f[0];if(a>=2&&
 // ---------- scope / range (batch11) ----------
 const MON_SHORT=['січ','лют','бер','кві','тра','чер','лип','сер','вер','жов','лис','гру'];
 function fmtShort(iso){const a=iso.split('-').map(Number);return a[2]+' '+MON_SHORT[a[1]-1];}
-function fmtRange(s,e){if(s===e)return fmtShort(s);const A=s.split('-').map(Number),B=e.split('-').map(Number);if(A[0]===B[0]&&A[1]===B[1])return A[2]+'–'+B[2]+' '+MON_SHORT[A[1]-1];return fmtShort(s)+' – '+fmtShort(e);}
+function fmtRange(s,e){if(s===e)return fmtShort(s);const A=s.split('-').map(Number),B=e.split('-').map(Number);
+  if(A[0]===B[0]&&A[1]===B[1])return A[2]+'–'+B[2]+' '+MON_SHORT[A[1]-1]+' '+A[0];                       // той самий міс+рік: 11–18 чер 2026
+  if(A[0]===B[0])return A[2]+' '+MON_SHORT[A[1]-1]+' – '+B[2]+' '+MON_SHORT[B[1]-1]+' '+A[0];             // той самий рік: 28 чер – 4 лип 2026
+  return fmtShort(s)+' '+A[0]+' – '+fmtShort(e)+' '+B[0];}                                                // різні роки: 28 гру 2026 – 4 січ 2027
 function inScope(d){return (!S.scopeStart||!S.scopeEnd)?true:(d>=S.scopeStart&&d<=S.scopeEnd);}
 
 // ---------- render: filter row ----------
@@ -1194,8 +1209,12 @@ function renderFilterRow(){
   document.body.dataset.filter=S.filter;
   document.querySelectorAll('.seg-i').forEach(b=>b.classList.toggle('act',b.dataset.f===S.filter));
   const lbl=$('dateLbl');
-  if(S.scopeStart&&S.scopeEnd){lbl.innerHTML=`<span class="db-sub">${fmtRange(S.scopeStart,S.scopeEnd)}</span>`;}
-  else lbl.innerHTML=isToday(S.activeDay)?`${fmtDate(S.activeDay)} · <span class="db-sub">Сьогодні</span>`:fmtDate(S.activeDay);
+  if(S.scopeStart&&S.scopeEnd&&S.scopeStart!==S.scopeEnd){
+    lbl.innerHTML=`<span class="db-sub">${fmtRange(S.scopeStart,S.scopeEnd)}</span>`;   // справжній діапазон (2+ дні)
+  }else{                                                                                 // один день — байдуже як обраний (кнопка / тап у календарі)
+    const day=S.scopeStart||S.activeDay;
+    lbl.innerHTML=isToday(day)?`${fmtDate(day)} · <span class="db-sub">Сьогодні</span>`:fmtDate(day);
+  }
 }
 
 // ---------- render: summary 2x2 + smart accent ----------
@@ -2261,7 +2280,7 @@ function addSwipeClose(bgId,closeFn){
   const box=document.querySelector('#'+bgId+' .sh-box');
   if(!box||box._sw)return;box._sw=true;
   let sy=0,ss=0,gt=false,ig=false;
-  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list')||!!e.target.closest('.cal-grid')||!!e.target.closest('.mg-grid');},{passive:true});
+  box.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;ss=box.scrollTop;gt=!!e.target.closest('.sh-grip-w');ig=!!e.target.closest('.fg-grid')||!!e.target.closest('.pk-list')||!!e.target.closest('.cal-grid')||!!e.target.closest('.mg-grid')||!!e.target.closest('.mg-y');},{passive:true});
   box.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-sy;if(gt&&dy>40)closeFn();else if(!ig&&ss===0&&dy>64)closeFn();},{passive:true});
 }
 ['sh-menu','sh-date','sh-month','sh-rec','sh-rf','sh-gen','sh-confirm'].forEach(id=>{
@@ -2338,11 +2357,14 @@ $('jSearchClear').addEventListener('click',()=>{S.search='';$('jSearch').value='
 // DATE PICKER
 // ============================================================
 // ----- Range calendar (batch11): tap start → tap end → Показати -----
-let calView=null, calS=null, calE=null;   // calView={y,m(1-12)}; calS/calE temp ISO
+let calView=null, calS=null, calE=null, calMgY=null;   // calView={y,m(1-12)}; calS/calE temp ISO; calMgY=рік у місяць-в'юшці (b28)
+function showCalDays(){ $('calMonView').style.minHeight=''; $('calMonView').hidden=true; $('calDayView').hidden=false; }   // b28 свап назад; b29 скид піну висоти
+function showCalMonths(){ $('calDayView').hidden=true; $('calMonView').hidden=false; } // b28 свап: на сітку місяців
 function calOpen(){
   const base=(S.scopeStart||S.activeDay).split('-').map(Number);
   calView={y:base[0],m:base[1]};
   calS=S.scopeStart||null; calE=S.scopeEnd||null;
+  showCalDays();                                          // b28: завжди відкриваємось на днях (скидаємо месяць-в'юшку якщо лишилась)
   renderCal(); bindCalSwipe($('calHdr')); openSheet('sh-date');
 }
 function calCellISO(d){return calView.y+'-'+pad(calView.m)+'-'+pad(d);}
@@ -2371,7 +2393,8 @@ function renderCal(){
   const trail=42-(lead+dim); for(let i=0;i<trail;i++)g+='<div class="cal-c blank"></div>';  // фікс 6 рядків → висота стала, без стрибків при гортанні
   $('calGrid').innerHTML=g;
   $('calHint').textContent = (calS&&calE&&calS!==calE) ? fmtRange(lo,hi)
-                            : calS ? fmtShort(calS)+' — тапни кінець діапазону'
+                            : (calS&&calE) ? fmtShort(calS)                       // committed/перевідкритий один день — без «тапни кінець»
+                            : calS ? fmtShort(calS)+' — тапни кінець діапазону'   // 1-й тап, чекаємо 2-й
                             : 'Тапни день — або початок і кінець діапазону';
 }
 function calTap(d){
@@ -2380,6 +2403,28 @@ function calTap(d){
   else{calE=iso;}                                          // 2-й тап = кінець (renderCal нормалізує lo/hi)
   renderCal();
 }
+// b28: тап по calMY → сітка місяців у ТОМУ Ж шіті (реюз .mg-* CSS). Драйвить calView (range-календар), НЕ S.monthView Tab-4 — ізоляція стану (wsd 14.10). Окремі ID calMg* щоб не зіткнутись із mgGrid/mgYear Tab-4.
+function openCalMonths(){
+  const h=$('calDayView').offsetHeight;   // b29: виміряти ДО приховування → пін на місячну в'юшку (шіт не стрибає)
+  calMgY=calView.y; renderCalMonths(); showCalMonths();
+  $('calMonView').style.minHeight=h+'px';
+}
+function renderCalMonths(){
+  const fl=dataFloor();
+  $('calMgY').textContent=calMgY;
+  $('calMgPrev').classList.toggle('off', calMgY<=fl.y);   // floor: не нижче року 1-го запису (вперед — без межі, як calStep)
+  let h='';
+  for(let i=1;i<=12;i++){
+    const blocked=(calMgY<fl.y)||(calMgY===fl.y&&i<fl.m);  // до 1-го запису — нема даних
+    const cur=(calMgY===calView.y&&i===calView.m);
+    h+=`<button class="mg-cell${cur?' cur':''}${blocked?' off':''}" type="button"${blocked?' disabled':''} data-m="${i}">${MON_AB[i-1]}</button>`;
+  }
+  const g=$('calMgGrid'); g.innerHTML=h;
+  g.querySelectorAll('.mg-cell:not(.off)').forEach(b=>b.addEventListener('click',()=>{
+    calView={y:calMgY,m:+b.dataset.m}; showCalDays(); renderCal();   // вибір місяця → назад на дні
+  }));
+}
+function calMgStepYear(d){ const fl=dataFloor(); const y=calMgY+d; if(y<fl.y)return; calMgY=y; renderCalMonths(); }
 function calStep(dir){
   const fl=dataFloor();
   if(dir<0 && (calView.y<fl.y||(calView.y===fl.y&&calView.m<=fl.m))) return;  // floor: не нижче місяця 1-го запису; вперед — без межі (сезон)
@@ -2389,6 +2434,17 @@ function calStep(dir){
   renderCal();
 }
 // свайп на ХЕДЕРІ (смужка ◂назва місяця▸) — НЕ на сітці: сітка володіє тапом (вибір днів). axis-lock + passive:false на touchmove → блок вертик. скролу при горизонт. намірі (Cookbook A44). _swiped гасить хибний click по стрілці.
+// b29: канонічний горизонт-свайп (Cookbook A44) для пігулок року. step(dir): -1 назад / +1 вперед. passive:false на touchmove ЛИШЕ для x → блок вертик. скролу при горизонт. намірі.
+function bindSwipeX(el, step){
+  if(!el||el._sw)return; el._sw=true;
+  let sx=0,sy=0,ax=null;
+  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;ax=null;el._swiped=false;},{passive:true});
+  el.addEventListener('touchmove',e=>{const cx=e.touches[0].clientX-sx,cy=e.touches[0].clientY-sy;
+    if(ax===null&&(Math.abs(cx)>10||Math.abs(cy)>10))ax=Math.abs(cx)>Math.abs(cy)?'x':'y';
+    if(ax==='x'){e.preventDefault();el._swiped=true;}},{passive:false});
+  el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(ax==='x'&&Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50)step(dx<0?1:-1);},{passive:true});
+}
 function bindCalSwipe(el){
   if(el._cSw)return; el._cSw=true;
   let sx=0,sy=0,ax=null;
@@ -2399,6 +2455,11 @@ function bindCalSwipe(el){
 $('dateBtn').addEventListener('click',calOpen);
 $('calPrev').addEventListener('click',()=>{const h=$('calHdr');if(h&&h._swiped){h._swiped=false;return;}calStep(-1);});
 $('calNext').addEventListener('click',()=>{const h=$('calHdr');if(h&&h._swiped){h._swiped=false;return;}calStep(1);});
+$('calMY').addEventListener('click',()=>{const h=$('calHdr');if(h&&h._swiped){h._swiped=false;return;}openCalMonths();});  // b28: тап = свап на місяці
+bindSwipeX($('calMgY'), calMgStepYear);   // b29: свайп року в новій місяць-в'юшці (range-календар)
+bindSwipeX($('mgYear'), mgStepYear);      // b29: свайп року в Tab-4 sh-month (етап 4 — перейняв пігулку+свайп)
+$('calMgPrev').addEventListener('click',()=>calMgStepYear(-1));
+$('calMgNext').addEventListener('click',()=>calMgStepYear(1));
 $('calGrid').addEventListener('click',e=>{const c=e.target.closest('.cal-c');if(!c||c.classList.contains('blank'))return;calTap(+c.dataset.d);});
 $('calApply').addEventListener('click',()=>{
   if(!calS){closeSheet('sh-date');return;}
