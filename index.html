@@ -183,11 +183,12 @@ button:disabled{cursor:not-allowed}
 .sr-clear:active{background:var(--surface-4)}
 
 /* ===== RANGE CALENDAR (batch11) ===== */
-.cal-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 10px}
-.cal-my{font-size:15px;font-weight:800;color:var(--text-primary)}
-.cal-nav{display:flex;gap:6px}
-.cal-nav button{width:34px;height:34px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.cal-nav button:active{background:var(--surface-4)}
+.cal-h{display:flex;align-items:center;gap:10px;margin:0 2px 10px}
+.cal-my{flex:1;display:flex;align-items:center;justify-content:center;height:34px;padding:0 14px;border-radius:var(--rs);background:var(--surface-3);border:1px solid var(--border-subtle);font-size:15px;font-weight:800;letter-spacing:-.2px;color:var(--text-primary);cursor:pointer;transition:background .12s}/* пігулка-місяць: афорданс «чіпай/свайпай» (як Tab-4 .mo-lbl, але surface-3 — бо sheet=surface-2, інакше злилось би) */
+.cal-my:active{background:var(--surface-4)}
+.cal-nav-btn{width:34px;height:34px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}/* спільна nav-кнопка ОБОХ календарів */
+.cal-nav-btn:active{background:var(--surface-4)}
+.cal-nav-btn.off{opacity:.34;pointer-events:none}
 .cal-wd{display:grid;grid-template-columns:repeat(7,1fr)}
 .cal-wd span{text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);padding:2px 0 6px}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px}
@@ -200,7 +201,11 @@ button:disabled{cursor:not-allowed}
 .cal-c.r3{border-radius:21px}
 .cal-c.today::after{content:"";position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--accent)}
 .cal-c.r1.today::after,.cal-c.r2.today::after,.cal-c.r3.today::after{background:#fff}
+/* Вікенд (Сб/Нд): нейтральна структурна заливка N2 (surface-4) — НЕ семантичний акцент. Видно лише на невибраних днях (під діапазоном ховається). */
+/* Вікенд Сб/Нд — лише шапка (нейтрально темніша), без заливки. Вихідні = структура календаря, не дані → жодного акцент-кольору. */
+.cal-wd span.we{color:var(--text-secondary)}
 .cal-hint{font-size:11.5px;color:var(--text-muted);text-align:center;margin:10px 0 2px}
+.cal-today{width:100%;padding:11px;text-align:center;margin-top:4px}
 .cal-foot{display:flex;gap:8px;margin-top:10px}
 .cal-reset{flex:0 0 auto;padding:13px 18px;border-radius:var(--r);background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);font-size:14px;font-weight:700;cursor:pointer}
 .cal-reset:active{background:var(--surface-4)}
@@ -252,12 +257,21 @@ body[data-filter="vibe"] .sum-cell.accent .sum-ico{color:var(--vibe-text)}
 /* 17.2: рамку Заправки приглушено до 58% — баланс із приглушеною (17.1) рамкою «Запис»: дві рівні сестри, не «гучна+тиха». Токен-адаптивне: light #3E7C94→soft teal, dark #6B9BB8→muted blue. A35 (паливо=синій) збережено */
 .cta-rf{background:color-mix(in srgb,var(--info) 10%,var(--surface-2));border-color:color-mix(in srgb,var(--info) 58%,var(--surface-2));color:var(--info)}
 .cta-rf:active{background:color-mix(in srgb,var(--info) 18%,var(--surface-2));transform:scale(.975)}
+/* B27: лінія між зонами (герой ↔ кнопки) + тонший відступ кнопок-пігулок */
+.cta-pill{margin-bottom:16px}
+.cta-pill .cta-btn{padding:10px;border-radius:999px;font-size:13.5px}
+.zone-div{height:1px;background:var(--border-subtle);margin:4px 2px 13px}
+[data-theme="dark"] .zone-div{background:var(--border-default)}
 
 /* ===== SECTION HEAD ===== */
 .sec-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 9px}
 .sec-t{font-size:13px;font-weight:800;color:var(--text-primary);letter-spacing:-.2px}
 .sec-c{font-size:12px;font-weight:600;color:var(--text-muted)}
 .sec-gap{margin-top:18px}
+/* B27: Tab-1 Огляд — хедери дня = eyebrow (uppercase 11px) + нижня лінія-divider. Лише .dl-варіант (compare: «з лінією»); Tab-2/картки лишаються на чистому .sec-h */
+.sec-h.dl .sec-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-secondary)}
+.sec-h.dl{border-bottom:1px solid var(--border-subtle);padding-bottom:7px;margin:0 2px 11px}
+[data-theme="dark"] .sec-h.dl{border-bottom-color:var(--border-default)}
 
 /* ===== RECORDS LIST (concept v1.3 Розділ E) ===== */
 .rec{display:flex;gap:11px;background:var(--surface-2);border:1px solid var(--border-subtle);border-radius:var(--r);padding:12px 13px;margin-bottom:8px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .14s,background .14s}
@@ -572,34 +586,70 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 /* b16a2: fl-lite прибрано — усе уніфіковано в fl-card (плаский lite поряд з картками = крінж на device) */
 /* Consumption */
 .fc-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.fc-val{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums}
+.fc-val{font-size:26px;font-weight:800;letter-spacing:-.5px;color:var(--info);line-height:1;font-variant-numeric:tabular-nums}/* b26 Q2: розхід = паливо → синій (A35) */
 .fc-val span{font-size:13px;font-weight:700;color:var(--text-secondary)}
 .fc-lbl{margin-top:5px;font-size:12px;font-weight:600;color:var(--text-secondary)}/* b16b B3: читабельніше (несе дельту) */
 .fc-trend{font-weight:800;font-variant-numeric:tabular-nums;color:var(--text-secondary)}/* b16a D1: напрям несе стрілка, не колір — без crit/ok */
 .fl-skip{margin-top:9px;font-size:11.5px;color:var(--text-muted)}
+.fc-main{position:relative;z-index:1}/* b26 Q2: текст поверх краплі-водяного знаку */
+.drop-wm{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:64px;height:64px;color:var(--info);opacity:.10;pointer-events:none}/* b26 Q2: водяний знак (не глиф-декор) */
+[data-theme="dark"] .drop-wm{opacity:.14}
 /* b16a D2: .spark + sparkline() лишено як примітив під відкладений Tab-1 hero (C2). Tab-3 виклики прибрано */
 .spark{width:88px;height:30px;display:block}
-/* Split bar */
+/* Split bar (Розподіл пробігу b26 Q4) */
 .split-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-4);margin-bottom:11px}
+.split-bar.bot{margin-bottom:0;margin-top:11px}/* b26 Q4: смуга під легендою */
 .split-w{background:var(--accent)}.split-v{background:var(--vibe)}.split-u{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
-.split-leg{display:grid;grid-template-columns:auto auto 1fr;gap:7px 8px;align-items:center;font-size:12.5px}/* b16c: грид → підписи авто-вирівняні до найширшого, значення стартують з однієї вертикалі */
-.split-li{display:contents}
 .sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .sl-dot.work{background:var(--accent)}.sl-dot.vibe{background:var(--vibe)}.sl-dot.unlog{background:color-mix(in srgb,var(--text-muted) 55%,var(--surface-4))}
-.sl-k{font-weight:700;color:var(--text-secondary)}
-.sl-v{color:var(--text-secondary);font-weight:600;font-variant-numeric:tabular-nums}/* b16b B3: не примарний */
-/* Money + pattern rows */
-.fm-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border-subtle)}
-.fm-row:last-child{border-bottom:none}
-.fm-k{font-size:13px;font-weight:600;color:var(--text-secondary)}
-.fm-v{font-size:14px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums;text-align:right}
-/* b16a2: острівець fp-stations прибрано — секція «Заправки» вже картка; підсекція = заголовок+список */
-.fp-sub{margin:12px 0 7px;font-size:12px;font-weight:700;color:var(--text-primary)}/* b16a A3: заголовок підсекції яскравий, без капсів */
-.fp-st{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border-subtle)}
-.fp-st:last-of-type{border-bottom:none}
-.fp-st-n{flex:1;font-size:13px;font-weight:600;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}/* b16a A3: назва АЗС приглушена */
-.fp-st-c{font-size:12px;font-weight:700;color:var(--text-muted);font-variant-numeric:tabular-nums}
-.fp-st-p{font-size:13px;font-weight:700;color:var(--text-primary);font-variant-numeric:tabular-nums;min-width:66px;text-align:right}/* b16a A3+R4: ціна = головне число */
+/* b26 Q4: тотал-герой + грид %/підрядок (A38 display:contents) */
+.pb-tot{display:flex;align-items:baseline;gap:7px;margin-bottom:11px}
+.pb-tot .v{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1;font-variant-numeric:tabular-nums}
+.pb-tot .u{font-size:13px;font-weight:700;color:var(--text-secondary)}
+.pb-grid{display:grid;grid-template-columns:auto 1fr auto;gap:6px 9px;align-items:center;font-size:12.5px}
+.pb-li{display:contents}
+.pb-k{font-weight:700;color:var(--text-secondary)}
+/* B27 чіп B: % у плашці; числа sub-рядка підсилені (.n), одиниці (км/л/₴) приглушені */
+.pb-chip{display:inline-flex;align-items:center;justify-content:center;min-width:46px;padding:3px 9px;border-radius:9px;font-size:12.5px;font-variant-numeric:tabular-nums;font-weight:700;color:var(--text-secondary);background:var(--surface-2);border:1px solid var(--border-subtle);box-shadow:0 1px 2px rgba(20,30,25,.08)}
+[data-theme="dark"] .pb-chip{background:var(--surface-3);border-color:var(--border-default);box-shadow:none}
+.pb2 .pb-sub{font-size:12px;color:var(--text-muted)}
+.pb2 .pb-sub .n{color:var(--text-secondary);font-weight:700}
+.pb-sub{grid-column:2 / -1;font-size:11.5px;color:var(--text-muted);margin:-2px 0 4px;font-variant-numeric:tabular-nums}
+/* b26 Q1: об'ємні сині стат-плитки (Cookbook A45 тон + A47 плитки) */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{border-radius:var(--rs);padding:13px 10px;display:flex;flex-direction:column;align-items:center;text-align:center;
+  border:1px solid color-mix(in srgb,var(--info) 26%,var(--border-subtle));
+  background:linear-gradient(180deg, color-mix(in srgb,var(--info) 12%,var(--surface-2)), color-mix(in srgb,var(--info) 6%,var(--surface-2)));
+  box-shadow:0 1px 2px rgba(20,30,25,.05), 0 3px 8px rgba(20,30,25,.07), inset 0 1px 0 rgba(255,255,255,.55)}
+[data-theme="dark"] .tile{border-color:color-mix(in srgb,var(--info) 40%,var(--border-default));
+  background:linear-gradient(180deg, color-mix(in srgb,var(--info) 22%,var(--surface-2)), color-mix(in srgb,var(--info) 12%,var(--surface-2)));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.22), 0 2px 4px rgba(0,0,0,.25)}
+.tile .ti{width:24px;height:24px;margin-bottom:9px;color:var(--info)}
+.tile .tv{font-size:16px;font-weight:800;letter-spacing:-.3px;line-height:1;font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--info) 60%,var(--text-primary))}
+[data-theme="dark"] .tile .tv{color:color-mix(in srgb,var(--info) 80%,var(--text-primary))}
+.tile .tl{margin-top:6px;font-size:11px;font-weight:600;color:var(--text-muted);line-height:1.25}
+/* b26 Q3: card-in-card (Cookbook A46) — Звички + Де заправляюся */
+.cic{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sub{background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);padding:11px 12px}
+[data-theme="dark"] .sub{border-color:var(--border-default);background:color-mix(in srgb,var(--surface-3) 80%,var(--surface-2));box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+.colh{font-size:11.5px;font-weight:800;color:var(--text-secondary);letter-spacing:.2px;margin-bottom:8px}
+.hbm{display:flex;align-items:center;gap:8px;padding:7px 0}
+.hbm:not(:last-child){border-bottom:1px solid var(--border-subtle)}
+[data-theme="dark"] .hbm:not(:last-child){border-bottom-color:var(--border-default)}
+.hbm .hi{width:18px;height:18px;flex-shrink:0}
+.hbm .hi.fuel{color:var(--info)}.hbm .hi.neutral{color:var(--text-secondary)}
+.ht{min-width:0;display:flex;flex-direction:column;gap:3px}
+.hk{font-size:11.5px;color:var(--text-secondary);font-weight:600;line-height:1.1}
+.hv{font-size:13.5px;font-weight:800;color:var(--text-primary);line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sti{display:flex;align-items:center;gap:8px;padding:7px 0}
+.sti:not(:last-child){border-bottom:1px solid var(--border-subtle)}
+[data-theme="dark"] .sti:not(:last-child){border-bottom-color:var(--border-default)}
+.mono{flex-shrink:0;width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:var(--surface-2);color:var(--text-secondary);border:1px solid var(--border-default)}
+[data-theme="dark"] .mono{background:var(--surface-4)}
+.stt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.stn{font-size:13px;font-weight:700;color:var(--text-primary);line-height:1.1}
+.stp{font-size:11.5px;color:var(--text-secondary);line-height:1.1;font-variant-numeric:tabular-nums}
+.stc{font-size:11px;font-weight:700;color:var(--text-muted);flex-shrink:0}
 
 /* ========================================================================
    TAB-4 «МІСЯЦЬ» (Batch 22) — банер A1 + перемикач + гантелі + ритм B3
@@ -627,12 +677,8 @@ html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#1
 .mo-lbl:active{background:var(--surface-3)}
 .mo-lbl svg{width:16px;height:16px;color:var(--text-secondary);flex-shrink:0}
 /* --- місяць-пікер (sheet, тап по назві) --- */
-.mg-h{display:flex;align-items:center;justify-content:space-between;margin:0 2px 14px}
-.mg-y{font-size:16px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums}
-.mg-nav{display:flex;gap:6px}
-.mg-nav button{width:34px;height:34px;border-radius:10px;background:var(--surface-3);border:1px solid var(--border-subtle);color:var(--text-secondary);display:flex;align-items:center;justify-content:center;cursor:pointer}
-.mg-nav button:active{background:var(--surface-4)}
-.mg-nav button.off{opacity:.34;pointer-events:none}
+.mg-h{display:flex;align-items:center;gap:10px;margin:0 2px 14px}
+.mg-y{flex:1;text-align:center;font-size:16px;font-weight:800;color:var(--text-primary);font-variant-numeric:tabular-nums}/* лейбл по центру: ◂ 2026 ▸ */
 .mg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mg-cell{font-family:inherit;padding:13px 0;border-radius:11px;background:var(--surface-3);border:1px solid var(--border-subtle);font-size:13.5px;font-weight:700;color:var(--text-primary);cursor:pointer;transition:background .12s}
 .mg-cell:active{background:var(--surface-4)}
@@ -666,7 +712,7 @@ html[data-theme="dark"][data-season="spring"] .forest{--sky-a:#1E2E1F;--sky-b:#1
 .dmb-ico.road{background:var(--surface-3);color:var(--text-secondary);border:1px solid var(--border-default)}/* дорога = нейтральний носій, не «зелена/робота» */
 .dmb-body{flex:1;min-width:0}
 .dmb-name{font-size:11.5px;font-weight:700;color:var(--text-secondary);margin-bottom:5px}
-.dmb-bar{display:grid;grid-template-columns:76px 1fr 76px;align-items:center;gap:9px}/* фікс-колонки: точки ●──● прибиті, не «ходять» при зміні місяця */
+.dmb-bar{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:9px}/* фікс-колонки: точки ●──● прибиті; 64px (а не 76) → довший конектор, вміщає найширше «8.2 л/100» */
 .dmb-end{min-width:0}
 .dmb-end.prev{text-align:right}
 .dmb-v{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--text-primary);line-height:1.05;font-variant-numeric:tabular-nums}
@@ -836,17 +882,15 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
     <div class="sh-grip-w"><div class="sh-grip"></div></div>
     <div class="sh-head"><span class="sh-title">Оберіть період</span><button class="sh-x" onclick="closeSheet('sh-date')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
-      <div class="cal-h">
+      <div class="cal-h" id="calHdr">
+        <button class="cal-nav-btn" id="calPrev" type="button" aria-label="Попередній місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <span class="cal-my" id="calMY">—</span>
-        <div class="cal-nav">
-          <button id="calPrev" type="button" aria-label="Попередній місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-          <button id="calNext" type="button" aria-label="Наступний місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
-        </div>
+        <button class="cal-nav-btn" id="calNext" type="button" aria-label="Наступний місяць"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
-      <div class="cal-wd"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Нд</span></div>
+      <div class="cal-wd"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span class="we">Сб</span><span class="we">Нд</span></div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="cal-hint" id="calHint">Тапни день — або початок і кінець діапазону</div>
-      <button class="chip-btn" id="todayBtn" style="width:100%;padding:11px;text-align:center;margin-top:4px">Сьогодні</button>
+      <button class="chip-btn cal-today" id="todayBtn" type="button">Сьогодні</button>
       <div class="cal-foot">
         <button class="cal-reset" id="calReset" type="button">Скинути</button>
         <button class="cal-apply" id="calApply" type="button">Показати</button>
@@ -862,11 +906,9 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
     <div class="sh-head"><span class="sh-title">Оберіть місяць</span><button class="sh-x" onclick="closeSheet('sh-month')" aria-label="Закрити">×</button></div>
     <div class="sh-body">
       <div class="mg-h">
+        <button class="cal-nav-btn" id="mgPrev" type="button" onclick="mgStepYear(-1)" aria-label="Попередній рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <span class="mg-y" id="mgYear">—</span>
-        <div class="mg-nav">
-          <button id="mgPrev" type="button" onclick="mgStepYear(-1)" aria-label="Попередній рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-          <button id="mgNext" type="button" onclick="mgStepYear(1)" aria-label="Наступний рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
-        </div>
+        <button class="cal-nav-btn" id="mgNext" type="button" onclick="mgStepYear(1)" aria-label="Наступний рік"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
       </div>
       <div class="mg-grid" id="mgGrid"></div>
     </div>
@@ -1012,7 +1054,7 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:23,stage:'Етап 1',date:'2026-06-10'};
+const APP_BUILD={batch:27,stage:'Етап 1',date:'2026-06-11'};
 
 function seed(){
   const t=todayISO();
@@ -1023,7 +1065,7 @@ function seed(){
     {id:uid(),date:t,time:'18:50',route:'Дім → магазин',addr:'АТБ Тополя',odoStart:17726,type:'vibe',fuel:8,odo:17742}
   ];
   S.refuels=[
-    {id:uid(),date:t,time:'12:30',azs:'WOG Слобожанський',liters:30.5,price:54.90,sum:1674.45,ftype:'А-95',odo:17701,fuel:11}
+    {id:uid(),date:t,time:'12:30',azs:'WOG',liters:30.5,price:54.90,sum:1674.45,ftype:'А-95',odo:17701,fuel:11}
   ];
   // --- минулі дні (mock-історія для Журналу: місяці + тижні + work/vibe + заправки) ---
   const d1=addDays(t,-1),d2=addDays(t,-2),d5=addDays(t,-5),d9=addDays(t,-9),d16=addDays(t,-16),d33=addDays(t,-33),d38=addDays(t,-38);
@@ -1042,10 +1084,10 @@ function seed(){
     {id:uid(),date:d38,time:'12:00',route:'Дім → дача',addr:'с. Любимівка',odoStart:16034,type:'vibe',fuel:5,odo:16080,range:60}
   );
   S.refuels.push(
-    {id:uid(),date:d1,time:'18:10',azs:'ОККО Слобожанський',liters:28.0,price:55.20,sum:1545.60,ftype:'А-95',odo:17650,fuel:11},
-    {id:uid(),date:d5,time:'15:30',azs:'WOG Набережна',liters:25.4,price:54.70,sum:1389.38,ftype:'А-95',odo:17425,fuel:10},
-    {id:uid(),date:d16,time:'10:05',azs:'UPG Центр',liters:32.1,price:53.90,sum:1730.19,ftype:'А-95',odo:16945,fuel:12},
-    {id:uid(),date:d33,time:'11:00',azs:'WOG Слобожанський',liters:29.7,price:52.40,sum:1556.28,ftype:'А-95',odo:16325,fuel:11}
+    {id:uid(),date:d1,time:'18:10',azs:'ОККО',liters:28.0,price:55.20,sum:1545.60,ftype:'А-95',odo:17650,fuel:11},
+    {id:uid(),date:d5,time:'15:30',azs:'WOG',liters:25.4,price:54.70,sum:1389.38,ftype:'А-95',odo:17425,fuel:10},
+    {id:uid(),date:d16,time:'10:05',azs:'UPG',liters:32.1,price:53.90,sum:1730.19,ftype:'А-95',odo:16945,fuel:12},
+    {id:uid(),date:d33,time:'11:00',azs:'WOG',liters:29.7,price:52.40,sum:1556.28,ftype:'А-95',odo:16325,fuel:11}
   );
 }
 // Model B міграція mv:2 (one-shot, idempotent). Бекфіл odoStart глобальним ланцюгом, прибрати збережене km.
@@ -1190,7 +1232,7 @@ function renderSummary(){
 
 // ---------- render: CTA pair ----------
 function renderCTA(){
-  return `<div class="cta-row">
+  return `<div class="zone-div"></div><div class="cta-row cta-pill">
     <button class="cta-btn cta-rec" id="cta-rec">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
       Запис
@@ -1257,11 +1299,11 @@ function renderRecords(){
   }
   if(recs.length){
     const total=recs.reduce((s,r)=>s+(tripKm(r)||0),0);
-    html+=`<div class="sec-h"><span class="sec-t">Записи дня</span><span class="sec-c">${recs.length} · ${total} км</span></div>`;
+    html+=`<div class="sec-h dl"><span class="sec-t">Записи дня</span><span class="sec-c">${recs.length} · ${total} км</span></div>`;
     html+=recs.map((r,i)=>recItem(r,i+1)).join('');
   }
   if(rfs.length){
-    html+=`<div class="sec-h${recs.length?' sec-gap':''}"><span class="sec-t">Заправки дня</span><span class="sec-c">${rfs.length}</span></div>`;
+    html+=`<div class="sec-h dl${recs.length?' sec-gap':''}"><span class="sec-t">Заправки дня</span><span class="sec-c">${rfs.length}</span></div>`;
     html+=rfs.map(rfItem).join('');
   }
   return html;
@@ -1494,12 +1536,15 @@ function stateBlock(cur){
 }
 function consumptionBlock(){
   const head=`<div class="sec-h"><span class="sec-t">Мій розхід</span><span class="sec-c">за заправками</span></div>`;
+  const DROP='<path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/>';
   const segs=scopedSegments(),ok=segs.filter(s=>s.plausible),skip=segs.length-ok.length;
   if(!ok.length)return `<section class="fl-card">${head}<div class="fl-note">Потрібно щонайменше дві заправки з одометром, щоб порахувати розхід.</div></section>`;
   const avg=avgL100(),last=ok[ok.length-1].l100,delta=last-avg;
   const dir=delta<-0.05?'down':(delta>0.05?'up':'flat'),arrow=dir==='down'?'↓':(dir==='up'?'↑':'→');
   const skipNote=skip>0?`<div class="fl-skip">${skip} ${plural(skip,['відрізок','відрізки','відрізків'])} не враховано (доливка / мало км)</div>`:'';
-  return `<section class="fl-card">${head}
+  return `<section class="fl-card" style="position:relative;overflow:hidden">
+    <svg class="drop-wm" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">${DROP}</svg>
+    ${head}
     <div class="fc-row">
       <div class="fc-main"><div class="fc-val">${f1(avg)}<span> л/100</span></div>
         <div class="fc-lbl">середній за період${dir!=='flat'?` · <span class="fc-trend ${dir}">${arrow}\u202F${f1(Math.abs(delta))}</span> ост. бак`:''}</div></div>
@@ -1507,41 +1552,69 @@ function consumptionBlock(){
   </section>`;
 }
 function splitBlock(){
-  const head=`<div class="sec-h"><span class="sec-t">Робота / Вайб</span><span class="sec-c">за пробігом</span></div>`;
+  const head=`<div class="sec-h"><span class="sec-t">Розподіл пробігу</span><span class="sec-c">загальний</span></div>`;
   const sp=fuelSplit();
   if(sp.tot<=0)return `<section class="fl-card">${head}<div class="fl-note">Немає записів з пробігом за цей період.</div></section>`;
+  const total=sp.wk+sp.vk+sp.unlog;                         // повний одометр-пробіг (скиби сумуються в нього; total===base)
   const lk=sp.wLit!=null, ck=sp.wCost!=null;
-  const showU=sp.uW>10;                               // сірий лише коли неповнота суттєва (інакше — нагадування зайве)
+  const showU=sp.uW>10;                                     // «Без запису» лише коли неповнота суттєва
+  const pct=v=>Math.round(total>0?v/total*100:0);
+  const subW=`<span class="n">${fmtNum(sp.wk)}</span> км${lk?` · ≈\u202F<span class="n">${f1(sp.wLit)}</span> л`:''}${ck?` · <span class="n">${fmtNum(sp.wCost)}</span>\u00A0₴`:''}`;
+  const subV=`<span class="n">${fmtNum(sp.vk)}</span> км${lk?` · ≈\u202F<span class="n">${f1(sp.vLit)}</span> л`:''}${ck?` · <span class="n">${fmtNum(sp.vCost)}</span>\u00A0₴`:''}`;
   let wW=sp.wW,vW=sp.vW,uW=sp.uW;
   if(!showU){const s=wW+vW; wW=s>0?wW/s*100:0; vW=s>0?vW/s*100:0; uW=0;} // майже все залоговано → 2 сегменти на всю смугу
-  return `<section class="fl-card">${head}
-    <div class="split-bar"><span class="split-w" style="width:${wW.toFixed(1)}%"></span><span class="split-v" style="width:${vW.toFixed(1)}%"></span>${showU?`<span class="split-u" style="width:${uW.toFixed(1)}%"></span>`:''}</div>
-    <div class="split-leg">
-      <div class="split-li"><i class="sl-dot work"></i><span class="sl-k">Робота</span><span class="sl-v">${fmtNum(sp.wk)} км${lk?` · ≈\u202F${f1(sp.wLit)} л`:''}${ck?` · ${money(sp.wCost)}`:''}</span></div>
-      <div class="split-li"><i class="sl-dot vibe"></i><span class="sl-k">Вайб</span><span class="sl-v">${fmtNum(sp.vk)} км${lk?` · ≈\u202F${f1(sp.vLit)} л`:''}${ck?` · ${money(sp.vCost)}`:''}</span></div>
-      ${showU?`<div class="split-li"><i class="sl-dot unlog"></i><span class="sl-k">Без запису</span><span class="sl-v">${fmtNum(sp.unlog)} км · ${sp.unlogPct}%</span></div>`:''}
+  return `<section class="fl-card pb2">${head}
+    <div class="pb-tot"><span class="v">${fmtNum(total)}</span><span class="u">км</span></div>
+    <div class="pb-grid">
+      <div class="pb-li"><i class="sl-dot work"></i><span class="pb-k">Робота</span><span class="pb-chip">${pct(sp.wk)}%</span></div>
+      <div class="pb-sub">${subW}</div>
+      <div class="pb-li"><i class="sl-dot vibe"></i><span class="pb-k">Вайб</span><span class="pb-chip">${pct(sp.vk)}%</span></div>
+      <div class="pb-sub">${subV}</div>
+      ${showU?`<div class="pb-li"><i class="sl-dot unlog"></i><span class="pb-k">Без запису</span><span class="pb-chip">${pct(sp.unlog)}%</span></div>
+      <div class="pb-sub"><span class="n">${fmtNum(sp.unlog)}</span> км</div>`:''}
     </div>
+    <div class="split-bar bot"><span class="split-w" style="width:${wW.toFixed(1)}%"></span><span class="split-v" style="width:${vW.toFixed(1)}%"></span>${showU?`<span class="split-u" style="width:${uW.toFixed(1)}%"></span>`:''}</div>
   </section>`;
 }
 function moneyBlock(){
   const m=fuelMoney(),head=`<div class="sec-h"><span class="sec-t">Гроші</span><span class="sec-c">за період</span></div>`;
   if(m.count<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
-  const rows=[['Витрати на паливо',m.cost>0?money(m.cost):'—'],['Вартість 100 км',m.per100!=null?money(m.per100):'—'],['Середня ціна літра',m.avgPrice!=null?m.avgPrice.toFixed(2)+'\u00A0₴':'—']];
-  return `<section class="fl-card">${head}${rows.map(r=>`<div class="fm-row"><span class="fm-k">${r[0]}</span><span class="fm-v">${r[1]}</span></div>`).join('')}</section>`;
+  const IC_SPEND='<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
+  const IC_PER100='<svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14l4-4M3.34 19a10 10 0 1 1 17.32 0"/></svg>';
+  const IC_PRICE='<svg class="ti" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg>';
+  const tiles=[
+    [IC_SPEND, m.cost>0?money(m.cost):'—', 'Витрати на паливо'],
+    [IC_PER100, m.per100!=null?money(m.per100):'—', 'Вартість 100 км'],
+    [IC_PRICE, m.avgPrice!=null?m.avgPrice.toFixed(2)+'\u00A0₴':'—', 'Середня ціна літра']
+  ];
+  return `<section class="fl-card">${head}<div class="tiles">${tiles.map(t=>`<div class="tile">${t[0]}<div class="tv">${t[1]}</div><div class="tl">${t[2]}</div></div>`).join('')}</div></section>`;
 }
 function patternBlock(){
-  const head=`<div class="sec-h"><span class="sec-t">Заправки</span><span class="sec-c">звички</span></div>`;
+  const head=`<div class="sec-h"><span class="sec-t">Заправки</span><span class="sec-c">за період</span></div>`;
   const rf=scopedRefuels();
   if(rf.length<1)return `<section class="fl-card">${head}<div class="fl-note">Заправок за цей період немає.</div></section>`;
   const m=fuelMoney(),cad=fuelCadence(),tops=topStations();
-  const cadDays=(cad&&cad.days&&cad.days>0)?('раз на '+cad.days+' '+plural(cad.days,['день','дні','днів'])):null;
-  const cadKm=(cad&&cad.km!=null&&cad.km>0)?('≈\u202F'+fmtNum(cad.km)+' км'):null;
-  const st=tops.map(t=>`<div class="fp-st"><span class="fp-st-n">${esc(t.azs)}</span><span class="fp-st-c">${t.count}×</span><span class="fp-st-p">${t.avgPrice!=null?t.avgPrice.toFixed(2)+'\u00A0₴/л':'—'}</span></div>`).join('');
+  const cadDays=(cad&&cad.days&&cad.days>0)?('кожні '+cad.days+' '+plural(cad.days,['день','дні','днів'])):'замало даних';
+  const cadKm=(cad&&cad.km!=null&&cad.km>0)?('≈\u202F'+fmtNum(cad.km)+' км'):'—';
+  const avgFill=(m.avgFill!=null)?(f1(m.avgFill)+' л'):'—';
+  const IC_CAL='<svg class="hi neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>';
+  const IC_ROAD='<svg class="hi neutral" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 L5 21"/><path d="M16 3 L19 21"/><path d="M12 4 v2.5 M12 10 v3 M12 17 v2.5"/></svg>';
+  const IC_DROP='<svg class="hi fuel" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5S5 10 5 14.5a7 7 0 0 0 14 0C19 10 12 2.5 12 2.5z"/></svg>';
+  const mono=s=>{const ch=[...String(s||'—')][0]||'—';return ch.toUpperCase();};
+  const sts=tops.map(t=>`<div class="sti"><span class="mono">${esc(mono(t.azs))}</span><div class="stt"><div class="stn">${esc(t.azs)}</div><div class="stp">${t.avgPrice!=null?t.avgPrice.toFixed(2)+'\u00A0₴/л':'—'}</div></div><span class="stc">${t.count}×</span></div>`).join('');
   return `<section class="fl-card">${head}
-    <div class="fm-row"><span class="fm-k">Як часто</span><span class="fm-v">${cadDays||'замало даних'}</span></div>
-    ${cadKm?`<div class="fm-row"><span class="fm-k">Між заправками</span><span class="fm-v">${cadKm}</span></div>`:''}
-    <div class="fm-row"><span class="fm-k">Середній залив</span><span class="fm-v">${m.avgFill!=null?f1(m.avgFill)+' л':'—'}</span></div>
-    ${tops.length?`<div class="fp-sub">Де заправляюсь</div>${st}`:''}
+    <div class="cic">
+      <div class="sub">
+        <div class="colh">Звички</div>
+        <div class="hbm">${IC_CAL}<div class="ht"><div class="hk">Як часто</div><div class="hv">${cadDays}</div></div></div>
+        <div class="hbm">${IC_ROAD}<div class="ht"><div class="hk">Між заправками</div><div class="hv">${cadKm}</div></div></div>
+        <div class="hbm">${IC_DROP}<div class="ht"><div class="hk">Середній залив</div><div class="hv">${avgFill}</div></div></div>
+      </div>
+      <div class="sub">
+        <div class="colh">Де заправляюся</div>
+        ${sts}
+      </div>
+    </div>
   </section>`;
 }
 function fuelPeriods(){
@@ -1589,6 +1662,13 @@ const MO_SCENE='<svg class="scene" viewBox="0 0 400 160" preserveAspectRatio="xM
 
 // ---- календарні хелпери місяця ----
 function curMonth(){const d=new Date();return {y:d.getFullYear(),m:d.getMonth()+1};}
+function dataFloor(){                                  // місяць 1-го запису = найраніша межа назад (обидва календарі)
+  let min=null;
+  S.records.forEach(r=>{if(r.date&&(min===null||r.date<min))min=r.date;});
+  S.refuels.forEach(r=>{if(r.date&&(min===null||r.date<min))min=r.date;});
+  if(!min)return curMonth();
+  const a=min.split('-');return {y:+a[0],m:+a[1]};
+}
 function daysInMonth(y,m){return new Date(y,m,0).getDate();}
 function isCurMonth(y,m){const c=curMonth();return y===c.y&&m===c.m;}
 function prevMonthOf(y,m){return m===1?{y:y-1,m:12}:{y:y,m:m-1};}
@@ -1680,6 +1760,8 @@ function dmbRow(ico,fuelCls,name,curStr,prevStr,curWhen,prevWhen,deltaHTML,muted
 
 // ---- синопсис банера ----
 function monthSynopsis(y,m,endISO,heroCur,heroPrev){
+  const cM=curMonth();
+  if((y>cM.y||(y===cM.y&&m>cM.m))&&(heroCur==null||heroCur===0))return 'ще немає поїздок';  // майбутній порожній місяць — чесно (не «перший місяць історії»)
   let dom='';
   if(S.filter==='all'){
     const s=monthStartISO(y,m);let wk=0,vk=0;
@@ -1717,10 +1799,11 @@ function renderMonth(){
 
   // перемикач місяця
   const atCur=isCurMonth(y,m);
+  const fl=dataFloor(); const atFloor=(y===fl.y&&m===fl.m);
   const sw=`<div class="mo-sw">
-    <button class="mo-arrow" id="moPrev" type="button" aria-label="Попередній місяць">${MO_ARR_L}</button>
+    <button class="mo-arrow${atFloor?' off':''}" id="moPrev" type="button" aria-label="Попередній місяць"${atFloor?' disabled':''}>${MO_ARR_L}</button>
     <button class="mo-lbl" type="button" onclick="openMonthPicker()">${MO_CAL}${cName} ${y}</button>
-    <button class="mo-arrow${atCur?' off':''}" id="moNext" type="button" aria-label="Наступний місяць"${atCur?' disabled':''}>${MO_ARR_R}</button>
+    <button class="mo-arrow" id="moNext" type="button" aria-label="Наступний місяць">${MO_ARR_R}</button>
   </div>`;
 
   // банер
@@ -1754,7 +1837,7 @@ function renderMonth(){
   const dU=function(n){return '<span>'+plural(n,['день','дні','днів'])+'</span>';};
   const rowAD=dmbRow(IC_DMB.cal,'','Активні дні',adCur+' '+dU(adCur),adPrev+' '+dU(adPrev),cName,pName,deltaBlockDays(adCur,adPrev),false,'');
 
-  const leg=`<div class="dmb-leg"><span><i class="prev"></i>${pName}</span><span><i class="cur"></i>${cName}${atCur?(' (до '+pad(cap)+'.'+pad(m)+')'):''}</span></div>`;
+  const leg=`<div class="dmb-leg"><span><i class="cur"></i>${cName}${atCur?(' (до '+pad(cap)+'.'+pad(m)+')'):''}</span><span><i class="prev"></i>${pName}</span></div>`;
   const dumbCard=`<div class="mo-card"><div class="r-h">${cName} vs ${pName} ${y}</div>${rowMile}${rowCons}${rowAD}${leg}</div>`;
 
   // ритм
@@ -1776,15 +1859,15 @@ function renderMonth(){
 
   const sc=$('mo-scroll');
   sc.innerHTML=sw+banner+dumbCard+rhCard;
-  const pB=$('moPrev'); if(pB)pB.addEventListener('click',()=>monthStep(-1));
-  const nB=$('moNext'); if(nB&&!nB.classList.contains('off'))nB.addEventListener('click',()=>monthStep(1));
+  const pB=$('moPrev'); if(pB&&!pB.classList.contains('off'))pB.addEventListener('click',()=>monthStep(-1));
+  const nB=$('moNext'); if(nB)nB.addEventListener('click',()=>monthStep(1));
   bindMonthSwipe(sc);
 }
 function monthStep(dir){
   let y=S.monthView.y, m=S.monthView.m+dir;
   if(m<1){m=12;y--;} if(m>12){m=1;y++;}
-  const c=curMonth();
-  if(y>c.y||(y===c.y&&m>c.m))return;                 // не в майбутнє (нема даних)
+  const fl=dataFloor();
+  if(y<fl.y||(y===fl.y&&m<fl.m))return;              // не нижче місяця 1-го запису; вперед — без межі (сезонний банер котиться через Новий рік)
   S.monthView={y:y,m:m}; renderMonth();
 }
 // свайп = бонус (axis-lock end-only, Cookbook A22); тап стрілками — основний
@@ -1800,21 +1883,21 @@ const MON_AB=['Січ','Лют','Бер','Кві','Тра','Чер','Лип','С
 let mgY=0;
 function openMonthPicker(){ mgY=S.monthView.y; renderMonthGrid(); openSheet('sh-month'); }
 function renderMonthGrid(){
-  const c=curMonth();
+  const fl=dataFloor();
   $('mgYear').textContent=mgY;
-  $('mgNext').classList.toggle('off', mgY>=c.y);                 // не в майбутній рік (нема даних)
+  $('mgPrev').classList.toggle('off', mgY<=fl.y);                // floor: не нижче року 1-го запису (вперед — без межі)
   let h='';
   for(let i=1;i<=12;i++){
-    const future=(mgY>c.y)||(mgY===c.y&&i>c.m);                  // той самий guard, що в monthStep
+    const blocked=(mgY<fl.y)||(mgY===fl.y&&i<fl.m);             // до 1-го запису — нема даних
     const cur=(mgY===S.monthView.y&&i===S.monthView.m);
-    h+=`<button class="mg-cell${cur?' cur':''}${future?' off':''}" type="button"${future?' disabled':''} data-m="${i}">${MON_AB[i-1]}</button>`;
+    h+=`<button class="mg-cell${cur?' cur':''}${blocked?' off':''}" type="button"${blocked?' disabled':''} data-m="${i}">${MON_AB[i-1]}</button>`;
   }
   const g=$('mgGrid'); g.innerHTML=h;
   g.querySelectorAll('.mg-cell:not(.off)').forEach(b=>b.addEventListener('click',()=>{
     S.monthView={y:mgY,m:+b.dataset.m}; closeSheet('sh-month'); renderMonth();
   }));
 }
-function mgStepYear(d){ const c=curMonth(); const y=mgY+d; if(y>c.y)return; mgY=y; renderMonthGrid(); }
+function mgStepYear(d){ const fl=dataFloor(); const y=mgY+d; if(y<fl.y)return; mgY=y; renderMonthGrid(); }
 
 // ---------- master render ----------
 function renderContent(){
@@ -2260,11 +2343,13 @@ function calOpen(){
   const base=(S.scopeStart||S.activeDay).split('-').map(Number);
   calView={y:base[0],m:base[1]};
   calS=S.scopeStart||null; calE=S.scopeEnd||null;
-  renderCal(); openSheet('sh-date');
+  renderCal(); bindCalSwipe($('calHdr')); openSheet('sh-date');
 }
 function calCellISO(d){return calView.y+'-'+pad(calView.m)+'-'+pad(d);}
 function renderCal(){
+  const fl=dataFloor();
   $('calMY').textContent=MON_NOM[calView.m-1]+' '+calView.y;
+  $('calPrev').classList.toggle('off',(calView.y<fl.y)||(calView.y===fl.y&&calView.m<=fl.m));  // floor: не нижче місяця 1-го запису
   const firstISO=calView.y+'-'+pad(calView.m)+'-01';
   const lead=(dowISO(firstISO)+6)%7;                       // Monday-first offset
   const dim=new Date(calView.y,calView.m,0).getDate();     // днів у місяці
@@ -2283,6 +2368,7 @@ function renderCal(){
     if(iso===tIso)cls+=' today';
     g+=`<div class="${cls}" data-d="${d}">${d}</div>`;
   }
+  const trail=42-(lead+dim); for(let i=0;i<trail;i++)g+='<div class="cal-c blank"></div>';  // фікс 6 рядків → висота стала, без стрибків при гортанні
   $('calGrid').innerHTML=g;
   $('calHint').textContent = (calS&&calE&&calS!==calE) ? fmtRange(lo,hi)
                             : calS ? fmtShort(calS)+' — тапни кінець діапазону'
@@ -2294,9 +2380,25 @@ function calTap(d){
   else{calE=iso;}                                          // 2-й тап = кінець (renderCal нормалізує lo/hi)
   renderCal();
 }
+function calStep(dir){
+  const fl=dataFloor();
+  if(dir<0 && (calView.y<fl.y||(calView.y===fl.y&&calView.m<=fl.m))) return;  // floor: не нижче місяця 1-го запису; вперед — без межі (сезон)
+  calView.m+=dir;
+  if(calView.m<1){calView.m=12;calView.y--;}
+  if(calView.m>12){calView.m=1;calView.y++;}
+  renderCal();
+}
+// свайп на ХЕДЕРІ (смужка ◂назва місяця▸) — НЕ на сітці: сітка володіє тапом (вибір днів). axis-lock + passive:false на touchmove → блок вертик. скролу при горизонт. намірі (Cookbook A44). _swiped гасить хибний click по стрілці.
+function bindCalSwipe(el){
+  if(el._cSw)return; el._cSw=true;
+  let sx=0,sy=0,ax=null;
+  el.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;ax=null;el._swiped=false;},{passive:true});
+  el.addEventListener('touchmove',e=>{const cx=e.touches[0].clientX-sx,cy=e.touches[0].clientY-sy;if(ax===null&&(Math.abs(cx)>10||Math.abs(cy)>10))ax=Math.abs(cx)>Math.abs(cy)?'x':'y';if(ax==='x'){e.preventDefault();el._swiped=true;}},{passive:false});
+  el.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;if(ax==='x'&&Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50)calStep(dx<0?1:-1);},{passive:true});
+}
 $('dateBtn').addEventListener('click',calOpen);
-$('calPrev').addEventListener('click',()=>{calView.m--;if(calView.m<1){calView.m=12;calView.y--;}renderCal();});
-$('calNext').addEventListener('click',()=>{calView.m++;if(calView.m>12){calView.m=1;calView.y++;}renderCal();});
+$('calPrev').addEventListener('click',()=>{const h=$('calHdr');if(h&&h._swiped){h._swiped=false;return;}calStep(-1);});
+$('calNext').addEventListener('click',()=>{const h=$('calHdr');if(h&&h._swiped){h._swiped=false;return;}calStep(1);});
 $('calGrid').addEventListener('click',e=>{const c=e.target.closest('.cal-c');if(!c||c.classList.contains('blank'))return;calTap(+c.dataset.d);});
 $('calApply').addEventListener('click',()=>{
   if(!calS){closeSheet('sh-date');return;}
