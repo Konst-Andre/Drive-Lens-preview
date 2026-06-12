@@ -64,6 +64,9 @@
   --sh1:0 1px 2px rgba(20,30,25,.05),0 2px 8px rgba(20,30,25,.05);
   --sh2:0 2px 6px rgba(20,30,25,.08),0 8px 24px rgba(20,30,25,.08);
   --r:14px; --rs:10px; --rxs:6px;
+  /* Animated seg thumb (Batch 32) — об'єм світлої пілюлі: тінь+волосяний бордер (A45/A39) */
+  --seg-dur:300ms; --seg-ease:cubic-bezier(.34,1.56,.64,1);
+  --thumb-bg:var(--surface-2); --thumb-sh:0 1px 3px rgba(20,30,25,.14),0 1px 2px rgba(20,30,25,.07); --thumb-bd:rgba(0,0,0,.05);
   --sab:env(safe-area-inset-bottom,0px);
   color-scheme:light;/* B19 #2: native-контроли (календар, time-пікер, спінери) у світлій темі */
 }
@@ -81,6 +84,7 @@
   --appbar-bg:rgba(13,17,16,0.92);
   --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
   --sh2:0 2px 6px rgba(0,0,0,.28),0 12px 28px rgba(0,0,0,.14);
+  --thumb-bg:var(--surface-4); --thumb-sh:var(--sh1); --thumb-bd:transparent;
 }
 @media(prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
@@ -97,6 +101,7 @@
     --appbar-bg:rgba(13,17,16,0.92);
     --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
     --sh2:0 2px 6px rgba(0,0,0,.28),0 12px 28px rgba(0,0,0,.14);
+    --thumb-bg:var(--surface-4); --thumb-sh:var(--sh1); --thumb-bd:transparent;
   }
 }
 
@@ -171,12 +176,18 @@ button:disabled{cursor:not-allowed}
 .filter-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border-subtle);flex-shrink:0;box-shadow:0 4px 12px rgba(20,30,25,.06)}
 [data-theme="dark"] .filter-row{box-shadow:none}   /* dark: тіні невидимі — обʼєм через тон, не shadow */
 .filter-row[hidden]{display:none}   /* b15 L4: інакше display:flex б'є атрибут [hidden] (рівна специфічність) → панель не ховалась на Паливі/Місяці */
-.seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px;flex:0 0 auto}
-.seg-i{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-secondary);transition:background .14s,color .14s,box-shadow .14s;cursor:pointer;white-space:nowrap}
+.seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px;flex:1;position:relative}/* b32: flex-fill (рівні сегменти) + anchor для .seg-thumb */
+.seg-i{display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-secondary);transition:color .14s;cursor:pointer;white-space:nowrap;flex:1;position:relative;z-index:1}/* b32: рівний поділ; текст над повзунком; фон/тінь несе .seg-thumb */
 .seg-i svg{width:14px;height:14px;flex-shrink:0}
-.seg-i.act{background:var(--surface-2);color:var(--accent);box-shadow:var(--sh1)}
-[data-theme="dark"] .seg-i.act{background:var(--surface-4);color:var(--accent-text)}
-.date-btn{margin-left:auto;display:flex;align-items:center;gap:6px;padding:7px 11px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);font-size:12.5px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:background .12s;min-width:0}
+.seg-i.act{color:var(--accent)}
+[data-theme="dark"] .seg-i.act{color:var(--accent-text)}
+body[data-filter="all"] .seg-i.act{color:var(--text-primary)}/* b32: «Всі» — нейтрал (узгоджено зі статус-лайном) */
+[data-theme="dark"] body[data-filter="all"] .seg-i.act{color:var(--text-secondary)}
+/* b32: анімований повзунок — несе фон+тінь активної пілюлі; рух через transform+width (constant-width slide, A54-pending) */
+.seg-thumb{position:absolute;top:3px;bottom:3px;left:0;width:0;border-radius:8px;background:var(--thumb-bg);box-shadow:var(--thumb-sh);border:1px solid var(--thumb-bd);transition:transform var(--seg-dur) var(--seg-ease),width var(--seg-dur) var(--seg-ease);pointer-events:none;z-index:0;opacity:0}
+.seg-thumb.seg-no-anim{transition:none}/* снап на лейаут/тему/resize/init — без слайду */
+@media(prefers-reduced-motion:reduce){.seg-thumb{transition:none}}
+.date-btn{margin-left:auto;display:flex;align-items:center;gap:6px;padding:7px 11px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);font-size:12.5px;font-weight:600;color:var(--text-primary);cursor:pointer;transition:background .12s;min-width:0;min-height:46px}/* b32 MEDIUM-4: стала висота під 2 рядки (1-рядкові стани не коротшать рядок) */
 .date-btn:active{background:var(--surface-4)}
 .date-btn svg{width:14px;height:14px;color:var(--text-secondary);flex-shrink:0}
 .date-btn .db-sub{color:var(--accent);font-weight:700}
@@ -489,6 +500,11 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .pk-opt:active{background:var(--surface-3)}
 .pk-opt.sel{color:var(--accent-text)}
 .pk-opt.other{color:var(--text-secondary);font-style:italic}
+/* b32 HIGH-3: .pk у рядку Налаштувань — компактна пілюля + float-right дропдаун (реюз makePicker) */
+.set-pk{position:relative;flex-shrink:0}
+.set-pk .pk-btn{width:auto;gap:6px;padding:8px 12px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);font-size:14px;font-weight:700;color:var(--text-primary)}
+.set-pk .pk-list{position:absolute;right:0;top:calc(100% + 6px);margin-top:0;min-width:168px;z-index:5;box-shadow:var(--sh1)}
+.gcard:has(.set-pk){overflow:visible}/* float-right дропдаун має виходити за межі картки (база .gcard має overflow:hidden) */
 
 /* Fuel selector (concept v1.3 Розділ D — 12 cells, 4 groups) */
 .fuel-sel{margin:2px 0 4px}
@@ -849,6 +865,7 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
   <!-- ===== FILTER ROW (chrome, статично — seg + date; НЕ релокується) ===== -->
   <div class="filter-row" id="filterRow">
     <div class="seg" id="seg" role="tablist" aria-label="Режим">
+      <span class="seg-thumb" aria-hidden="true"></span>
       <button class="seg-i" data-f="work" role="tab">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
         Робочий
@@ -1106,7 +1123,7 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:'31',stage:'Етап 1',date:'2026-06-12'};
+const APP_BUILD={batch:'32',stage:'Етап 1',date:'2026-06-12'};
 
 function seed(){
   const t=todayISO();
@@ -1256,6 +1273,19 @@ function renderFilterRow(){
     lbl.innerHTML=isToday(day)?`${fmtDate(day)} · <span class="db-sub">Сьогодні</span>`:fmtDate(day);
   }
 }
+
+// ---------- seg thumb (b32 HIGH-1): constant-width slide, per-instance, multi-seg ----------
+function ensureThumb(seg){let t=seg.querySelector('.seg-thumb');if(!t){t=document.createElement('span');t.className='seg-thumb';t.setAttribute('aria-hidden','true');seg.insertBefore(t,seg.firstChild);}return t;}
+function placeThumb(seg,snap){
+  if(!seg)return;const t=ensureThumb(seg),act=seg.querySelector('.seg-i.act');
+  if(!act){t.style.opacity='0';return;}
+  const sr=seg.getBoundingClientRect(),r=act.getBoundingClientRect();
+  if(r.width===0){t.style.opacity='0';return;}            // ще не в лейауті (схований таб/рядок) — переміряємо наступним хуком
+  const apply=()=>{t.style.width=r.width+'px';t.style.transform='translateX('+(r.left-sr.left)+'px)';t.style.opacity='1';};
+  if(snap){t.classList.add('seg-no-anim');apply();requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.remove('seg-no-anim')));}
+  else apply();
+}
+function placeAllThumbs(snap){document.querySelectorAll('.seg').forEach(s=>placeThumb(s,snap));}
 
 // ---------- render: summary 2x2 + smart accent ----------
 function renderSummary(){
@@ -1678,6 +1708,7 @@ function patternBlock(){
 }
 function fuelPeriods(){
   return `<div class="seg fl-seg" id="flSeg" role="tablist" aria-label="Період аналітики">
+    <span class="seg-thumb" aria-hidden="true"></span>
     <button class="seg-i${S.fuelScope==='m'?' act':''}" data-fs="m" role="tab">Місяць</button>
     <button class="seg-i${S.fuelScope==='3m'?' act':''}" data-fs="3m" role="tab">3 міс</button>
     <button class="seg-i${S.fuelScope==='all'?' act':''}" data-fs="all" role="tab">Усе</button>
@@ -1693,9 +1724,11 @@ function renderFuel(){
       <button class="fl-cta" id="fl-add" type="button">Додати заправку</button>
     </div>`;
     $('fl-add').addEventListener('click',()=>openRefuelForm());
+    placeThumb($('flSeg'),true);
     return;
   }
   scroll.innerHTML=fuelPeriods()+stateBlock(cur)+consumptionBlock()+splitBlock()+moneyBlock()+patternBlock();
+  placeThumb($('flSeg'),true);
 }
 
 // ============================================================
@@ -2154,8 +2187,14 @@ function makePicker(cfg){ // cfg:{root,btn,cur,list,options,allowOther,otherInpu
       set(val,opt.textContent);open(false);
       if(cfg.otherInput)$(cfg.otherInput).style.display='none';
     }
+    if(cfg.onChange)cfg.onChange(btn.dataset.val);   // b32: миттєвий persist (Налаштування); azs/type не передають → no-op
   });
-  document.addEventListener('click',e=>{if(!list.hidden&&!e.target.closest('#'+cfg.root))open(false);});
+  // A21: один document-listener на root-id (settings .pk перебудовується genSheet'ом щоразу → інакше стек listeners); re-resolve по id під поточний вузол
+  if(!makePicker._docBound)makePicker._docBound={};
+  if(!makePicker._docBound[cfg.root]){
+    makePicker._docBound[cfg.root]=true;
+    document.addEventListener('click',e=>{const L=$(cfg.list),R=document.getElementById(cfg.root);if(L&&!L.hidden&&!(e.target.closest&&e.target.closest('#'+cfg.root))){L.hidden=true;if(R)R.classList.remove('open');}});
+  }
   return {set,open,build,get:()=>btn.dataset.val};
 }
 const azsPicker=makePicker({root:'f-azs',btn:'f-azs-btn',cur:'f-azs-cur',list:'f-azs-list',options:AZS,allowOther:true,otherInput:'f-azs-other'});
@@ -2237,14 +2276,8 @@ function menuAction(key){
   if(key==='about')return openAbout();
 }
 function openSettings(){
+  const CHEV='<svg class="pk-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>';
   genSheet('Налаштування',`
-    <div class="eb">Формат</div>
-    <div class="gcard">
-      <div class="set-i"><div><div class="set-l">Одиниці</div><div class="set-d">відстань і пробіг</div></div>
-        <select class="inp" id="set-units"><option value="km">Кілометри</option><option value="mi">Милі</option></select></div>
-      <div class="set-i"><div><div class="set-l">Валюта</div><div class="set-d">для заправок</div></div>
-        <select class="inp" id="set-cur"><option value="₴">₴ Гривня</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option></select></div>
-    </div>
     <div class="eb">Поведінка</div>
     <div class="gcard">
       <div class="set-i"><div><div class="set-l">Нагадування</div><div class="set-d">«закрити день» увечері</div></div>
@@ -2252,15 +2285,36 @@ function openSettings(){
       <div class="set-i"><div><div class="set-l">Автозбереження</div><div class="set-d">локальна чернетка форм</div></div>
         <label class="sw"><input type="checkbox" id="set-auto"><span class="sw-tr"></span></label></div>
     </div>
+    <div class="eb">Формат</div>
+    <div class="gcard">
+      <div class="set-i"><div><div class="set-l">Одиниці</div><div class="set-d">відстань і пробіг</div></div>
+        <div class="pk set-pk" id="set-units-pk">
+          <button type="button" class="pk-btn set-pk-btn" id="set-units-btn" data-val="${esc(SETTINGS.units)}"><span id="set-units-cur">—</span>${CHEV}</button>
+          <div class="pk-list" id="set-units-list" hidden></div>
+        </div></div>
+      <div class="set-i"><div><div class="set-l">Валюта</div><div class="set-d">для заправок</div></div>
+        <div class="pk set-pk" id="set-cur-pk">
+          <button type="button" class="pk-btn set-pk-btn" id="set-cur-btn" data-val="${esc(SETTINGS.currency)}"><span id="set-cur-cur">—</span>${CHEV}</button>
+          <div class="pk-list" id="set-cur-list" hidden></div>
+        </div></div>
+    </div>
     <div class="eb">Авто</div>
     <div class="gcard">
       <div class="set-i"><div><div class="set-l">Місткість бака (л)</div><div class="set-d">об'єм повного бака</div></div>
         <input class="inp" type="text" id="set-tank" inputmode="decimal" pattern="[0-9]*\.?[0-9]*" autocomplete="off" spellcheck="false" placeholder="50"></div>
     </div>`);
-  $('set-units').value=SETTINGS.units;$('set-cur').value=SETTINGS.currency;$('set-rem').checked=SETTINGS.reminders;$('set-auto').checked=SETTINGS.autosave;
+  $('set-rem').checked=SETTINGS.reminders;$('set-auto').checked=SETTINGS.autosave;
   $('set-tank').value=SETTINGS.tankL!=null?SETTINGS.tankL:50;
-  $('set-units').addEventListener('change',e=>{SETTINGS.units=e.target.value;saveSettings();toast('Збережено');});
-  $('set-cur').addEventListener('change',e=>{SETTINGS.currency=e.target.value;saveSettings();toast('Збережено');});
+  // Одиниці / Валюта → кастомний .pk (реюз makePicker, float-right). Шіт genSheet'иться щоразу → білд тут.
+  const UNIT_OPTS=[{v:'km',l:'Кілометри'},{v:'mi',l:'Милі'}];
+  const CUR_OPTS=[{v:'₴',l:'₴ Гривня'},{v:'USD',l:'$ USD'},{v:'EUR',l:'€ EUR'}];
+  const lblOf=(opts,v)=>{const o=opts.find(x=>x.v===v);return o?o.l:v;};
+  const unitsPicker=makePicker({root:'set-units-pk',btn:'set-units-btn',cur:'set-units-cur',list:'set-units-list',options:UNIT_OPTS,allowOther:false,
+    onChange:v=>{SETTINGS.units=v;saveSettings();toast('Збережено');}});
+  const curPicker=makePicker({root:'set-cur-pk',btn:'set-cur-btn',cur:'set-cur-cur',list:'set-cur-list',options:CUR_OPTS,allowOther:false,
+    onChange:v=>{SETTINGS.currency=v;saveSettings();toast('Збережено');}});
+  unitsPicker.set(SETTINGS.units,lblOf(UNIT_OPTS,SETTINGS.units));
+  curPicker.set(SETTINGS.currency,lblOf(CUR_OPTS,SETTINGS.currency));
   $('set-rem').addEventListener('change',e=>{SETTINGS.reminders=e.target.checked;saveSettings();});
   $('set-auto').addEventListener('change',e=>{SETTINGS.autosave=e.target.checked;saveSettings();});
   $('set-tank').addEventListener('change',e=>{const v=num(e.target.value);SETTINGS.tankL=(v!=null&&v>0)?v:50;e.target.value=SETTINGS.tankL;saveSettings();if(S.tab==='fuel')renderFuel();toast('Бак: '+SETTINGS.tankL+' л');});
@@ -2422,7 +2476,7 @@ function confirmAction(title,desc,onOk){
 // ============================================================
 // FILTER SEGMENT
 // ============================================================
-$('seg').addEventListener('click',e=>{const b=e.target.closest('.seg-i');if(b){S.filter=b.dataset.f;render();}});
+$('seg').addEventListener('click',e=>{const b=e.target.closest('.seg-i');if(b){S.filter=b.dataset.f;render();placeThumb($('seg'),false);}});
 $('jSearch').addEventListener('input',e=>{S.search=e.target.value;$('jSearchClear').hidden=!S.search;renderContent();});
 $('jSearchClear').addEventListener('click',()=>{S.search='';$('jSearch').value='';$('jSearchClear').hidden=true;$('jSearch').focus();renderContent();});
 
@@ -2566,6 +2620,7 @@ function applyTheme(){
   document.querySelectorAll('.theme-item').forEach(it=>it.classList.toggle('active',it.dataset.mode===mode));
   const lbl=mode==='auto'?'Системна':mode==='dark'?'Темна':'Світла';
   $('btnTheme').setAttribute('aria-label','Тема: '+lbl);
+  placeAllThumbs(true);
 }
 function setThemeMode(mode){try{if(mode==='auto')localStorage.removeItem(THEME_KEY);else localStorage.setItem(THEME_KEY,mode);}catch(e){}applyTheme();}
 document.documentElement.classList.add('no-transition');
@@ -2595,6 +2650,7 @@ function setTab(t){
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='sc-'+t));
   document.querySelector('.app-bar').classList.remove('scrolled');
   renderContent();
+  placeThumb($('seg'),true);
 }
 $('bnav').addEventListener('click',e=>{const b=e.target.closest('.nav-i');if(b)setTab(b.dataset.tab);});
 // Fuel period switch (delegation — content rebuilt each render)
@@ -2627,6 +2683,10 @@ loadSettings();loadData();
 $('seg').querySelector('[data-f="all"]').classList.add('act');
 setTab('overview');
 render();
+// b32: seg-повзунок — снап на старті, після завантаження шрифтів (date-btn ширина → seg-простір) і на resize/orientation
+placeAllThumbs(true);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>placeAllThumbs(true));
+let _segRT=null;window.addEventListener('resize',()=>{cancelAnimationFrame(_segRT);_segRT=requestAnimationFrame(()=>placeAllThumbs(true));});
 </script>
 </body>
 </html>
