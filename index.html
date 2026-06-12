@@ -176,7 +176,7 @@ button:disabled{cursor:not-allowed}
 .filter-row{display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--surface-2);border-bottom:1px solid var(--border-subtle);flex-shrink:0;box-shadow:0 4px 12px rgba(20,30,25,.06)}
 [data-theme="dark"] .filter-row{box-shadow:none}   /* dark: тіні невидимі — обʼєм через тон, не shadow */
 .filter-row[hidden]{display:none}   /* b15 L4: інакше display:flex б'є атрибут [hidden] (рівна специфічність) → панель не ховалась на Паливі/Місяці */
-.seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px;flex:1;position:relative}/* b32: flex-fill (рівні сегменти) + anchor для .seg-thumb */
+.seg{display:flex;background:var(--surface-3);border-radius:var(--rs);padding:3px;gap:2px;flex:1;position:relative;overflow:hidden;min-width:min-content}/* b32: flex-fill + anchor; overflow:hidden кліпає overshoot пружинки; min-width:min-content — інакше overflow обнуляє min-width:auto флекс-елемента і seg стискається нижче 3 сегментів (обрізає «Всі») */
 .seg-i{display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 11px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text-secondary);transition:color .14s;cursor:pointer;white-space:nowrap;flex:1;position:relative;z-index:1}/* b32: рівний поділ; текст над повзунком; фон/тінь несе .seg-thumb */
 .seg-i svg{width:14px;height:14px;flex-shrink:0}
 .seg-i.act{color:var(--accent)}
@@ -504,6 +504,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .set-pk{position:relative;flex-shrink:0}
 .set-pk .pk-btn{width:auto;gap:6px;padding:8px 12px;background:var(--surface-3);border:1px solid var(--border-subtle);border-radius:var(--rs);font-size:14px;font-weight:700;color:var(--text-primary)}
 .set-pk .pk-list{position:absolute;right:0;top:calc(100% + 6px);margin-top:0;min-width:168px;z-index:5;box-shadow:var(--sh1)}
+.set-pk.pk-up .pk-list{top:auto;bottom:calc(100% + 6px)}/* b32: flip-up коли знизу мало місця (валюта — останній рядок шіта) */
 .gcard:has(.set-pk){overflow:visible}/* float-right дропдаун має виходити за межі картки (база .gcard має overflow:hidden) */
 
 /* Fuel selector (concept v1.3 Розділ D — 12 cells, 4 groups) */
@@ -1262,6 +1263,7 @@ function fmtRange(s,e){if(s===e)return fmtShort(s);const A=s.split('-').map(Numb
 function inScope(d){return (!S.scopeStart||!S.scopeEnd)?true:(d>=S.scopeStart&&d<=S.scopeEnd);}
 
 // ---------- render: filter row ----------
+let _lastFilter=null;   // b32: animate повзунок ЛИШЕ коли фільтр реально змінився; зміна дати (інша ширина date-btn → релейаут seg) → снап
 function renderFilterRow(){
   document.body.dataset.filter=S.filter;
   document.querySelectorAll('.seg-i').forEach(b=>b.classList.toggle('act',b.dataset.f===S.filter));
@@ -1272,6 +1274,9 @@ function renderFilterRow(){
     const day=S.scopeStart||S.activeDay;
     lbl.innerHTML=isToday(day)?`${fmtDate(day)} · <span class="db-sub">Сьогодні</span>`:fmtDate(day);
   }
+  const animate=(_lastFilter!==null&&_lastFilter!==S.filter);
+  placeThumb($('seg'),!animate);   // після оновлення date-label (ширина date-btn уже нова) → коректний вимір
+  _lastFilter=S.filter;
 }
 
 // ---------- seg thumb (b32 HIGH-1): constant-width slide, per-instance, multi-seg ----------
@@ -2174,7 +2179,9 @@ function makePicker(cfg){ // cfg:{root,btn,cur,list,options,allowOther,otherInpu
   }
   function mark(val){list.querySelectorAll('.pk-opt').forEach(o=>o.classList.toggle('sel',o.dataset.val===val));}
   function set(val,label){btn.dataset.val=val;cur.textContent=label;mark(val);}
-  function open(o){root.classList.toggle('open',o);list.hidden=!o;}
+  function open(o){root.classList.toggle('open',o);list.hidden=!o;
+    if(cfg.flip)root.classList.toggle('pk-up',o);   // b32: settings .pk — завжди вгору (консистентно: і Одиниці, і Валюта однаково)
+  }
   build();
   btn.addEventListener('click',()=>open(list.hidden));
   list.addEventListener('click',e=>{
@@ -2309,9 +2316,9 @@ function openSettings(){
   const UNIT_OPTS=[{v:'km',l:'Кілометри'},{v:'mi',l:'Милі'}];
   const CUR_OPTS=[{v:'₴',l:'₴ Гривня'},{v:'USD',l:'$ USD'},{v:'EUR',l:'€ EUR'}];
   const lblOf=(opts,v)=>{const o=opts.find(x=>x.v===v);return o?o.l:v;};
-  const unitsPicker=makePicker({root:'set-units-pk',btn:'set-units-btn',cur:'set-units-cur',list:'set-units-list',options:UNIT_OPTS,allowOther:false,
+  const unitsPicker=makePicker({root:'set-units-pk',btn:'set-units-btn',cur:'set-units-cur',list:'set-units-list',options:UNIT_OPTS,allowOther:false,flip:true,
     onChange:v=>{SETTINGS.units=v;saveSettings();toast('Збережено');}});
-  const curPicker=makePicker({root:'set-cur-pk',btn:'set-cur-btn',cur:'set-cur-cur',list:'set-cur-list',options:CUR_OPTS,allowOther:false,
+  const curPicker=makePicker({root:'set-cur-pk',btn:'set-cur-btn',cur:'set-cur-cur',list:'set-cur-list',options:CUR_OPTS,allowOther:false,flip:true,
     onChange:v=>{SETTINGS.currency=v;saveSettings();toast('Збережено');}});
   unitsPicker.set(SETTINGS.units,lblOf(UNIT_OPTS,SETTINGS.units));
   curPicker.set(SETTINGS.currency,lblOf(CUR_OPTS,SETTINGS.currency));
@@ -2476,7 +2483,7 @@ function confirmAction(title,desc,onOk){
 // ============================================================
 // FILTER SEGMENT
 // ============================================================
-$('seg').addEventListener('click',e=>{const b=e.target.closest('.seg-i');if(b){S.filter=b.dataset.f;render();placeThumb($('seg'),false);}});
+$('seg').addEventListener('click',e=>{const b=e.target.closest('.seg-i');if(b){S.filter=b.dataset.f;render();}});
 $('jSearch').addEventListener('input',e=>{S.search=e.target.value;$('jSearchClear').hidden=!S.search;renderContent();});
 $('jSearchClear').addEventListener('click',()=>{S.search='';$('jSearch').value='';$('jSearchClear').hidden=true;$('jSearch').focus();renderContent();});
 
