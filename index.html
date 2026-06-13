@@ -68,6 +68,13 @@
   --seg-dur:450ms; --seg-ease:cubic-bezier(.34,1.56,.64,1);  /* b33: 300→450 (device: 450 краще читається і для 3-seg еталона, і для 2-seg шіта) */
   --thumb-bg:var(--surface-2); --thumb-sh:0 1px 3px rgba(20,30,25,.14),0 1px 2px rgba(20,30,25,.07); --thumb-bd:rgba(0,0,0,.05);
   --sab:env(safe-area-inset-bottom,0px);
+  /* Glass tab-bar (Batch 35) — пресет A, blur 12 (shimmer-cap ≤12), light = defaults */
+  --nav-dur:400ms; --nav-ease:cubic-bezier(.34,1.3,.64,1);
+  --glass-blur:12px; --glass-sat:180%;
+  --glass-bg:rgba(255,255,255,.82);
+  --glass-rim:rgba(255,255,255,.55);
+  --glass-lift:0 -1px 1px rgba(20,30,25,.04),0 -8px 22px rgba(20,30,25,.07);
+  --cap-bg:var(--accent-soft);
   color-scheme:light;/* B19 #2: native-контроли (календар, time-пікер, спінери) у світлій темі */
 }
 [data-theme="dark"]{
@@ -85,6 +92,11 @@
   --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
   --sh2:0 2px 6px rgba(0,0,0,.28),0 12px 28px rgba(0,0,0,.14);
   --thumb-bg:var(--surface-4); --thumb-sh:var(--sh1); --thumb-bd:transparent;
+  /* Glass tab-bar (Batch 35) — dark preset A */
+  --glass-bg:rgba(20,28,24,.78);
+  --glass-rim:rgba(255,255,255,.08);
+  --glass-lift:0 -1px 2px rgba(0,0,0,.28),0 -10px 24px rgba(0,0,0,.20);
+  --cap-bg:var(--surface-4);
 }
 @media(prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
@@ -102,6 +114,11 @@
     --sh1:0 1px 2px rgba(0,0,0,.22),0 4px 12px rgba(0,0,0,.10);
     --sh2:0 2px 6px rgba(0,0,0,.28),0 12px 28px rgba(0,0,0,.14);
     --thumb-bg:var(--surface-4); --thumb-sh:var(--sh1); --thumb-bd:transparent;
+    /* Glass tab-bar (Batch 35) — dark preset A */
+    --glass-bg:rgba(20,28,24,.78);
+    --glass-rim:rgba(255,255,255,.08);
+    --glass-lift:0 -1px 2px rgba(0,0,0,.28),0 -10px 24px rgba(0,0,0,.20);
+    --cap-bg:var(--surface-4);
   }
 }
 
@@ -117,7 +134,7 @@ input,select,textarea{font-size:16px!important;font-family:inherit}      /* anti
 button{font-family:inherit;border:none;cursor:pointer;background:none;color:inherit}
 button:disabled{cursor:not-allowed}
 .no-transition,.no-transition *{transition:none!important}
-#app{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--surface-1)}
+#app{max-width:430px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:var(--surface-1);position:relative}
 
 /* ===== APP BAR ===== */
 .app-bar{background:var(--surface-2);border-bottom:1px solid var(--border-subtle);padding:max(18px,calc(env(safe-area-inset-top,0px) + 12px)) 14px 8px;flex-shrink:0;z-index:20;position:relative;transition:box-shadow .15s,border-color .15s}
@@ -239,7 +256,7 @@ body[data-filter="all"] .seg-i.act{color:var(--text-primary)}/* b32: «Всі» 
 .screens{flex:1 1 auto;position:relative;overflow:hidden}
 .screen{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
 .screen.active{display:flex}
-.scroll-a{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding:14px 14px calc(20px + var(--sab))}
+.scroll-a{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin;padding:14px 14px calc(var(--nav-h,64px) + 14px)}
 
 /* ===== SUMMARY WIDGET 2x2 (concept v1.3 Розділ A) ===== */
 .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
@@ -421,15 +438,40 @@ body[data-filter="all"] .jsum-l b{color:var(--text-primary)}/* Всі — ней
 .jd-open:active{background:var(--accent-soft)}
 .jd-open svg{width:15px;height:15px;flex-shrink:0}
 
-/* ===== BOTTOM NAV (concept v1.2 §14.13 — 3-state padding) ===== */
-.bottom-nav{display:flex;background:var(--surface-2);border-top:1px solid var(--border-subtle);flex-shrink:0;padding-bottom:8px}
-@media(display-mode:standalone){.bottom-nav{padding-bottom:0}}
-html.pwa-full .nav-i{padding-top:8px;padding-bottom:calc(8px + var(--sab))}
-.nav-i{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;border-radius:12px;color:var(--text-muted);font-size:10px;font-weight:600;transition:color .15s,background .15s;cursor:pointer}
-.nav-i:active{background:var(--surface-3)}
-.nav-i svg{width:22px;height:22px;transition:stroke .15s}
-.nav-i.act{color:var(--accent)}
-[data-theme="dark"] .nav-i.act{color:var(--accent-text)}
+/* ===== BOTTOM NAV — скляний таб-бар + капсула (Batch 35) ===== */
+.bottom-nav{position:absolute;left:0;right:0;bottom:0;z-index:50;display:flex;
+  padding:9px 6px calc(9px + var(--sab));
+  background:var(--glass-bg);
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border-top:1px solid var(--glass-rim);box-shadow:var(--glass-lift)}
+/* fallback: backdrop-filter недоступний → щільніший непрозорий фон */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .bottom-nav{background:rgba(255,255,255,.96)}
+  [data-theme="dark"] .bottom-nav{background:rgba(20,28,24,.96)}
+}
+/* accessibility: «Зменшити прозорість» (iOS) → теж непрозорий бар (як native) */
+@media(prefers-reduced-transparency:reduce){
+  .bottom-nav{background:var(--surface-2);backdrop-filter:none;-webkit-backdrop-filter:none;border-top:1px solid var(--border-subtle)}
+}
+/* капсула (постійний елемент, слайд A54) — L3 (світла) = default */
+.tb-cap{position:absolute;left:0;top:0;border-radius:14px;z-index:0;opacity:0;pointer-events:none;
+  background:var(--cap-bg);
+  box-shadow:0 1px 2px rgba(20,30,25,.14),0 2px 6px rgba(20,30,25,.09),0 6px 14px rgba(20,30,25,.07),inset 0 1px 0 rgba(255,255,255,.9),inset 0 -1.5px 1px rgba(20,30,25,.06);
+  border:1px solid color-mix(in srgb,var(--accent) 16%,transparent);
+  transition:transform var(--nav-dur) var(--nav-ease),width var(--nav-dur) var(--nav-ease),height var(--nav-dur) var(--nav-ease)}
+.tb-cap.cap-no-anim{transition:none}
+/* Dc (темна, залочено) — inset-рим замість border */
+[data-theme="dark"] .tb-cap{
+  border:none;
+  box-shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2),0 8px 20px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.18),inset 0 0 0 1px color-mix(in srgb,var(--accent) 16%,transparent)}
+.nav-i{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;font-size:10px;font-weight:600;line-height:1;color:var(--text-muted);position:relative;z-index:1;transition:color .15s,transform .12s;cursor:pointer}
+.nav-i:active{transform:scale(.96)}
+.nav-i svg{width:22px;height:22px}
+.nav-i[data-tab="fuel"] svg{transform:translateX(2.5px)}
+.nav-i.act{color:var(--accent-text)}                /* світла = #2E7355 */
+[data-theme="dark"] .nav-i.act{color:#48A074}       /* G1 — залочено (НЕ --accent-text #4FAE7A) */
+@media(prefers-reduced-motion:reduce){.tb-cap{transition:none}}
 
 /* ===== BOTTOM SHEETS (concept v1.2 §14.15) ===== */
 .sh-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;visibility:hidden;opacity:0;pointer-events:none;transition:opacity .24s ease,visibility 0s linear .26s}
@@ -585,7 +627,7 @@ select.inp{appearance:none;-webkit-appearance:none;background-image:url("data:im
 .tg-arr{width:12px;height:12px;color:var(--text-muted);flex-shrink:0}
 
 /* Toast */
-.toast{position:fixed;left:50%;bottom:calc(78px + var(--sab));transform:translateX(-50%) translateY(20px);background:var(--text-primary);color:var(--surface-1);padding:11px 18px;border-radius:22px;font-size:13px;font-weight:700;z-index:400;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:var(--sh2);max-width:90%;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h,64px) + 14px);transform:translateX(-50%) translateY(20px);background:var(--text-primary);color:var(--surface-1);padding:11px 18px;border-radius:22px;font-size:13px;font-weight:700;z-index:400;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;box-shadow:var(--sh2);max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ===== Orientation lock (concept v1.2 §14.19) ===== */
@@ -910,6 +952,7 @@ body[data-tab="month"] .date-btn{display:none}/* A36-aware: (0,2,0) > .date-btn 
 
   <!-- ===== BOTTOM NAV ===== -->
   <nav class="bottom-nav" id="bnav">
+    <span class="tb-cap" aria-hidden="true"></span>
     <button class="nav-i act" data-tab="overview">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
       Огляд
@@ -1127,7 +1170,7 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:'34',stage:'Етап 1',date:'2026-06-13'};
+const APP_BUILD={batch:'35',stage:'Етап 1',date:'2026-06-13'};
 
 function seed(){
   const t=todayISO();
@@ -1295,6 +1338,20 @@ function placeThumb(seg,snap){
   else apply();
 }
 function placeAllThumbs(snap){document.querySelectorAll('.seg,.type-seg').forEach(s=>placeThumb(s,snap));}
+
+// ---------- nav capsule (Batch 35): постійний слайдер під активним табом (A54-механіка) ----------
+let _navReady=false;
+function measureNav(){const n=$('bnav');if(n)document.documentElement.style.setProperty('--nav-h',n.offsetHeight+'px');}
+function placeCap(snap){
+  const nav=$('bnav');if(!nav)return;
+  const cap=nav.querySelector('.tb-cap'),btn=nav.querySelector('.nav-i.act');
+  if(!cap||!btn){if(cap)cap.style.opacity='0';return;}
+  const nr=nav.getBoundingClientRect(),r=btn.getBoundingClientRect();
+  if(r.width===0){cap.style.opacity='0';return;}            // нав ще не в лейауті — переміряємо хуком load/resize
+  const apply=()=>{cap.style.width=r.width+'px';cap.style.height=r.height+'px';cap.style.transform='translate('+(r.left-nr.left)+'px,'+(r.top-nr.top)+'px)';cap.style.opacity='1';};
+  if(snap){cap.classList.add('cap-no-anim');apply();requestAnimationFrame(()=>requestAnimationFrame(()=>cap.classList.remove('cap-no-anim')));}
+  else apply();
+}
 
 // ---------- render: summary 2x2 + smart accent ----------
 function renderSummary(){
@@ -2666,6 +2723,7 @@ function setTab(t){
   document.body.dataset.tab=t;
   $('filterRow').hidden=(t==='fuel');
   document.querySelectorAll('.nav-i').forEach(b=>b.classList.toggle('act',b.dataset.tab===t));
+  placeCap(!_navReady);_navReady=true;   // boot=snap, далі=слайд
   document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id==='sc-'+t));
   document.querySelector('.app-bar').classList.remove('scrolled');
   renderContent();
@@ -2689,6 +2747,11 @@ $('jr-scroll').addEventListener('click',e=>{
 (function(){const isS=window.matchMedia('(display-mode:standalone)').matches||navigator.standalone;if(!isS)return;const sab=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--sab'))||0;if(sab>0){const d=window.innerHeight-(screen.height-sab);if(d>sab*.5)document.documentElement.classList.add('pwa-full');}})();
 // VisualViewport vh modes
 (function(){const vv=window.visualViewport;function checkVh(){const vh=vv?vv.height:window.innerHeight;document.body.classList.toggle('tight-vh',vh<720);document.body.classList.toggle('roomy-vh',vh>790);}if(vv){vv.addEventListener('resize',checkVh);vv.addEventListener('scroll',checkVh);}else{window.addEventListener('resize',checkVh);}checkVh();})();
+// Nav height (--nav-h для scroll-under падінгу) + reflow капсули (Batch 35)
+function _navSync(){measureNav();placeCap(true);}
+window.addEventListener('resize',_navSync,{passive:true});
+if(window.visualViewport)window.visualViewport.addEventListener('resize',_navSync,{passive:true});
+window.addEventListener('load',_navSync);
 // App-bar scroll elevation
 const _appBar=document.querySelector('.app-bar');
 document.querySelectorAll('.scroll-a').forEach(el=>{const screen=el.closest('.screen');let ticking=false;el.addEventListener('scroll',()=>{if(ticking)return;ticking=true;requestAnimationFrame(()=>{if(screen&&screen.classList.contains('active'))_appBar.classList.toggle('scrolled',el.scrollTop>8);ticking=false;});},{passive:true});});
@@ -2700,6 +2763,7 @@ document.querySelectorAll('.scroll-a').forEach(el=>{const screen=el.closest('.sc
 // ============================================================
 loadSettings();loadData();
 $('seg').querySelector('[data-f="all"]').classList.add('act');
+measureNav();
 setTab('overview');
 render();
 // b32: seg-повзунок — снап на старті, після завантаження шрифтів (date-btn ширина → seg-простір) і на resize/orientation
