@@ -439,12 +439,14 @@ body[data-filter="all"] .jsum-l b{color:var(--text-primary)}/* Всі — ней
 .jd-open svg{width:15px;height:15px;flex-shrink:0}
 
 /* ===== BOTTOM NAV — скляний таб-бар + капсула (Batch 35) ===== */
-.bottom-nav{position:absolute;left:0;right:0;bottom:0;z-index:50;display:flex;
-  padding:0 6px max(9px, var(--sab));
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:430px;bottom:0;z-index:50;display:flex;
+  padding:6px 6px max(9px, var(--sab));
   background:var(--glass-bg);
   backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
   -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
   border-top:1px solid var(--glass-rim);box-shadow:var(--glass-lift)}
+/* DEBUG (тимчасово, прибрати після device-тесту): підсвітити нижню safe-area зону бару */
+.bottom-nav::after{content:"";position:absolute;left:0;right:0;bottom:0;height:max(9px,var(--sab));background:rgba(255,0,255,.4);pointer-events:none;z-index:80}
 /* fallback: backdrop-filter недоступний → щільніший непрозорий фон */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .bottom-nav{background:rgba(255,255,255,.96)}
