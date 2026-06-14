@@ -13,7 +13,9 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Drive Lens">
 <!-- theme-color (dynamic) — оновлюється inline script нижче і toggle JS. Default dark для PWA splash. -->
-<meta name="theme-color" content="#0D1110">
+<meta name="theme-color" content="#0E1311">
+<!-- Batch 38: PWA manifest (display:standalone) — критично для коректного standalone-режиму на iOS -->
+<link rel="manifest" href="manifest.json?v=batch38">
 <!-- FOUC fix — встановити data-theme ДО CSS apply і first paint (wsd Кластер 9). iOS 18+ live listener у body JS. -->
 <script>
   (function(){
@@ -25,7 +27,7 @@
       html.setAttribute('data-theme', dark ? 'dark' : 'light');
       html.setAttribute('data-theme-mode', mode);
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.content = dark ? '#0D1110' : '#F4F7F5';
+      if (meta) meta.content = dark ? '#0E1311' : '#F4F7F5';
     } catch(e) {
       document.documentElement.setAttribute('data-theme', 'dark');
       document.documentElement.setAttribute('data-theme-mode', 'auto');
@@ -439,26 +441,16 @@ body[data-filter="all"] .jsum-l b{color:var(--text-primary)}/* Всі — ней
 .jd-open svg{width:15px;height:15px;flex-shrink:0}
 
 /* ===== BOTTOM NAV — скляний таб-бар + капсула (Batch 35) ===== */
-/* Batch 37 (B): fixed = якір до viewport, не до #app (знімає 100dvh-залежність).
-   6px top — підтверджено робочим (Batch 36). */
+/* Batch 38 (overlay-retry з маніфестом): чистий fixed, без skirt/magenta.
+   Тест гіпотези: у true standalone (manifest display:standalone) bottom:0 дістає
+   фізичного низу → scroll-under блюр живе. 6px top — підтверджено (Batch 36).
+   sab складено в padding бару → скло фарбує зону home-indicator зсередини. */
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;
   padding:6px 6px max(9px, var(--sab));
   background:var(--glass-bg);
   backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
   -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
   border-top:1px solid var(--glass-rim);box-shadow:var(--glass-lift)}
-/* Batch 37 (B): скляний SKIRT — продовження скла ПІД баром. Якщо fixed;bottom:0
-   сідає на ~44px вище фізичного краю (фантом-тулбар standalone), skirt зафарбовує
-   цю зону склом замість голої --surface-1. top:100% → рендериться поза баром униз. */
-.bottom-nav::after{content:"";position:absolute;left:0;right:0;top:100%;height:64px;
-  background:var(--glass-bg);
-  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-sat));
-  pointer-events:none}
-/* DEBUG b37 — magenta-хейрлайн на фактичному низі бару (bottom:0 border-box).
-   На device: відстань від лінії до home-indicator = фантом-зсув. ПРИБРАТИ після тесту. */
-.bottom-nav::before{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
-  background:rgba(255,0,255,.75);z-index:99;pointer-events:none}
 /* fallback: backdrop-filter недоступний → щільніший непрозорий фон */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .bottom-nav{background:rgba(255,255,255,.96)}
@@ -1184,7 +1176,7 @@ function lsDel(k){try{localStorage.removeItem(k);}catch(e){}}
 const S={activeDay:todayISO(),expandedDay:todayISO(),filter:'all',search:'',scopeStart:null,scopeEnd:null,records:[],refuels:[],editRecId:null,editRfId:null,fuelScope:'3m',odoStartDirty:false,monthView:null};
 const SETTINGS={units:'km',currency:'₴',reminders:true,autosave:true,tankL:50};
 // Антизастій версії: кожен batch бампає batch+date (wsd-правило Batch 21). openAbout читає це.
-const APP_BUILD={batch:'37',stage:'Етап 1',date:'2026-06-14'};
+const APP_BUILD={batch:'38',stage:'Етап 1',date:'2026-06-14'};
 
 function seed(){
   const t=todayISO();
@@ -2706,7 +2698,7 @@ function applyTheme(){
   html.setAttribute('data-theme',dark?'dark':'light');
   html.setAttribute('data-theme-mode',mode);
   const meta=document.querySelector('meta[name="theme-color"]');
-  if(meta)meta.content=dark?'#0D1110':'#F4F7F5';
+  if(meta)meta.content=dark?'#0E1311':'#F4F7F5';
   document.querySelectorAll('.theme-item').forEach(it=>it.classList.toggle('active',it.dataset.mode===mode));
   const lbl=mode==='auto'?'Системна':mode==='dark'?'Темна':'Світла';
   $('btnTheme').setAttribute('aria-label','Тема: '+lbl);

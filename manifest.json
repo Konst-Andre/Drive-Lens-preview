@@ -1,16 +1,18 @@
 {
-  "id": "/drive-lens/",
   "name": "Drive Lens",
   "short_name": "Drive Lens",
+  "description": "Особистий трекер пробігу та палива",
+  "id": "drive-lens",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#0E1311",
   "theme_color": "#0E1311",
+  "orientation": "portrait-primary",
+  "lang": "uk",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ]
 }
